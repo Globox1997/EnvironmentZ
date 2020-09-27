@@ -14,6 +14,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
@@ -27,9 +28,10 @@ public class ColdEffect extends StatusEffect {
 
   @Override
   public void applyUpdateEffect(LivingEntity entity, int amplifier) {
-    if (isWarmBlockNearBy(entity)) {
+    if (!isWarmBlockNearBy(entity)) {
       DamageSource damageSource = createDamageSource();
       entity.damage(damageSource, ConfigInit.CONFIG.cold_damage);
+      ((PlayerEntity) entity).addExhaustion(0.005F);
     }
   }
 

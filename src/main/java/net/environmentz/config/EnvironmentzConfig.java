@@ -9,9 +9,9 @@ import me.sargunvohra.mcmods.autoconfig1u.annotation.Config;
 public class EnvironmentzConfig implements ConfigData {
 
   public boolean allow_all_armor = false;
+  public float cold_damage = 1.0F;
   @ConfigEntry.Gui.PrefixText
   public int cold_damage_interval = 400;
-  public float cold_damage = 1.0F;
   public int cold_damage_effect_time = 2400;
   public int cold_tick_interval = 400;
   public int heating_up_interval = 100;

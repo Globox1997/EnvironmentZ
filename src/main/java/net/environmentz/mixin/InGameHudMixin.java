@@ -29,36 +29,38 @@ public abstract class InGameHudMixin extends DrawableHelper {
   private final MinecraftClient client;
 
   private static final Identifier FREEZING_ICON = new Identifier("environmentz:textures/mob_effect/coldness.png");
-  private static float smoothRendering = 0.0F;
+  private float smoothRendering;
 
   public InGameHudMixin(MinecraftClient client) {
     this.client = client;
   }
 
-  @Inject(method = "render", at = @At(value = "TAIL"))
+  @Inject(method = "Lnet/minecraft/client/gui/hud/InGameHud;render(Lnet/minecraft/client/util/math/MatrixStack;F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHotbar(FLnet/minecraft/client/util/math/MatrixStack;)V"))
   private void renderFreezingIcon(MatrixStack matrixStack, float f, CallbackInfo info) {
     PlayerEntity playerEntity = client.player;
     if (!playerEntity.isCreative()) {
       if (playerEntity.world.getBiome(playerEntity.getBlockPos()).getTemperature() <= 0.0F
           && !ColdEffect.hasWarmClothing(playerEntity) && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
-        if (smoothRendering < 0.98F) {
+        if (smoothRendering < 0.995F) {
           smoothRendering = smoothRendering + 0.0025F;
         }
         this.renderFreezingIconOverlay(matrixStack, smoothRendering);
       } else if (smoothRendering > 0.0F) {
-        smoothRendering = smoothRendering - 0.01F;
         this.renderFreezingIconOverlay(matrixStack, smoothRendering);
+        smoothRendering = smoothRendering - 0.01F;
       }
 
     }
   }
 
   private void renderFreezingIconOverlay(MatrixStack matrixStack, float smooth) {
+    RenderSystem.enableBlend();
     int scaledWidth = this.client.getWindow().getScaledWidth();
     int scaledHeight = this.client.getWindow().getScaledHeight();
     RenderSystem.color4f(1.0F, 1.0F, 1.0F, smooth);
     this.client.getTextureManager().bindTexture(FREEZING_ICON);
-    DrawableHelper.drawTexture(matrixStack, (scaledWidth / 2) - 9, scaledHeight - 49, 0.0F, 0.0F, 18, 18, 18, 18);
+    DrawableHelper.drawTexture(matrixStack, (scaledWidth / 2) - 9, scaledHeight - 55, 0.0F, 0.0F, 18, 18, 18, 18);
+    RenderSystem.disableBlend();
   }
 
 }

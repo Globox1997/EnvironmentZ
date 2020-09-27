@@ -8,6 +8,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.At;
 
 import net.environmentz.effect.ColdEffect;
+import net.fabricmc.api.Environment;
+import net.fabricmc.api.EnvType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameOverlayRenderer;
 import net.minecraft.client.render.BufferBuilder;
@@ -19,23 +21,26 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 
+@Environment(EnvType.CLIENT)
 @Mixin(InGameOverlayRenderer.class)
 public abstract class InGameOverlayRendererMixin {
   private static final Identifier WINTER_TEX = new Identifier("environmentz:textures/misc/coldness.png");
-  private static float smoothRendering = 0.0F;
+  private static float smoothRendering;
 
-  @Inject(method = "renderOverlays", at = @At("HEAD"))
+  @Inject(method = "renderOverlays", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;enableAlphaTest()V"))
   private static void renderOverlaysMixin(MinecraftClient minecraftClient, MatrixStack matrixStack, CallbackInfo info) {
     PlayerEntity playerEntity = minecraftClient.player;
-    if (playerEntity.world.getBiome(playerEntity.getBlockPos()).getTemperature() <= 0.0F
-        && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
-      if (smoothRendering < 0.25F) {
-        smoothRendering = smoothRendering + 0.01F;
+    if (!playerEntity.isCreative()) {
+      if (playerEntity.world.getBiome(playerEntity.getBlockPos()).getTemperature() <= 0.0F
+          && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
+        if (smoothRendering < 0.25F) {
+          smoothRendering = smoothRendering + 0.005F;
+        }
+        renderWinterOverlay(minecraftClient, matrixStack, smoothRendering);
+      } else if (smoothRendering > 0.0F) {
+        renderWinterOverlay(minecraftClient, matrixStack, smoothRendering);
+        smoothRendering = smoothRendering - 0.005F;
       }
-      renderWinterOverlay(minecraftClient, matrixStack, smoothRendering);
-    } else if (smoothRendering > 0.0F) {
-      smoothRendering = smoothRendering - 0.01F;
-      renderWinterOverlay(minecraftClient, matrixStack, smoothRendering);
     }
   }
 
