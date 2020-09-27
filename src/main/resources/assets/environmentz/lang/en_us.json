@@ -1,0 +1,15 @@
+{
+  "effect.environmentz.coldness": "Freeze",
+
+  "death.attack.cold": "%1$s is frozen to death",
+
+  "text.autoconfig.environmentz.title": "EnvironmentZ Config",
+  "text.autoconfig.environmentz.option.allow_all_armor": "Allow all armor to protect for freezing",
+  "text.autoconfig.environmentz.option.cold_damage_interval.@PrefixText": "Duration in ticks (1s = 20ticks)",
+  "text.autoconfig.environmentz.option.cold_damage_interval": "Freeze Damage Interval",
+  "text.autoconfig.environmentz.option.cold_damage": "Freeze Damage",
+  "text.autoconfig.environmentz.option.cold_damage_effect_time": "Freeze damage effect time",
+  "text.autoconfig.environmentz.option.cold_tick_interval": "Freeze tick interval",
+  "text.autoconfig.environmentz.option.heating_up_interval": "Heating up interval",
+  "text.autoconfig.environmentz.option.heating_up_cold_tick_decrease": "Heating up freeze tick decrease"
+}

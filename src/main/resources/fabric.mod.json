@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "environmentz",
+  "version": "1.0.0",
+  "name": "EnvironmentZ",
+  "description": "Some harder environmentz",
+  "authors": [
+    "Globox_Z"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/environmentz",
+    "sources": "https://github.com/Globox1997/EnvironmentZ"
+  },
+  "license": "GLPv3",
+  "icon": "assets/environmentz/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.environmentz.EnvironmentzMain"
+    ],
+    "client": [
+      "net.environmentz.EnvironmentzClient"
+    ],
+    "modmenu": [
+      "net.environmentz.config.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "environmentz.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.7.4",
+    "fabric": "*",
+    "minecraft": "1.16.x"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}
