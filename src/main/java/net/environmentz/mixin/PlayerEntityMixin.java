@@ -41,13 +41,15 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         coldnessTimer = 0;
       }
       if (this.hasStatusEffect(EffectInit.COLDNESS)) {
-        if (ColdEffect.isWarmBlockNearBy(this)) {
+        if (ColdEffect.isWarmBlockNearBy(this) || this.world.getBiome(this.getBlockPos()).getTemperature() >= 2.0F) {
           warmingTimer++;
           if (warmingTimer >= ConfigInit.CONFIG.heating_up_interval) {
             int coldDuration = this.getStatusEffect(EffectInit.COLDNESS).getDuration();
             this.removeStatusEffect(EffectInit.COLDNESS);
-            this.addStatusEffect(new StatusEffectInstance(EffectInit.COLDNESS,
-                coldDuration - ConfigInit.CONFIG.heating_up_cold_tick_decrease, 0, false, false, true));
+            if (coldDuration >= ConfigInit.CONFIG.heating_up_cold_tick_decrease) {
+              this.addStatusEffect(new StatusEffectInstance(EffectInit.COLDNESS,
+                  coldDuration - ConfigInit.CONFIG.heating_up_cold_tick_decrease, 0, false, false, true));
+            }
             warmingTimer = 0;
           }
         }
