@@ -11,5 +11,8 @@
   "text.autoconfig.environmentz.option.cold_damage_effect_time": "Freeze damage effect time",
   "text.autoconfig.environmentz.option.cold_tick_interval": "Freeze tick interval",
   "text.autoconfig.environmentz.option.heating_up_interval": "Heating up interval",
-  "text.autoconfig.environmentz.option.heating_up_cold_tick_decrease": "Heating up freeze tick decrease"
+  "text.autoconfig.environmentz.option.heating_up_cold_tick_decrease": "Heating up freeze tick decrease",
+  "text.autoconfig.environmentz.option.freeze_icon_x.@PrefixText": "HUD freeze icon position",
+  "text.autoconfig.environmentz.option.freeze_icon_x": "x position",
+  "text.autoconfig.environmentz.option.freeze_icon_y": "y position"
 }
