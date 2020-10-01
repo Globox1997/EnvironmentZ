@@ -24,7 +24,7 @@ import net.minecraft.util.math.Matrix4f;
 @Environment(EnvType.CLIENT)
 @Mixin(InGameOverlayRenderer.class)
 public abstract class InGameOverlayRendererMixin {
-  private static final Identifier WINTER_TEX = new Identifier("environmentz:textures/misc/coldness.png");
+  private static final Identifier WINTER_TEX = new Identifier("environmentz:textures/misc/coldness_overlay.png");
   private static float smoothRendering;
 
   @Inject(method = "renderOverlays", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;enableAlphaTest()V"))
