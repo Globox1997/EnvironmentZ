@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 import net.fabricmc.api.Environment;
 import net.environmentz.effect.ColdEffect;
+import net.environmentz.init.ConfigInit;
 import net.fabricmc.api.EnvType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
@@ -28,7 +29,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
   @Mutable
   private final MinecraftClient client;
 
-  private static final Identifier FREEZING_ICON = new Identifier("environmentz:textures/mob_effect/coldness.png");
+  private static final Identifier FREEZING_ICON = new Identifier("environmentz:textures/misc/coldness.png");
   private float smoothRendering;
 
   public InGameHudMixin(MinecraftClient client) {
@@ -54,21 +55,12 @@ public abstract class InGameHudMixin extends DrawableHelper {
   }
 
   private void renderFreezingIconOverlay(MatrixStack matrixStack, float smooth) {
-    RenderSystem.enableBlend();
     int scaledWidth = this.client.getWindow().getScaledWidth();
     int scaledHeight = this.client.getWindow().getScaledHeight();
     RenderSystem.color4f(1.0F, 1.0F, 1.0F, smooth);
     this.client.getTextureManager().bindTexture(FREEZING_ICON);
-    DrawableHelper.drawTexture(matrixStack, (scaledWidth / 2) - 9, scaledHeight - 55, 0.0F, 0.0F, 18, 18, 18, 18);
-    RenderSystem.disableBlend();
+    DrawableHelper.drawTexture(matrixStack, (scaledWidth / 2) - ConfigInit.CONFIG.freeze_icon_x,
+        scaledHeight - ConfigInit.CONFIG.freeze_icon_y, 0.0F, 0.0F, 13, 13, 13, 13);
   }
 
 }
-
-// When you go into snowy biomes you'll start to freeze if you don't wear
-// leather armor (configure able)
-
-// If you are freezing, you can only walk slower and you'll take damage over
-// time.
-
-// Warm yourself up at a fireplace :)
