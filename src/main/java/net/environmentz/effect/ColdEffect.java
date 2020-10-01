@@ -70,18 +70,19 @@ public class ColdEffect extends StatusEffect {
   }
 
   public static boolean hasWarmClothing(LivingEntity livingEntity) {
-    if ((livingEntity.getEquippedStack(EquipmentSlot.HEAD).isItemEqualIgnoreDamage(new ItemStack(Items.LEATHER_HELMET))
-        && livingEntity.getEquippedStack(EquipmentSlot.CHEST)
-            .isItemEqualIgnoreDamage(new ItemStack(Items.LEATHER_CHESTPLATE))
-        && livingEntity.getEquippedStack(EquipmentSlot.LEGS)
-            .isItemEqualIgnoreDamage(new ItemStack(Items.LEATHER_LEGGINGS))
-        && livingEntity.getEquippedStack(EquipmentSlot.FEET)
-            .isItemEqualIgnoreDamage(new ItemStack(Items.LEATHER_BOOTS)))
+    ItemStack headStack = livingEntity.getEquippedStack(EquipmentSlot.HEAD);
+    ItemStack chestStack = livingEntity.getEquippedStack(EquipmentSlot.CHEST);
+    ItemStack legStack = livingEntity.getEquippedStack(EquipmentSlot.LEGS);
+    ItemStack feetStack = livingEntity.getEquippedStack(EquipmentSlot.FEET);
+    if ((headStack.isItemEqualIgnoreDamage(new ItemStack(Items.LEATHER_HELMET))
+        && chestStack.isItemEqualIgnoreDamage(new ItemStack(Items.LEATHER_CHESTPLATE))
+        && legStack.isItemEqualIgnoreDamage(new ItemStack(Items.LEATHER_LEGGINGS))
+        && feetStack.isItemEqualIgnoreDamage(new ItemStack(Items.LEATHER_BOOTS)))
         || (ConfigInit.CONFIG.allow_all_armor
-            && (livingEntity.getEquippedStack(EquipmentSlot.HEAD).getItem().isIn(TagInit.WARM_ARMOR)
-                && livingEntity.getEquippedStack(EquipmentSlot.CHEST).getItem().isIn(TagInit.WARM_ARMOR)
-                && livingEntity.getEquippedStack(EquipmentSlot.LEGS).getItem().isIn(TagInit.WARM_ARMOR)
-                && livingEntity.getEquippedStack(EquipmentSlot.FEET).getItem().isIn(TagInit.WARM_ARMOR)))) {
+            && (headStack.getItem().isIn(TagInit.WARM_ARMOR) && chestStack.getItem().isIn(TagInit.WARM_ARMOR)
+                && legStack.getItem().isIn(TagInit.WARM_ARMOR) && feetStack.getItem().isIn(TagInit.WARM_ARMOR)))
+        || (headStack.getItem().isIn(TagInit.ALLOW_ALL_ARMOR) && chestStack.getItem().isIn(TagInit.ALLOW_ALL_ARMOR)
+            && legStack.getItem().isIn(TagInit.ALLOW_ALL_ARMOR) && feetStack.getItem().isIn(TagInit.ALLOW_ALL_ARMOR))) {
       return true;
     } else
       return false;
