@@ -16,4 +16,7 @@ public class EnvironmentzConfig implements ConfigData {
   public int cold_tick_interval = 400;
   public int heating_up_interval = 100;
   public int heating_up_cold_tick_decrease = 400;
+  @ConfigEntry.Gui.PrefixText
+  public int freeze_icon_x = 7;
+  public int freeze_icon_y = 52;
 }
