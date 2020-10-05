@@ -2,6 +2,7 @@ package net.environmentz.config;
 
 import me.sargunvohra.mcmods.autoconfig1u.ConfigData;
 import me.sargunvohra.mcmods.autoconfig1u.annotation.ConfigEntry;
+import me.sargunvohra.mcmods.autoconfig1u.shadowed.blue.endless.jankson.Comment;
 import me.sargunvohra.mcmods.autoconfig1u.annotation.Config;
 
 @Config(name = "environmentz")
@@ -12,9 +13,13 @@ public class EnvironmentzConfig implements ConfigData {
   public float cold_damage = 1.0F;
   @ConfigEntry.Gui.PrefixText
   public int cold_damage_interval = 400;
+  @Comment("Freeze effect duration ticks")
   public int cold_damage_effect_time = 2400;
+  @Comment("Freeze effect apply ticks")
   public int cold_tick_interval = 400;
+  public int warm_armor_tick_modifier = 40;
   public int heating_up_interval = 100;
+  @Comment("Substracting freeze effect ticks")
   public int heating_up_cold_tick_decrease = 400;
   @ConfigEntry.Gui.PrefixText
   public int freeze_icon_x = 7;

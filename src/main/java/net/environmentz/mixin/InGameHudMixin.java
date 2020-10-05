@@ -30,7 +30,11 @@ public abstract class InGameHudMixin extends DrawableHelper {
   private final MinecraftClient client;
 
   private static final Identifier FREEZING_ICON = new Identifier("environmentz:textures/misc/coldness.png");
-  private float smoothRendering;
+  private static float smoothRendering;
+  private static int warmArmorTickModifier = ConfigInit.CONFIG.warm_armor_tick_modifier;
+  private static int coldTickInterval = ConfigInit.CONFIG.cold_tick_interval;
+  private static int freezeIconX = ConfigInit.CONFIG.freeze_icon_x;
+  private static int freezeIconY = ConfigInit.CONFIG.freeze_icon_y;
 
   public InGameHudMixin(MinecraftClient client) {
     this.client = client;
@@ -41,9 +45,14 @@ public abstract class InGameHudMixin extends DrawableHelper {
     PlayerEntity playerEntity = client.player;
     if (!playerEntity.isCreative()) {
       if (playerEntity.world.getBiome(playerEntity.getBlockPos()).getTemperature() <= 0.0F
-          && !ColdEffect.hasWarmClothing(playerEntity) && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
-        if (smoothRendering < 0.995F) {
-          smoothRendering = smoothRendering + 0.0025F;
+          && ColdEffect.warmClothingModifier(playerEntity) != (warmArmorTickModifier * 4)
+          && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
+        System.out.print(smoothRendering + ":");
+        if (smoothRendering < 1.0F) {
+          smoothRendering = smoothRendering + (1.0F / (float)(coldTickInterval + warmArmorTickModifier));
+        }
+        if (smoothRendering > 1.0F) {
+          smoothRendering = 1.0F;
         }
         this.renderFreezingIconOverlay(matrixStack, smoothRendering);
       } else if (smoothRendering > 0.0F) {
@@ -59,8 +68,8 @@ public abstract class InGameHudMixin extends DrawableHelper {
     int scaledHeight = this.client.getWindow().getScaledHeight();
     RenderSystem.color4f(1.0F, 1.0F, 1.0F, smooth);
     this.client.getTextureManager().bindTexture(FREEZING_ICON);
-    DrawableHelper.drawTexture(matrixStack, (scaledWidth / 2) - ConfigInit.CONFIG.freeze_icon_x,
-        scaledHeight - ConfigInit.CONFIG.freeze_icon_y, 0.0F, 0.0F, 13, 13, 13, 13);
+    DrawableHelper.drawTexture(matrixStack, (scaledWidth / 2) - freezeIconX, scaledHeight - freezeIconY, 0.0F, 0.0F, 13,
+        13, 13, 13);
   }
 
 }

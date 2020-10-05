@@ -21,6 +21,10 @@ import net.minecraft.util.math.BlockPos;
 
 public class ColdEffect extends StatusEffect {
   private static final UUID COLDNESS = UUID.fromString("a8287185-47ef-4b9f-a6d3-643b5833181d");
+  private static float coldDamage = ConfigInit.CONFIG.cold_damage;
+  private static int coldDamageInterval = ConfigInit.CONFIG.cold_damage_interval;
+  private static int warmArmorTickModifier = ConfigInit.CONFIG.warm_armor_tick_modifier;
+  private static boolean allowAllArmor = ConfigInit.CONFIG.allow_all_armor;
 
   public ColdEffect(StatusEffectType type, int color) {
     super(type, color);
@@ -30,14 +34,14 @@ public class ColdEffect extends StatusEffect {
   public void applyUpdateEffect(LivingEntity entity, int amplifier) {
     if (!isWarmBlockNearBy(entity)) {
       DamageSource damageSource = createDamageSource();
-      entity.damage(damageSource, ConfigInit.CONFIG.cold_damage);
+      entity.damage(damageSource, coldDamage);
       ((PlayerEntity) entity).addExhaustion(0.005F);
     }
   }
 
   @Override
   public boolean canApplyUpdateEffect(int duration, int amplifier) {
-    return duration % ConfigInit.CONFIG.cold_damage_interval == 0;
+    return duration % coldDamageInterval == 0;
   }
 
   @Override
@@ -69,23 +73,34 @@ public class ColdEffect extends StatusEffect {
     return new EntityDamageSource("cold", null);
   }
 
-  public static boolean hasWarmClothing(LivingEntity livingEntity) {
+  public static int warmClothingModifier(LivingEntity livingEntity) {
+    int warmingModifier = 0;
+    int configAddition = warmArmorTickModifier;
     ItemStack headStack = livingEntity.getEquippedStack(EquipmentSlot.HEAD);
     ItemStack chestStack = livingEntity.getEquippedStack(EquipmentSlot.CHEST);
     ItemStack legStack = livingEntity.getEquippedStack(EquipmentSlot.LEGS);
     ItemStack feetStack = livingEntity.getEquippedStack(EquipmentSlot.FEET);
-    if ((headStack.isItemEqualIgnoreDamage(new ItemStack(Items.LEATHER_HELMET))
-        && chestStack.isItemEqualIgnoreDamage(new ItemStack(Items.LEATHER_CHESTPLATE))
-        && legStack.isItemEqualIgnoreDamage(new ItemStack(Items.LEATHER_LEGGINGS))
-        && feetStack.isItemEqualIgnoreDamage(new ItemStack(Items.LEATHER_BOOTS)))
-        || (ConfigInit.CONFIG.allow_all_armor
-            && (headStack.getItem().isIn(TagInit.WARM_ARMOR) && chestStack.getItem().isIn(TagInit.WARM_ARMOR)
-                && legStack.getItem().isIn(TagInit.WARM_ARMOR) && feetStack.getItem().isIn(TagInit.WARM_ARMOR)))
-        || (headStack.getItem().isIn(TagInit.ALLOW_ALL_ARMOR) && chestStack.getItem().isIn(TagInit.ALLOW_ALL_ARMOR)
-            && legStack.getItem().isIn(TagInit.ALLOW_ALL_ARMOR) && feetStack.getItem().isIn(TagInit.ALLOW_ALL_ARMOR))) {
-      return true;
-    } else
-      return false;
+    if (headStack.isItemEqualIgnoreDamage(new ItemStack(Items.LEATHER_HELMET))
+        || headStack.getItem().isIn(TagInit.ALLOW_ALL_ARMOR)
+        || (allowAllArmor && (headStack.getItem().isIn(TagInit.WARM_ARMOR)))) {
+      warmingModifier = warmingModifier + configAddition;
+    }
+    if (chestStack.isItemEqualIgnoreDamage(new ItemStack(Items.LEATHER_CHESTPLATE))
+        || chestStack.getItem().isIn(TagInit.ALLOW_ALL_ARMOR)
+        || (allowAllArmor && (chestStack.getItem().isIn(TagInit.WARM_ARMOR)))) {
+      warmingModifier = warmingModifier + configAddition;
+    }
+    if (legStack.isItemEqualIgnoreDamage(new ItemStack(Items.LEATHER_LEGGINGS))
+        || legStack.getItem().isIn(TagInit.ALLOW_ALL_ARMOR)
+        || (allowAllArmor && (legStack.getItem().isIn(TagInit.WARM_ARMOR)))) {
+      warmingModifier = warmingModifier + configAddition;
+    }
+    if (feetStack.isItemEqualIgnoreDamage(new ItemStack(Items.LEATHER_BOOTS))
+        || feetStack.getItem().isIn(TagInit.ALLOW_ALL_ARMOR)
+        || (allowAllArmor && (feetStack.getItem().isIn(TagInit.WARM_ARMOR)))) {
+      warmingModifier = warmingModifier + configAddition;
+    }
+    return warmingModifier;
   }
 
   public static boolean isWarmBlockNearBy(LivingEntity livingEntity) {
