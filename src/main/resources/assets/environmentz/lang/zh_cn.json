@@ -11,7 +11,7 @@
   "text.autoconfig.environmentz.option.cold_damage_effect_time": "霜冻状态效果时长",
   "text.autoconfig.environmentz.option.cold_tick_interval": "霜冻刻间隔",
   "text.autoconfig.environmentz.option.heating_up_interval": "升温间隔",
-  "text.autoconfig.environmentz.option.heating_up_cold_tick_decrease": "升温严寒刻削减",
+  "text.autoconfig.environmentz.option.heating_up_cold_tick_decrease": "升温御寒刻削减",
   "text.autoconfig.environmentz.option.freeze_icon_x.@PrefixText": "平视显示器中霜冻图标的位置",
   "text.autoconfig.environmentz.option.freeze_icon_x": "横向位置 (x)",
   "text.autoconfig.environmentz.option.freeze_icon_y": "纵向位置 (y)",
