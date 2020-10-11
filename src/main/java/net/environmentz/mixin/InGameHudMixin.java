@@ -30,7 +30,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
   private final MinecraftClient client;
 
   private static final Identifier FREEZING_ICON = new Identifier("environmentz:textures/misc/coldness.png");
-  private static float smoothRendering;
+  private float smoothFreezingIconRendering;
   private static int warmArmorTickModifier = ConfigInit.CONFIG.warm_armor_tick_modifier;
   private static int coldTickInterval = ConfigInit.CONFIG.cold_tick_interval;
   private static int freezeIconX = ConfigInit.CONFIG.freeze_icon_x;
@@ -47,17 +47,18 @@ public abstract class InGameHudMixin extends DrawableHelper {
       if (playerEntity.world.getBiome(playerEntity.getBlockPos()).getTemperature() <= 0.0F
           && ColdEffect.warmClothingModifier(playerEntity) != (warmArmorTickModifier * 4)
           && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
-        System.out.print(smoothRendering + ":");
-        if (smoothRendering < 1.0F) {
-          smoothRendering = smoothRendering + (1.0F / (float)(coldTickInterval + warmArmorTickModifier));
+        System.out.print(smoothFreezingIconRendering + ":");
+        if (smoothFreezingIconRendering < 1.0F) {
+          smoothFreezingIconRendering = smoothFreezingIconRendering
+              + (1.0F / (float) (coldTickInterval + warmArmorTickModifier));
         }
-        if (smoothRendering > 1.0F) {
-          smoothRendering = 1.0F;
+        if (smoothFreezingIconRendering > 1.0F) {
+          smoothFreezingIconRendering = 1.0F;
         }
-        this.renderFreezingIconOverlay(matrixStack, smoothRendering);
-      } else if (smoothRendering > 0.0F) {
-        this.renderFreezingIconOverlay(matrixStack, smoothRendering);
-        smoothRendering = smoothRendering - 0.01F;
+        this.renderFreezingIconOverlay(matrixStack, smoothFreezingIconRendering);
+      } else if (smoothFreezingIconRendering > 0.0F) {
+        this.renderFreezingIconOverlay(matrixStack, smoothFreezingIconRendering);
+        smoothFreezingIconRendering = smoothFreezingIconRendering - 0.01F;
       }
 
     }
