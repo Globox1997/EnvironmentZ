@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import net.environmentz.init.ConfigInit;
 import net.environmentz.init.TagInit;
+import net.environmentz.mixin.DamageSourceAccessor;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
@@ -11,7 +12,6 @@ import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,12 +19,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
 
-public class ColdEffect extends StatusEffect {
+public class ColdEffect extends StatusEffect implements DamageSourceAccessor {
   private static final UUID COLDNESS = UUID.fromString("a8287185-47ef-4b9f-a6d3-643b5833181d");
-  private static float coldDamage = ConfigInit.CONFIG.cold_damage;
-  private static int coldDamageInterval = ConfigInit.CONFIG.cold_damage_interval;
-  private static int warmArmorTickModifier = ConfigInit.CONFIG.warm_armor_tick_modifier;
-  private static boolean allowAllArmor = ConfigInit.CONFIG.allow_all_armor;
 
   public ColdEffect(StatusEffectType type, int color) {
     super(type, color);
@@ -34,14 +30,14 @@ public class ColdEffect extends StatusEffect {
   public void applyUpdateEffect(LivingEntity entity, int amplifier) {
     if (!isWarmBlockNearBy(entity)) {
       DamageSource damageSource = createDamageSource();
-      entity.damage(damageSource, coldDamage);
+      entity.damage(damageSource, ConfigInit.CONFIG.cold_damage);
       ((PlayerEntity) entity).addExhaustion(0.005F);
     }
   }
 
   @Override
   public boolean canApplyUpdateEffect(int duration, int amplifier) {
-    return duration % coldDamageInterval == 0;
+    return duration % ConfigInit.CONFIG.cold_damage_interval == 0;
   }
 
   @Override
@@ -69,13 +65,16 @@ public class ColdEffect extends StatusEffect {
 
   }
 
-  public static DamageSource createDamageSource() {
-    return new EntityDamageSource("cold", null);
+  public DamageSource createDamageSource() {
+    return ((DamageSourceAccessor) ((DamageSourceAccessor) new DamageSource("cold")).setBypassesArmorAccess())
+        .setUnblockableAccess();
   }
 
   public static int warmClothingModifier(LivingEntity livingEntity) {
     int warmingModifier = 0;
-    int configAddition = warmArmorTickModifier;
+    int configAddition = ConfigInit.CONFIG.warm_armor_tick_modifier;
+    boolean allowAllArmor = ConfigInit.CONFIG.allow_all_armor;
+
     ItemStack headStack = livingEntity.getEquippedStack(EquipmentSlot.HEAD);
     ItemStack chestStack = livingEntity.getEquippedStack(EquipmentSlot.CHEST);
     ItemStack legStack = livingEntity.getEquippedStack(EquipmentSlot.LEGS);
@@ -104,8 +103,9 @@ public class ColdEffect extends StatusEffect {
   }
 
   public static boolean isWarmBlockNearBy(LivingEntity livingEntity) {
-    for (int i = -1; i < 2; i++) {
-      for (int u = -1; u < 2; u++) {
+    int heatingRange = ConfigInit.CONFIG.heating_up_block_range;
+    for (int i = -heatingRange; i < heatingRange + 1; i++) {
+      for (int u = -heatingRange; u < heatingRange + 1; u++) {
         BlockPos pos = new BlockPos(livingEntity.getBlockPos().getX() + i, livingEntity.getBlockPos().getY(),
             livingEntity.getBlockPos().getZ() + u);
         if (livingEntity.world.getBlockState(pos).isIn(TagInit.WARMING_BLOCKS)) {
@@ -114,6 +114,16 @@ public class ColdEffect extends StatusEffect {
       }
     }
     return false;
+  }
+
+  @Override
+  public DamageSource setBypassesArmorAccess() {
+    throw new AssertionError("Access Error");
+  }
+
+  @Override
+  public DamageSource setUnblockableAccess() {
+    throw new AssertionError("Access Error");
   }
 
 }

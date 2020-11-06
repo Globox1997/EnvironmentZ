@@ -15,12 +15,14 @@ public class EnvironmentzConfig implements ConfigData {
   public int cold_damage_interval = 400;
   @Comment("Freeze effect duration ticks")
   public int cold_damage_effect_time = 2400;
-  @Comment("Freeze effect apply ticks")
+  @Comment("Time after freezing occurs")
   public int cold_tick_interval = 400;
   public int warm_armor_tick_modifier = 40;
   public int heating_up_interval = 100;
   @Comment("Substracting freeze effect ticks")
   public int heating_up_cold_tick_decrease = 400;
+  @Comment("Caution! This could decrease performance")
+  public int heating_up_block_range = 1;
   @ConfigEntry.Gui.PrefixText
   public int freeze_icon_x = 7;
   public int freeze_icon_y = 52;

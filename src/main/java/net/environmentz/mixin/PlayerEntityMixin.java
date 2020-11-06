@@ -16,13 +16,8 @@ import net.minecraft.world.World;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity {
-  private static int coldnessTimer;
-  private static int warmingTimer;
-  private static int coldTickInterval = ConfigInit.CONFIG.cold_tick_interval;
-  private static int heatingUpColdTickDecrease = ConfigInit.CONFIG.heating_up_cold_tick_decrease;
-  private static int heatingUpInterval = ConfigInit.CONFIG.heating_up_interval;
-  private static int coldDamageEffectTime = ConfigInit.CONFIG.cold_damage_effect_time;
-  private static int warmArmorTickModifier = ConfigInit.CONFIG.warm_armor_tick_modifier;
+  private int coldnessTimer;
+  private int warmingTimer;
 
   public PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
     super(entityType, world);
@@ -33,11 +28,11 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     PlayerEntity playerEntity = (PlayerEntity) (Object) this;
     if (!playerEntity.isCreative()) {
       if (this.world.getBiome(this.getBlockPos()).getTemperature() <= 0.0F && !ColdEffect.isWarmBlockNearBy(this)) {
-        if (ColdEffect.warmClothingModifier(this) != (warmArmorTickModifier * 4)) {
+        if (ColdEffect.warmClothingModifier(this) != ConfigInit.CONFIG.warm_armor_tick_modifier * 4) {
           coldnessTimer++;
-          if (coldnessTimer >= (coldTickInterval + ColdEffect.warmClothingModifier(this))) {
-            this.addStatusEffect(
-                new StatusEffectInstance(EffectInit.COLDNESS, coldDamageEffectTime, 0, false, false, true));
+          if (coldnessTimer >= (ConfigInit.CONFIG.cold_tick_interval + ColdEffect.warmClothingModifier(this))) {
+            this.addStatusEffect(new StatusEffectInstance(EffectInit.COLDNESS,
+                ConfigInit.CONFIG.cold_damage_effect_time, 0, false, false, true));
             coldnessTimer = 0;
           }
         }
@@ -47,12 +42,12 @@ public abstract class PlayerEntityMixin extends LivingEntity {
       if (this.hasStatusEffect(EffectInit.COLDNESS)) {
         if (ColdEffect.isWarmBlockNearBy(this) || this.world.getBiome(this.getBlockPos()).getTemperature() >= 2.0F) {
           warmingTimer++;
-          if (warmingTimer >= heatingUpInterval) {
+          if (warmingTimer >= ConfigInit.CONFIG.heating_up_interval) {
             int coldDuration = this.getStatusEffect(EffectInit.COLDNESS).getDuration();
             this.removeStatusEffect(EffectInit.COLDNESS);
-            if (coldDuration > heatingUpColdTickDecrease) {
+            if (coldDuration > ConfigInit.CONFIG.heating_up_cold_tick_decrease) {
               this.addStatusEffect(new StatusEffectInstance(EffectInit.COLDNESS,
-                  coldDuration - heatingUpColdTickDecrease, 0, false, false, true));
+                  coldDuration - ConfigInit.CONFIG.heating_up_cold_tick_decrease, 0, false, false, true));
             }
             warmingTimer = 0;
           }
