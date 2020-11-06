@@ -43,7 +43,6 @@ public abstract class InGameHudMixin extends DrawableHelper {
       if (playerEntity.world.getBiome(playerEntity.getBlockPos()).getTemperature() <= 0.0F
           && ColdEffect.warmClothingModifier(playerEntity) != (ConfigInit.CONFIG.warm_armor_tick_modifier * 4)
           && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
-        System.out.print(smoothFreezingIconRendering + ":");
         if (smoothFreezingIconRendering < 1.0F) {
           smoothFreezingIconRendering = smoothFreezingIconRendering
               + (1.0F / (float) (ConfigInit.CONFIG.cold_tick_interval + ConfigInit.CONFIG.warm_armor_tick_modifier));
