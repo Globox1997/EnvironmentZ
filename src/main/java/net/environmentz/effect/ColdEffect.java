@@ -66,8 +66,8 @@ public class ColdEffect extends StatusEffect implements DamageSourceAccessor {
   }
 
   public DamageSource createDamageSource() {
-    return ((DamageSourceAccessor) ((DamageSourceAccessor) new DamageSource("cold")).setBypassesArmorAccess())
-        .setUnblockableAccess();
+    return ((DamageSourceAccessor) ((DamageSourceAccessor) new DamageSource("cold"))
+        .setBypassesArmorEnvironmentZAccess()).setUnblockableEnvironmentZAccess();
   }
 
   public static int warmClothingModifier(LivingEntity livingEntity) {
@@ -117,12 +117,12 @@ public class ColdEffect extends StatusEffect implements DamageSourceAccessor {
   }
 
   @Override
-  public DamageSource setBypassesArmorAccess() {
+  public DamageSource setBypassesArmorEnvironmentZAccess() {
     throw new AssertionError("Access Error");
   }
 
   @Override
-  public DamageSource setUnblockableAccess() {
+  public DamageSource setUnblockableEnvironmentZAccess() {
     throw new AssertionError("Access Error");
   }
 

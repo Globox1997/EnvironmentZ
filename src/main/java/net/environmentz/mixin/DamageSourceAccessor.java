@@ -9,8 +9,8 @@ import net.minecraft.entity.damage.DamageSource;
 public abstract interface DamageSourceAccessor {
 
     @Invoker("setBypassesArmor")
-    public abstract DamageSource setBypassesArmorAccess();
+    public abstract DamageSource setBypassesArmorEnvironmentZAccess();
 
     @Invoker("setUnblockable")
-    public abstract DamageSource setUnblockableAccess();
+    public abstract DamageSource setUnblockableEnvironmentZAccess();
 }
