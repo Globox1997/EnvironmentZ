@@ -5,6 +5,8 @@ import java.util.UUID;
 import net.environmentz.init.ConfigInit;
 import net.environmentz.init.TagInit;
 import net.environmentz.mixin.DamageSourceAccessor;
+import net.minecraft.block.AbstractFurnaceBlock;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
@@ -108,7 +110,9 @@ public class ColdEffect extends StatusEffect implements DamageSourceAccessor {
       for (int u = -heatingRange; u < heatingRange + 1; u++) {
         BlockPos pos = new BlockPos(livingEntity.getBlockPos().getX() + i, livingEntity.getBlockPos().getY(),
             livingEntity.getBlockPos().getZ() + u);
-        if (livingEntity.world.getBlockState(pos).isIn(TagInit.WARMING_BLOCKS)) {
+        if (livingEntity.world.getBlockState(pos).isIn(TagInit.WARMING_BLOCKS)
+            || (livingEntity.world.getBlockState(pos).isOf(Blocks.FURNACE)
+                && livingEntity.world.getBlockState(pos).get(AbstractFurnaceBlock.LIT))) {
           return true;
         }
       }
