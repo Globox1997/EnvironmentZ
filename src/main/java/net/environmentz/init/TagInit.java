@@ -9,7 +9,6 @@ import net.minecraft.util.Identifier;
 public class TagInit {
   // Item
   public static final Tag<Item> WARM_ARMOR = TagRegistry.item(new Identifier("environmentz", "warm_armor"));
-  public static final Tag<Item> ALLOW_ALL_ARMOR = TagRegistry.item(new Identifier("environmentz", "allow_all_armor"));
   // Block
   public static final Tag<Block> WARMING_BLOCKS = TagRegistry.block(new Identifier("environmentz", "warming_blocks"));
 

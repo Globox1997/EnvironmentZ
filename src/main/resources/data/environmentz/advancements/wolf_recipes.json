@@ -1,0 +1,24 @@
+{
+    "parent": "minecraft:recipes/root",
+    "rewards": {
+        "recipes": [
+            "environmentz:wolf_boots",
+            "environmentz:wolf_chestplate",
+            "environmentz:wolf_helmet",
+            "environmentz:wolf_leggings",
+            "environmentz:leather_strap"
+        ]
+    },
+    "criteria": {
+        "got_wolf_things": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "environmentz:wolf_pelt"
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import net.fabricmc.api.Environment;
 import net.environmentz.effect.ColdEffect;
 import net.environmentz.init.ConfigInit;
+import net.environmentz.init.EffectInit;
 import net.fabricmc.api.EnvType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
@@ -42,7 +43,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
     if (!playerEntity.isCreative()) {
       if (playerEntity.world.getBiome(playerEntity.getBlockPos()).getTemperature() <= 0.0F
           && ColdEffect.warmClothingModifier(playerEntity) != (ConfigInit.CONFIG.warm_armor_tick_modifier * 4)
-          && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
+          && !ColdEffect.isWarmBlockNearBy(playerEntity) && !playerEntity.hasStatusEffect(EffectInit.WARMING)) {
         if (smoothFreezingIconRendering < 1.0F) {
           smoothFreezingIconRendering = smoothFreezingIconRendering
               + (1.0F / (float) (ConfigInit.CONFIG.cold_tick_interval + ConfigInit.CONFIG.warm_armor_tick_modifier));

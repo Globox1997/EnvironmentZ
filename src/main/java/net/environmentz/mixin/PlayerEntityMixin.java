@@ -28,7 +28,8 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     PlayerEntity playerEntity = (PlayerEntity) (Object) this;
     if (!playerEntity.isCreative()) {
       if (this.world.getBiome(this.getBlockPos()).getTemperature() <= 0.0F && !ColdEffect.isWarmBlockNearBy(this)) {
-        if (ColdEffect.warmClothingModifier(this) != ConfigInit.CONFIG.warm_armor_tick_modifier * 4) {
+        if (ColdEffect.warmClothingModifier(this) != ConfigInit.CONFIG.warm_armor_tick_modifier * 4
+            && !playerEntity.hasStatusEffect(EffectInit.WARMING)) {
           coldnessTimer++;
           if (coldnessTimer >= (ConfigInit.CONFIG.cold_tick_interval + ColdEffect.warmClothingModifier(this))) {
             this.addStatusEffect(new StatusEffectInstance(EffectInit.COLDNESS,
@@ -40,7 +41,8 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         coldnessTimer = 0;
       }
       if (this.hasStatusEffect(EffectInit.COLDNESS)) {
-        if (ColdEffect.isWarmBlockNearBy(this) || this.world.getBiome(this.getBlockPos()).getTemperature() >= 2.0F) {
+        if (ColdEffect.isWarmBlockNearBy(this) || this.world.getBiome(this.getBlockPos()).getTemperature() >= 2.0F
+            || playerEntity.hasStatusEffect(EffectInit.WARMING)) {
           warmingTimer++;
           if (warmingTimer >= ConfigInit.CONFIG.heating_up_interval) {
             int coldDuration = this.getStatusEffect(EffectInit.COLDNESS).getDuration();

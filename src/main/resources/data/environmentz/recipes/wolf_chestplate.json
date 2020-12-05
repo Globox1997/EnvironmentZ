@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "a a",
+    "bab",
+    "bbb"
+  ],
+  "key": {
+    "a": {
+      "item": "environmentz:leather_strap"
+    },
+    "b": {
+      "item": "environmentz:wolf_pelt"
+    }
+  },
+  "result": {
+    "item": "environmentz:wolf_chestplate"
+  }
+}

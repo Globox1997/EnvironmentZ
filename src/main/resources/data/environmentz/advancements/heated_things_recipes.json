@@ -1,0 +1,23 @@
+{
+    "parent": "minecraft:recipes/root",
+    "rewards": {
+        "recipes": [
+            "environmentz:heated_stones_blasting",
+            "environmentz:heated_stones_fire",
+            "environmentz:heated_stones_furnace",
+            "environmentz:heated_stones"
+        ]
+    },
+    "criteria": {
+        "got_heating_things": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "minecraft:cobblestone"
+                    }
+                ]
+            }
+        }
+    }
+}

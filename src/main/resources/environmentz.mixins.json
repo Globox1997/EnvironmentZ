@@ -9,7 +9,8 @@
   ],
   "client": [
     "InGameOverlayRendererMixin",
-    "InGameHudMixin"
+    "InGameHudMixin",
+    "HeadFeatureRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

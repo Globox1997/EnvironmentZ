@@ -1,0 +1,9 @@
+{
+    "type": "minecraft:smelting",
+    "ingredient": {
+        "item": "environmentz:heating_stones"
+    },
+    "result": "environmentz:heated_stones",
+    "experience": 0,
+    "cookingtime": 400
+}

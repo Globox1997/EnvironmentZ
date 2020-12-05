@@ -9,6 +9,8 @@ public class EnvironmentzMain implements ModInitializer {
   public void onInitialize() {
     ConfigInit.init();
     EffectInit.init();
+    ItemInit.init();
+    LootInit.init();
     TagInit.init();
   }
 }

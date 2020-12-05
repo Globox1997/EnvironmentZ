@@ -18,7 +18,6 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
 
 public class ColdEffect extends StatusEffect implements DamageSourceAccessor {
@@ -81,24 +80,16 @@ public class ColdEffect extends StatusEffect implements DamageSourceAccessor {
     ItemStack chestStack = livingEntity.getEquippedStack(EquipmentSlot.CHEST);
     ItemStack legStack = livingEntity.getEquippedStack(EquipmentSlot.LEGS);
     ItemStack feetStack = livingEntity.getEquippedStack(EquipmentSlot.FEET);
-    if (headStack.isItemEqualIgnoreDamage(new ItemStack(Items.LEATHER_HELMET))
-        || headStack.getItem().isIn(TagInit.ALLOW_ALL_ARMOR)
-        || (allowAllArmor && (headStack.getItem().isIn(TagInit.WARM_ARMOR)))) {
+    if (headStack.getItem().isIn(TagInit.WARM_ARMOR) || (allowAllArmor && !headStack.isEmpty())) {
       warmingModifier = warmingModifier + configAddition;
     }
-    if (chestStack.isItemEqualIgnoreDamage(new ItemStack(Items.LEATHER_CHESTPLATE))
-        || chestStack.getItem().isIn(TagInit.ALLOW_ALL_ARMOR)
-        || (allowAllArmor && (chestStack.getItem().isIn(TagInit.WARM_ARMOR)))) {
+    if (chestStack.getItem().isIn(TagInit.WARM_ARMOR) || (allowAllArmor && !chestStack.isEmpty())) {
       warmingModifier = warmingModifier + configAddition;
     }
-    if (legStack.isItemEqualIgnoreDamage(new ItemStack(Items.LEATHER_LEGGINGS))
-        || legStack.getItem().isIn(TagInit.ALLOW_ALL_ARMOR)
-        || (allowAllArmor && (legStack.getItem().isIn(TagInit.WARM_ARMOR)))) {
+    if (legStack.getItem().isIn(TagInit.WARM_ARMOR) || (allowAllArmor && !legStack.isEmpty())) {
       warmingModifier = warmingModifier + configAddition;
     }
-    if (feetStack.isItemEqualIgnoreDamage(new ItemStack(Items.LEATHER_BOOTS))
-        || feetStack.getItem().isIn(TagInit.ALLOW_ALL_ARMOR)
-        || (allowAllArmor && (feetStack.getItem().isIn(TagInit.WARM_ARMOR)))) {
+    if (feetStack.getItem().isIn(TagInit.WARM_ARMOR) || (allowAllArmor && !feetStack.isEmpty())) {
       warmingModifier = warmingModifier + configAddition;
     }
     return warmingModifier;
