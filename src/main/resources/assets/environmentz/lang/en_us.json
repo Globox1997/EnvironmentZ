@@ -23,9 +23,12 @@
   "item.environmentz.heated_stones":"Heated Stones",
   "item.environmentz.wolf_pelt": "Wolf Pelt",
   "item.environmentz.leather_strap": "Leather Strap",
+  "item.environmentz.polar_bear_fur": "Polar bear Fur",
 
   "item.environmentz.wolf_helmet": "Wolf Pelt Helmet",
   "item.environmentz.wolf_chestplate": "Wolf Pelt Chestplate",
   "item.environmentz.wolf_leggings": "Wolf Pelt Leggings",
-  "item.environmentz.wolf_boots": "Wolf Pelt Boots"
+  "item.environmentz.wolf_boots": "Wolf Pelt Boots",
+
+  "item.environmentz.fur_insolated.tooltip": "Insolated"
 }
