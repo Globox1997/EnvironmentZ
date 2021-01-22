@@ -29,7 +29,7 @@ public class ArmorItemMixin extends Item {
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         super.appendTooltip(stack, world, tooltip, context);
         CompoundTag tag = stack.getTag();
-        if (tag.contains("environmentz")) {
+        if (stack.hasTag() && tag.contains("environmentz")) {
             tooltip.add(new TranslatableText("item.environmentz.fur_insolated.tooltip").formatted(Formatting.BLUE));
         }
 
