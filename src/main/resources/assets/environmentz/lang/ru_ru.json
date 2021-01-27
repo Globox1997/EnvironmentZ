@@ -1,0 +1,34 @@
+{
+  "effect.environmentz.coldness": "Переохлаждение",
+  "effect.environmentz.warming": "Согревание",
+
+  "death.attack.cold": "%1$s замёрз насмерть",
+
+  "text.autoconfig.environmentz.title": "Настройка EnvironmentZ",
+  "text.autoconfig.environmentz.option.allow_all_armor": "Любая броня обеспечивает защиту от мороза",
+  "text.autoconfig.environmentz.option.cold_damage_interval.@PrefixText": "Длительность в тиках (1с = 20 тиков)",
+  "text.autoconfig.environmentz.option.cold_damage_interval": "Интервал урона от переохлаждения",
+  "text.autoconfig.environmentz.option.cold_damage": "Урон переохлаждения",
+  "text.autoconfig.environmentz.option.cold_damage_effect_time": "Время эффекта переохлаждения",
+  "text.autoconfig.environmentz.option.cold_tick_interval": "Интервал тиков переохлаждения",
+  "text.autoconfig.environmentz.option.heating_up_interval": "Интервал согревания",
+  "text.autoconfig.environmentz.option.heating_up_cold_tick_decrease": "Согревание уменьшает время переохлаждения",
+  "text.autoconfig.environmentz.option.freeze_icon_x.@PrefixText": "Позиция в HUD иконки холода",
+  "text.autoconfig.environmentz.option.freeze_icon_x": "X позиция",
+  "text.autoconfig.environmentz.option.freeze_icon_y": "Y позиция",
+  "text.autoconfig.environmentz.option.warm_armor_tick_modifier": "Тёплая броня замедляет появление переохлаждения",
+  "text.autoconfig.environmentz.option.heating_up_block_range": "Радиус нагрева блоков",
+
+  "item.environmentz.heating_stones":"Нагревательные камни",
+  "item.environmentz.heated_stones":"Нагретые камни",
+  "item.environmentz.wolf_pelt": "Волчья шкура",
+  "item.environmentz.leather_strap": "Кожаный ремешок",
+  "item.environmentz.polar_bear_fur": "Мех полярного медведя",
+
+  "item.environmentz.wolf_helmet": "Шлем из волчей шкуры",
+  "item.environmentz.wolf_chestplate": "Нагрудник из волчей шкуры",
+  "item.environmentz.wolf_leggings": "Штаны из волчей шкуры",
+  "item.environmentz.wolf_boots": "Ботинки из волчей шкуры",
+
+  "item.environmentz.fur_insolated.tooltip": "Тёплый"
+}
