@@ -16,7 +16,7 @@
   "text.autoconfig.environmentz.option.freeze_icon_x.@PrefixText": "Позиция в HUD иконки холода",
   "text.autoconfig.environmentz.option.freeze_icon_x": "X позиция",
   "text.autoconfig.environmentz.option.freeze_icon_y": "Y позиция",
-  "text.autoconfig.environmentz.option.warm_armor_tick_modifier": "Тёплая броня замедляет появление переохлаждения",
+  "text.autoconfig.environmentz.option.warm_armor_tick_modifier": "Тёплая броня замедляет развитие переохлаждения",
   "text.autoconfig.environmentz.option.heating_up_block_range": "Радиус нагрева блоков",
 
   "item.environmentz.heating_stones":"Нагревательные камни",
@@ -30,5 +30,5 @@
   "item.environmentz.wolf_leggings": "Штаны из волчей шкуры",
   "item.environmentz.wolf_boots": "Ботинки из волчей шкуры",
 
-  "item.environmentz.fur_insolated.tooltip": "Тёплый"
+  "item.environmentz.fur_insolated.tooltip": "Утеплённый"
 }
