@@ -27,7 +27,8 @@ public abstract class PlayerEntityMixin extends LivingEntity {
   public void tickMixin(CallbackInfo info) {
     PlayerEntity playerEntity = (PlayerEntity) (Object) this;
     if (!playerEntity.isCreative()) {
-      if (this.world.getBiome(this.getBlockPos()).getTemperature() <= 0.0F && !ColdEffect.isWarmBlockNearBy(this)) {
+      if (this.world.getBiome(this.getBlockPos()).getTemperature() <= ConfigInit.CONFIG.max_biome_temp
+          && !ColdEffect.isWarmBlockNearBy(this)) {
         if (ColdEffect.warmClothingModifier(this) != ConfigInit.CONFIG.warm_armor_tick_modifier * 4
             && !playerEntity.hasStatusEffect(EffectInit.WARMING)) {
           coldnessTimer++;
@@ -41,7 +42,8 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         coldnessTimer = 0;
       }
       if (this.hasStatusEffect(EffectInit.COLDNESS)) {
-        if (ColdEffect.isWarmBlockNearBy(this) || this.world.getBiome(this.getBlockPos()).getTemperature() >= 2.0F
+        if (ColdEffect.isWarmBlockNearBy(this)
+            || this.world.getBiome(this.getBlockPos()).getTemperature() >= ConfigInit.CONFIG.heating_up_biome_temp
             || playerEntity.hasStatusEffect(EffectInit.WARMING)) {
           warmingTimer++;
           if (warmingTimer >= ConfigInit.CONFIG.heating_up_interval) {

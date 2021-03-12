@@ -23,6 +23,9 @@ public class EnvironmentzConfig implements ConfigData {
   public int heating_up_cold_tick_decrease = 400;
   @Comment("Caution! This could decrease performance")
   public int heating_up_block_range = 1;
+  @Comment("Below max biome temp - start freezing")
+  public float max_biome_temp = 0.0F;
+  public float heating_up_biome_temp = 2.0F;
   @ConfigEntry.Gui.PrefixText
   public int freeze_icon_x = 7;
   public int freeze_icon_y = 52;
