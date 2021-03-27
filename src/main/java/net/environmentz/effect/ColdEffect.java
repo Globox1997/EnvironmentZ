@@ -32,7 +32,9 @@ public class ColdEffect extends StatusEffect implements DamageSourceAccessor {
     if (!isWarmBlockNearBy(entity)) {
       DamageSource damageSource = createDamageSource();
       entity.damage(damageSource, ConfigInit.CONFIG.cold_damage);
-      ((PlayerEntity) entity).addExhaustion(0.005F);
+      if (entity instanceof PlayerEntity) {
+        ((PlayerEntity) entity).addExhaustion(0.005F);
+      }
     }
   }
 
