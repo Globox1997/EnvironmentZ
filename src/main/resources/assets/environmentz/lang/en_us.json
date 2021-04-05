@@ -1,11 +1,11 @@
 {
-  "effect.environmentz.coldness": "Freeze",
+  "effect.environmentz.coldness": "Frostbite",
   "effect.environmentz.warming": "Warming",
 
-  "death.attack.cold": "%1$s is frozen to death",
+  "death.attack.cold": "%1$s froze to death",
 
   "text.autoconfig.environmentz.title": "EnvironmentZ Config",
-  "text.autoconfig.environmentz.option.allow_all_armor": "Allow all armor to protect for freezing",
+  "text.autoconfig.environmentz.option.allow_all_armor": "Allow all armor to protect against freezing",
   "text.autoconfig.environmentz.option.cold_tick_interval.@PrefixText": "Duration in ticks (1s = 20ticks)",
   "text.autoconfig.environmentz.option.cold_tick_interval": "Freeze tick interval",
   "text.autoconfig.environmentz.option.cold_damage_interval": "Freeze Damage Interval",
@@ -26,12 +26,12 @@
   "item.environmentz.heated_stones":"Heated Stones",
   "item.environmentz.wolf_pelt": "Wolf Pelt",
   "item.environmentz.leather_strap": "Leather Strap",
-  "item.environmentz.polar_bear_fur": "Polar bear Fur",
+  "item.environmentz.polar_bear_fur": "Polar Bear Fur",
 
   "item.environmentz.wolf_helmet": "Wolf Pelt Helmet",
   "item.environmentz.wolf_chestplate": "Wolf Pelt Chestplate",
   "item.environmentz.wolf_leggings": "Wolf Pelt Leggings",
   "item.environmentz.wolf_boots": "Wolf Pelt Boots",
 
-  "item.environmentz.fur_insolated.tooltip": "Insolated"
+  "item.environmentz.fur_insolated.tooltip": "Insulated"
 }
