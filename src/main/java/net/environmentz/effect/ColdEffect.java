@@ -6,7 +6,6 @@ import net.environmentz.init.ConfigInit;
 import net.environmentz.init.TagInit;
 import net.environmentz.mixin.DamageSourceAccessor;
 import net.minecraft.block.AbstractFurnaceBlock;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
@@ -29,9 +28,13 @@ public class ColdEffect extends StatusEffect implements DamageSourceAccessor {
 
   @Override
   public void applyUpdateEffect(LivingEntity entity, int amplifier) {
-    if (!isWarmBlockNearBy(entity)) {
+    if (!entity.world.isClient && !isWarmBlockNearBy(entity)) {
+      float snowMultiplicator = 1.0F;
+      if (entity.world.isRaining()) {
+        snowMultiplicator = 2.0F;
+      }
       DamageSource damageSource = createDamageSource();
-      entity.damage(damageSource, ConfigInit.CONFIG.cold_damage);
+      entity.damage(damageSource, ConfigInit.CONFIG.cold_damage * snowMultiplicator);
       if (entity instanceof PlayerEntity) {
         ((PlayerEntity) entity).addExhaustion(0.005F);
       }
@@ -106,12 +109,14 @@ public class ColdEffect extends StatusEffect implements DamageSourceAccessor {
     int heatingRange = ConfigInit.CONFIG.heating_up_block_range;
     for (int i = -heatingRange; i < heatingRange + 1; i++) {
       for (int u = -heatingRange; u < heatingRange + 1; u++) {
-        BlockPos pos = new BlockPos(livingEntity.getBlockPos().getX() + i, livingEntity.getBlockPos().getY(),
-            livingEntity.getBlockPos().getZ() + u);
-        if (livingEntity.world.getBlockState(pos).isIn(TagInit.WARMING_BLOCKS)
-            || (livingEntity.world.getBlockState(pos).isOf(Blocks.FURNACE)
-                && livingEntity.world.getBlockState(pos).get(AbstractFurnaceBlock.LIT))) {
-          return true;
+        for (int k = -heatingRange - 1; k < heatingRange; k++) {
+          BlockPos pos = new BlockPos(livingEntity.getBlockPos().getX() + i, livingEntity.getBlockPos().getY() + k,
+              livingEntity.getBlockPos().getZ() + u);
+          if (livingEntity.world.getBlockState(pos).isIn(TagInit.WARMING_BLOCKS)
+              || (livingEntity.world.getBlockState(pos).getBlock() instanceof AbstractFurnaceBlock
+                  && livingEntity.world.getBlockState(pos).get(AbstractFurnaceBlock.LIT))) {
+            return true;
+          }
         }
       }
     }

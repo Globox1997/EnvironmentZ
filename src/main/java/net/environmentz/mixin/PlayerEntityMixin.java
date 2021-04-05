@@ -16,6 +16,7 @@ import net.minecraft.world.World;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity {
+  private int ticker;
   private int coldnessTimer;
   private int warmingTimer;
 
@@ -25,37 +26,40 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
   @Inject(method = "tick", at = @At("TAIL"))
   public void tickMixin(CallbackInfo info) {
-    PlayerEntity playerEntity = (PlayerEntity) (Object) this;
-    if (!playerEntity.isCreative()) {
-      if (this.world.getBiome(this.getBlockPos()).getTemperature() <= ConfigInit.CONFIG.max_biome_temp
-          && !ColdEffect.isWarmBlockNearBy(this)) {
-        if (ColdEffect.warmClothingModifier(this) != ConfigInit.CONFIG.warm_armor_tick_modifier * 4
-            && !playerEntity.hasStatusEffect(EffectInit.WARMING)) {
+    if (!((PlayerEntity) (Object) this).isCreative() && !((PlayerEntity) (Object) this).isSpectator()) {
+      ticker++;
+      if (ticker >= 20) {
+        if (!this.world.isClient && !this.hasStatusEffect(EffectInit.WARMING)
+            && ColdEffect.warmClothingModifier(this) != ConfigInit.CONFIG.warm_armor_tick_modifier * 4
+            && this.world.getBiome(this.getBlockPos()).getTemperature() <= ConfigInit.CONFIG.max_biome_freeze_temp
+            && !ColdEffect.isWarmBlockNearBy(this)) {
           coldnessTimer++;
           if (coldnessTimer >= (ConfigInit.CONFIG.cold_tick_interval + ColdEffect.warmClothingModifier(this))) {
-            this.addStatusEffect(new StatusEffectInstance(EffectInit.COLDNESS,
-                ConfigInit.CONFIG.cold_damage_effect_time, 0, false, false, true));
+            int coldDamageEffectTime = ConfigInit.CONFIG.cold_damage_effect_time;
+            if (this.world.isRaining()) {
+              coldDamageEffectTime += ConfigInit.CONFIG.cold_tick_snowing_bonus;
+            }
+            this.addStatusEffect(
+                new StatusEffectInstance(EffectInit.COLDNESS, coldDamageEffectTime, 0, false, false, true));
             coldnessTimer = 0;
           }
-        }
-      } else if (coldnessTimer > 0) {
-        coldnessTimer = 0;
-      }
-      if (this.hasStatusEffect(EffectInit.COLDNESS)) {
-        if (ColdEffect.isWarmBlockNearBy(this)
-            || this.world.getBiome(this.getBlockPos()).getTemperature() >= ConfigInit.CONFIG.heating_up_biome_temp
-            || playerEntity.hasStatusEffect(EffectInit.WARMING)) {
-          warmingTimer++;
-          if (warmingTimer >= ConfigInit.CONFIG.heating_up_interval) {
-            int coldDuration = this.getStatusEffect(EffectInit.COLDNESS).getDuration();
-            this.removeStatusEffect(EffectInit.COLDNESS);
-            if (coldDuration > ConfigInit.CONFIG.heating_up_cold_tick_decrease) {
-              this.addStatusEffect(new StatusEffectInstance(EffectInit.COLDNESS,
-                  coldDuration - ConfigInit.CONFIG.heating_up_cold_tick_decrease, 0, false, false, true));
+        } else if (this.hasStatusEffect(EffectInit.COLDNESS)) {
+          if (ColdEffect.isWarmBlockNearBy(this)
+              || this.world.getBiome(this.getBlockPos()).getTemperature() >= ConfigInit.CONFIG.heating_up_biome_temp
+              || this.hasStatusEffect(EffectInit.WARMING)) {
+            warmingTimer++;
+            if (warmingTimer >= ConfigInit.CONFIG.heating_up_interval) {
+              int coldDuration = this.getStatusEffect(EffectInit.COLDNESS).getDuration();
+              this.removeStatusEffect(EffectInit.COLDNESS);
+              if (coldDuration > ConfigInit.CONFIG.heating_up_cold_tick_decrease) {
+                this.addStatusEffect(new StatusEffectInstance(EffectInit.COLDNESS,
+                    coldDuration - ConfigInit.CONFIG.heating_up_cold_tick_decrease, 0, false, false, true));
+              }
+              warmingTimer = 0;
             }
-            warmingTimer = 0;
           }
         }
+        ticker = 0;
       }
     }
   }

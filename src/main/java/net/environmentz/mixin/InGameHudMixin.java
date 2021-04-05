@@ -32,6 +32,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
 
   private static final Identifier FREEZING_ICON = new Identifier("environmentz:textures/misc/coldness.png");
   private float smoothFreezingIconRendering;
+  private int ticker;
 
   public InGameHudMixin(MinecraftClient client) {
     this.client = client;
@@ -40,23 +41,28 @@ public abstract class InGameHudMixin extends DrawableHelper {
   @Inject(method = "Lnet/minecraft/client/gui/hud/InGameHud;render(Lnet/minecraft/client/util/math/MatrixStack;F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHotbar(FLnet/minecraft/client/util/math/MatrixStack;)V"))
   private void renderFreezingIcon(MatrixStack matrixStack, float f, CallbackInfo info) {
     PlayerEntity playerEntity = client.player;
-    if (!playerEntity.isCreative()) {
-      if (playerEntity.world.getBiome(playerEntity.getBlockPos()).getTemperature() <= 0.0F
-          && ColdEffect.warmClothingModifier(playerEntity) != (ConfigInit.CONFIG.warm_armor_tick_modifier * 4)
-          && !ColdEffect.isWarmBlockNearBy(playerEntity) && !playerEntity.hasStatusEffect(EffectInit.WARMING)) {
-        if (smoothFreezingIconRendering < 1.0F) {
-          smoothFreezingIconRendering = smoothFreezingIconRendering
-              + (1.0F / (float) (ConfigInit.CONFIG.cold_tick_interval + ConfigInit.CONFIG.warm_armor_tick_modifier));
+    if (!playerEntity.isCreative() && !playerEntity.isSpectator()) {
+      ticker++;
+      if (ticker >= 20) {
+        if (!playerEntity.hasStatusEffect(EffectInit.WARMING)
+            && ColdEffect.warmClothingModifier(playerEntity) != (ConfigInit.CONFIG.warm_armor_tick_modifier * 4)
+            && playerEntity.world.getBiome(playerEntity.getBlockPos()).getTemperature() <= 0.0F
+            && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
+          if (smoothFreezingIconRendering < 1.0F) {
+            smoothFreezingIconRendering = smoothFreezingIconRendering
+                + (1.0F / (float) (ConfigInit.CONFIG.cold_tick_interval + ConfigInit.CONFIG.warm_armor_tick_modifier));
+          }
+          if (smoothFreezingIconRendering > 1.0F) {
+            smoothFreezingIconRendering = 1.0F;
+          }
+        } else if (smoothFreezingIconRendering > 0.0F) {
+          smoothFreezingIconRendering = smoothFreezingIconRendering - 0.01F;
         }
-        if (smoothFreezingIconRendering > 1.0F) {
-          smoothFreezingIconRendering = 1.0F;
-        }
-        this.renderFreezingIconOverlay(matrixStack, smoothFreezingIconRendering);
-      } else if (smoothFreezingIconRendering > 0.0F) {
-        this.renderFreezingIconOverlay(matrixStack, smoothFreezingIconRendering);
-        smoothFreezingIconRendering = smoothFreezingIconRendering - 0.01F;
+        ticker = 0;
       }
-
+      if (smoothFreezingIconRendering > 0.0F) {
+        this.renderFreezingIconOverlay(matrixStack, smoothFreezingIconRendering);
+      }
     }
   }
 

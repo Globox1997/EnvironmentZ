@@ -26,20 +26,30 @@ import net.minecraft.util.math.Matrix4f;
 public abstract class InGameOverlayRendererMixin {
   private static final Identifier WINTER_TEX = new Identifier("environmentz:textures/misc/coldness_overlay.png");
   private static float smoothFreezingRendering;
+  private static int ticker;
 
   @Inject(method = "renderOverlays", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;enableAlphaTest()V"))
   private static void renderOverlaysMixin(MinecraftClient minecraftClient, MatrixStack matrixStack, CallbackInfo info) {
     PlayerEntity playerEntity = minecraftClient.player;
-    if (!playerEntity.isCreative()) {
-      if (playerEntity.world.getBiome(playerEntity.getBlockPos()).getTemperature() <= 0.0F
-          && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
-        if (smoothFreezingRendering < 0.25F) {
-          smoothFreezingRendering = smoothFreezingRendering + 0.005F;
+    if (!playerEntity.isCreative() && !playerEntity.isSpectator()) {
+      ticker++;
+      if (ticker >= 10) {
+        if (playerEntity.world.getBiome(playerEntity.getBlockPos()).getTemperature() <= 0.0F
+            && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
+          float maxWhitening = 0.3F;
+          if (playerEntity.world.isRaining()) {
+            maxWhitening = 0.5F;
+          }
+          if (smoothFreezingRendering < maxWhitening) {
+            smoothFreezingRendering = smoothFreezingRendering + 0.02F;
+          }
+        } else if (smoothFreezingRendering > 0.0F) {
+          smoothFreezingRendering = smoothFreezingRendering - 0.02F;
         }
+        ticker = 0;
+      }
+      if (smoothFreezingRendering > 0.0F) {
         renderWinterOverlay(minecraftClient, matrixStack, smoothFreezingRendering);
-      } else if (smoothFreezingRendering > 0.0F) {
-        renderWinterOverlay(minecraftClient, matrixStack, smoothFreezingRendering);
-        smoothFreezingRendering = smoothFreezingRendering - 0.005F;
       }
     }
   }
