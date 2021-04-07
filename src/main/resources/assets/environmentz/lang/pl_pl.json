@@ -1,0 +1,37 @@
+{
+  "effect.environmentz.coldness": "Przemarznięty",
+  "effect.environmentz.warming": "Rozgrzewanie",
+
+  "death.attack.cold": "%1$s zamarzł na śmierć",
+
+  "text.autoconfig.environmentz.title": "Konfiguracja EnvironmentZ",
+  "text.autoconfig.environmentz.option.allow_all_armor": "Każda zbroja chroni przed przemarznięciem",
+  "text.autoconfig.environmentz.option.cold_tick_interval.@PrefixText": "Czas trawania w tickach (1s = 20 ticków)",
+  "text.autoconfig.environmentz.option.cold_tick_interval": "Czas po którym następuje zamarzanie",
+  "text.autoconfig.environmentz.option.cold_damage_interval": "Interwał obrażeń zimna",
+  "text.autoconfig.environmentz.option.cold_damage": "Obrażenia od zimna",
+  "text.autoconfig.environmentz.option.cold_damage_effect_time": "Czas trwania efektu przemarznięcia",
+  "text.autoconfig.environmentz.option.heating_up_interval": "Czas po którym następuje rozgrzewanie",
+  "text.autoconfig.environmentz.option.heating_up_cold_tick_decrease": "Heating up freeze tick decrease",
+  "text.autoconfig.environmentz.option.freeze_icon_x.@PrefixText": "Pozycja ikony zamarzania w HUD",
+  "text.autoconfig.environmentz.option.freeze_icon_x": "Pozycja X",
+  "text.autoconfig.environmentz.option.freeze_icon_y": "Pozycja Y",
+  "text.autoconfig.environmentz.option.warm_armor_tick_modifier": "Warm armor tick modifier",
+  "text.autoconfig.environmentz.option.heating_up_block_range": "Block heating radius",
+  "text.autoconfig.environmentz.option.max_biome_freeze_temp": "Max temperatura biomu zimnego",
+  "text.autoconfig.environmentz.option.heating_up_biome_temp": "Temperatura biomu ciepłego",
+  "text.autoconfig.environmentz.option.cold_tick_snowing_bonus": "Cold tick snowing bonus time",
+
+  "item.environmentz.heating_stones":"Rozgrzewające kamienie",
+  "item.environmentz.heated_stones":"Rozgrzane kamienie",
+  "item.environmentz.wolf_pelt": "Wilcza skóra",
+  "item.environmentz.leather_strap": "Skórzany pasek",
+  "item.environmentz.polar_bear_fur": "Futro z niedźwiedzia polarnego",
+
+  "item.environmentz.wolf_helmet": "Hełm z wilczej skóry",
+  "item.environmentz.wolf_chestplate": "Napierśnik z wilczej skóry",
+  "item.environmentz.wolf_leggings": "Nogawice z wilczej skóry",
+  "item.environmentz.wolf_boots": "Buty z wilczej skóry",
+
+  "item.environmentz.fur_insolated.tooltip": "Ocieplona"
+}
