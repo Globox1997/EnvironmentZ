@@ -88,19 +88,19 @@ public class ColdEffect extends StatusEffect implements DamageSourceAccessor {
 
     if (headStack.getItem().isIn(TagInit.WARM_ARMOR) || (allowAllArmor && !headStack.isEmpty())
         || (headStack.hasTag() && headStack.getTag().contains("environmentz"))) {
-      warmingModifier = warmingModifier + configAddition;
+      warmingModifier += configAddition;
     }
     if (chestStack.getItem().isIn(TagInit.WARM_ARMOR) || (allowAllArmor && !chestStack.isEmpty())
         || (chestStack.hasTag() && chestStack.getTag().contains("environmentz"))) {
-      warmingModifier = warmingModifier + configAddition;
+      warmingModifier += configAddition;
     }
     if (legStack.getItem().isIn(TagInit.WARM_ARMOR) || (allowAllArmor && !legStack.isEmpty())
         || (legStack.hasTag() && legStack.getTag().contains("environmentz"))) {
-      warmingModifier = warmingModifier + configAddition;
+      warmingModifier += configAddition;
     }
     if (feetStack.getItem().isIn(TagInit.WARM_ARMOR) || (allowAllArmor && !feetStack.isEmpty())
         || (feetStack.hasTag() && feetStack.getTag().contains("environmentz"))) {
-      warmingModifier = warmingModifier + configAddition;
+      warmingModifier += configAddition;
     }
     return warmingModifier;
   }
