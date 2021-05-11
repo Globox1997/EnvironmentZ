@@ -2,12 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "a a",
-    "bab",
+    "aba",
     "bbb"
   ],
   "key": {
     "a": {
-      "item": "environmentz:leather_strap"
+      "item": "minecraft:leather"
     },
     "b": {
       "item": "environmentz:wolf_pelt"

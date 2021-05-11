@@ -3,11 +3,11 @@
   "pattern": [
     "bbb",
     "a a",
-    "b b"
+    "a a"
   ],
   "key": {
     "a": {
-      "item": "environmentz:leather_strap"
+      "item": "minecraft:leather"
     },
     "b": {
       "item": "environmentz:wolf_pelt"

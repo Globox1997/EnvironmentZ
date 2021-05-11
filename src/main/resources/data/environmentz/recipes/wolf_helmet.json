@@ -1,10 +1,13 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "bbb",
+    "aaa",
     "b b"
   ],
   "key": {
+    "a": {
+      "item": "minecraft:leather"
+    },
     "b": {
       "item": "environmentz:wolf_pelt"
     }
