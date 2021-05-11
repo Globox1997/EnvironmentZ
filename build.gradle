@@ -16,6 +16,8 @@ minecraft {
 
 repositories {
 	maven { url "https://maven.shedaniel.me/" }
+	maven { url "https://www.cursemaven.com" }
+	maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -35,10 +37,14 @@ dependencies {
 	modCompile "io.github.prospector:modmenu:${project.mod_menu_version}",{
 		exclude(group: "net.fabricmc.fabric-api")
 	}
-	// Modmenu dev
-	modCompile "io.github.prospector:modmenu:${project.mod_menu_version}",{
-			exclude(group: "net.fabricmc.fabric-api")
-	}
+	// Dehydration
+	modCompileOnly ('com.github.Globox1997:Dehydration:c3a1727f28') {
+        exclude(group: "net.fabricmc.fabric-api")
+		exclude(group: "me.shedaniel.cloth")
+		exclude(group: "io.github.prospector")
+		exclude(group: "curse.maven:motschens-puddles-463169")
+		
+    }
 
 }
 
