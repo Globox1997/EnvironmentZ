@@ -1,0 +1,137 @@
+package net.environmentz.util;
+
+import net.dehydration.access.ThristManagerAccess;
+import net.dehydration.thirst.ThirstManager;
+import net.environmentz.effect.ColdEffect;
+import net.environmentz.effect.OverheatingEffect;
+import net.environmentz.init.ConfigInit;
+import net.environmentz.init.EffectInit;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.player.PlayerEntity;
+
+public class TemperatureAspects {
+
+    public static int coldnessTimer;
+    public static int dehydrationTimer;
+    public static int acclimatizeTimer;
+
+    // Should work
+    public static void coldEnvironment(PlayerEntity playerEntity) {
+        if (!ConfigInit.CONFIG.excluded_cold_names.contains(playerEntity.getName().asString())) {
+            int warmClothingModifier = ColdEffect.warmClothingModifier(playerEntity);
+            if (!playerEntity.hasStatusEffect(EffectInit.WARMING)
+                    && warmClothingModifier != ConfigInit.CONFIG.warm_armor_tick_modifier * 4
+                    && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
+                coldnessTimer++;
+                if (coldnessTimer >= (ConfigInit.CONFIG.cold_tick_interval + warmClothingModifier)) {
+                    int coldDamageEffectTime = ConfigInit.CONFIG.cold_damage_effect_time;
+                    if (playerEntity.world.isRaining()) {
+                        coldDamageEffectTime += ConfigInit.CONFIG.cold_tick_snowing_bonus;
+                    }
+                    playerEntity.addStatusEffect(
+                            new StatusEffectInstance(EffectInit.COLDNESS, coldDamageEffectTime, 0, false, false, true));
+                    coldnessTimer = 0;
+                }
+            } else {
+                if (coldnessTimer > 0) {
+                    coldnessTimer = 0;
+                }
+            }
+        }
+    }
+
+    // Check if wearsArmorModifier can be removed and be 1 - 4
+    // Should work
+    public static void hotEnvironment(PlayerEntity playerEntity) {
+        if (!ConfigInit.CONFIG.excluded_heat_names.contains(playerEntity.getName().asString())) {
+            if (!playerEntity.hasStatusEffect(EffectInit.COOLING) && OverheatingEffect.wearsArmor(playerEntity)
+                    && !playerEntity.isTouchingWaterOrRain()
+                    && playerEntity.world.isSkyVisible(playerEntity.getBlockPos()) && playerEntity.world.isDay()) {
+                dehydrationTimer++;
+                if (FabricLoader.getInstance().isModLoaded("dehydration")) {
+                    if (dehydrationTimer % ConfigInit.CONFIG.overheating_dehydration_timer == 0) {
+                        ThirstManager thirstManager = ((ThristManagerAccess) playerEntity)
+                                .getThirstManager(playerEntity);
+                        thirstManager.addDehydration(ConfigInit.CONFIG.overheating_dehydration_thirst);
+                    }
+                }
+                if (dehydrationTimer >= ConfigInit.CONFIG.overheating_tick_interval) {
+                    if (FabricLoader.getInstance().isModLoaded("dehydration")) {
+                        ThirstManager thirstManager = ((ThristManagerAccess) playerEntity)
+                                .getThirstManager(playerEntity);
+                        if (thirstManager.getThirstLevel() < 14) {
+                            playerEntity.addStatusEffect(new StatusEffectInstance(EffectInit.OVERHEATING,
+                                    ConfigInit.CONFIG.overheating_damage_effect_time, 0, false, false, true));
+                        }
+                    } else {
+                        playerEntity.addStatusEffect(new StatusEffectInstance(EffectInit.OVERHEATING,
+                                ConfigInit.CONFIG.overheating_damage_effect_time, 0, false, false, true));
+                    }
+                    dehydrationTimer = 0;
+                }
+            } else if (dehydrationTimer > 0) {
+                dehydrationTimer = 0;
+            }
+
+        }
+    }
+
+    // Checked nach warm block, biome temp, effect warming
+    public static void acclimatize(PlayerEntity playerEntity) {
+        if (playerEntity.hasStatusEffect(EffectInit.COLDNESS)) {
+            if (ColdEffect.isWarmBlockNearBy(playerEntity)
+                    || playerEntity.world.getBiome(playerEntity.getBlockPos())
+                            .getTemperature() >= ConfigInit.CONFIG.acclimatize_biome_temp
+                    || playerEntity.hasStatusEffect(EffectInit.WARMING)) {
+                acclimatizeTimer++;
+                if (acclimatizeTimer >= ConfigInit.CONFIG.heating_up_interval) {
+                    int coldDuration = playerEntity.getStatusEffect(EffectInit.COLDNESS).getDuration();
+                    playerEntity.removeStatusEffect(EffectInit.COLDNESS);
+                    if (coldDuration > ConfigInit.CONFIG.heating_up_cold_tick_decrease) {
+                        playerEntity.addStatusEffect(new StatusEffectInstance(EffectInit.COLDNESS,
+                                coldDuration - ConfigInit.CONFIG.heating_up_cold_tick_decrease, 0, false, false, true));
+                    }
+                    acclimatizeTimer = 0;
+                }
+            } else if (acclimatizeTimer > 0) {
+                acclimatizeTimer = 0;
+            }
+        } else if (playerEntity.hasStatusEffect(EffectInit.OVERHEATING)) {
+            if (playerEntity.world.isNight()
+                    || playerEntity.world.getBiome(playerEntity.getBlockPos())
+                            .getTemperature() <= ConfigInit.CONFIG.acclimatize_biome_temp
+                    || playerEntity.isTouchingWaterOrRain() || playerEntity.hasStatusEffect(EffectInit.COOLING)) {
+                acclimatizeTimer++;
+                if (FabricLoader.getInstance().isModLoaded("dehydration")) {
+                    ThirstManager thirstManager = ((ThristManagerAccess) playerEntity).getThirstManager(playerEntity);
+                    if (thirstManager.getThirstLevel() > 17) {
+                        if (acclimatizeTimer >= ConfigInit.CONFIG.cooling_down_interval) {
+                            int coldDuration = playerEntity.getStatusEffect(EffectInit.OVERHEATING).getDuration();
+                            playerEntity.removeStatusEffect(EffectInit.OVERHEATING);
+                            if (coldDuration > ConfigInit.CONFIG.cooling_down_tick_decrease) {
+                                playerEntity.addStatusEffect(new StatusEffectInstance(EffectInit.OVERHEATING,
+                                        coldDuration - ConfigInit.CONFIG.cooling_down_tick_decrease, 0, false, false,
+                                        true));
+                                thirstManager.addDehydration(ConfigInit.CONFIG.overheating_dehydration_thirst);
+                            }
+                            acclimatizeTimer = 0;
+                        }
+                    }
+                } else {
+                    if (acclimatizeTimer >= ConfigInit.CONFIG.cooling_down_interval) {
+                        int coldDuration = playerEntity.getStatusEffect(EffectInit.OVERHEATING).getDuration();
+                        playerEntity.removeStatusEffect(EffectInit.OVERHEATING);
+                        if (coldDuration > ConfigInit.CONFIG.cooling_down_tick_decrease) {
+                            playerEntity.addStatusEffect(new StatusEffectInstance(EffectInit.OVERHEATING,
+                                    coldDuration - ConfigInit.CONFIG.cooling_down_tick_decrease, 0, false, false,
+                                    true));
+                        }
+                        acclimatizeTimer = 0;
+                    }
+                }
+            }
+        }
+    }
+
+}

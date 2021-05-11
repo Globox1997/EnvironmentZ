@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.At;
 
 import net.environmentz.effect.ColdEffect;
+import net.environmentz.init.ConfigInit;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvType;
 import net.minecraft.client.MinecraftClient;
@@ -24,7 +25,7 @@ import net.minecraft.util.math.Matrix4f;
 @Environment(EnvType.CLIENT)
 @Mixin(InGameOverlayRenderer.class)
 public abstract class InGameOverlayRendererMixin {
-  private static final Identifier WINTER_TEX = new Identifier("environmentz:textures/misc/coldness_overlay.png");
+  private static final Identifier WINTER_TEX = new Identifier("environmentz:textures/gui/coldness_overlay.png");
   private static float smoothFreezingRendering;
   private static int ticker;
 
@@ -34,8 +35,8 @@ public abstract class InGameOverlayRendererMixin {
     if (!playerEntity.isCreative() && !playerEntity.isSpectator()) {
       ticker++;
       if (ticker >= 10) {
-        if (playerEntity.world.getBiome(playerEntity.getBlockPos()).getTemperature() <= 0.0F
-            && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
+        if (playerEntity.world.getBiome(playerEntity.getBlockPos())
+            .getTemperature() <= ConfigInit.CONFIG.biome_freeze_temp && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
           float maxWhitening = 0.3F;
           if (playerEntity.world.isRaining()) {
             maxWhitening = 0.5F;
