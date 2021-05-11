@@ -1,0 +1,13 @@
+{
+    "replace": false,
+    "values": [
+        "environmentz:heating_stones",
+        "environmentz:heated_stones",
+        "environmentz:wolf_pelt",
+        "environmentz:polar_bear_fur",
+        "environmentz:wolf_helmet",
+        "environmentz:wolf_chestplate",
+        "environmentz:wolf_leggings",
+        "environmentz:wolf_boots"
+    ]
+}
