@@ -33,7 +33,7 @@
   "text.autoconfig.environmentz.option.cold_tick_snowing_bonus": "Cold tick snowing bonus time",
   "text.autoconfig.environmentz.option.excluded_cold_names": "Exluded freezing name list",
 
-  "text.autoconfig.environmentz.option.disable_armor_debuff": "Отключение дебаффа перегрева брони",
+  "text.autoconfig.environmentz.option.disable_armor_debuff": "Отключение дебаффа перегрева в броне",
   "text.autoconfig.environmentz.option.overheating_tick_interval": "Интервал тиков перегрева",
   "text.autoconfig.environmentz.option.overheating_tick_interval.@PrefixText": "Длительность в тиках (1с = 20тикам)",
   "text.autoconfig.environmentz.option.overheating_damage_effect_time": "Длительность эффекта урона перегревом",
