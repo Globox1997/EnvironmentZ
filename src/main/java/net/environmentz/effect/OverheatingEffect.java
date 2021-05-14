@@ -63,27 +63,27 @@ public class OverheatingEffect extends StatusEffect {
   }
 
   public static boolean wearsArmor(LivingEntity livingEntity) {
-    boolean wearsArmorModifier = false;
-    boolean noArmorDebuff = ConfigInit.CONFIG.disable_armor_debuff;
+    boolean wearsArmor = true;
+    boolean armorDebuff = ConfigInit.CONFIG.disable_armor_debuff;
     ItemStack headStack = livingEntity.getEquippedStack(EquipmentSlot.HEAD);
     ItemStack chestStack = livingEntity.getEquippedStack(EquipmentSlot.CHEST);
     ItemStack legStack = livingEntity.getEquippedStack(EquipmentSlot.LEGS);
     ItemStack feetStack = livingEntity.getEquippedStack(EquipmentSlot.FEET);
 
-    if (!noArmorDebuff) {
+    if (!armorDebuff) {
       if (headStack.isEmpty() || headStack.getItem().isIn(TagInit.ALLOWED_ARMOR)) {
-        wearsArmorModifier = true;
+        wearsArmor = false;
       }
       if (chestStack.isEmpty() || chestStack.getItem().isIn(TagInit.ALLOWED_ARMOR)) {
-        wearsArmorModifier = true;
+        wearsArmor = false;
       }
       if (legStack.isEmpty() || legStack.getItem().isIn(TagInit.ALLOWED_ARMOR)) {
-        wearsArmorModifier = true;
+        wearsArmor = false;
       }
       if (feetStack.isEmpty() || feetStack.getItem().isIn(TagInit.ALLOWED_ARMOR)) {
-        wearsArmorModifier = true;
+        wearsArmor = false;
       }
-      return wearsArmorModifier;
+      return wearsArmor;
     } else
       return false;
   }
