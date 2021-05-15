@@ -24,7 +24,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
   @Inject(method = "tick", at = @At("TAIL"))
   public void tickMixin(CallbackInfo info) {
     PlayerEntity playerEntity = (PlayerEntity) (Object) this;
-    if (!this.world.isClient && !playerEntity.isCreative() && !playerEntity.isSpectator()) {
+    if (!this.world.isClient && !playerEntity.isCreative() && !playerEntity.isSpectator() && playerEntity.isAlive()) {
       ticker++;
       if (ticker >= 20) {
         if (this.world.getBiome(this.getBlockPos()).getTemperature() <= ConfigInit.CONFIG.biome_freeze_temp) {
@@ -43,6 +43,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         } else if (TemperatureAspects.acclimatizeTimer > 0) {
           TemperatureAspects.acclimatizeTimer = 0;
         }
+        TemperatureAspects.dryOrWett(playerEntity);
         ticker = 0;
       }
     }

@@ -20,6 +20,10 @@ public class EnvironmentzConfig implements ConfigData {
   public int icon_x = 7;
   @ConfigEntry.Category("general_settings")
   public int icon_y = 52;
+  @ConfigEntry.Category("general_settings")
+  public int wet_effect_time = 409;
+  @ConfigEntry.Category("general_settings")
+  public int wet_bonus_malus = 30;
 
   // Freezing Settings
   @ConfigEntry.Category("freezing_settings")

@@ -15,8 +15,8 @@ public class TemperatureAspects {
     public static int coldnessTimer;
     public static int dehydrationTimer;
     public static int acclimatizeTimer;
+    private static int dryingTimer;
 
-    // Should work
     public static void coldEnvironment(PlayerEntity playerEntity) {
         if (!ConfigInit.CONFIG.excluded_cold_names.contains(playerEntity.getName().asString())) {
             int warmClothingModifier = ColdEffect.warmClothingModifier(playerEntity);
@@ -24,9 +24,13 @@ public class TemperatureAspects {
                     && warmClothingModifier != ConfigInit.CONFIG.warm_armor_tick_modifier * 4
                     && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
                 coldnessTimer++;
-                if (coldnessTimer >= (ConfigInit.CONFIG.cold_tick_interval + warmClothingModifier)) {
+                int wetMalus = 0;
+                if (playerEntity.hasStatusEffect(EffectInit.WET)) {
+                    wetMalus = ConfigInit.CONFIG.wet_bonus_malus;
+                }
+                if (coldnessTimer >= (ConfigInit.CONFIG.cold_tick_interval + warmClothingModifier - wetMalus)) {
                     int coldDamageEffectTime = ConfigInit.CONFIG.cold_damage_effect_time;
-                    if (playerEntity.world.isRaining()) {
+                    if (playerEntity.world.getLevelProperties().isRaining()) {
                         coldDamageEffectTime += ConfigInit.CONFIG.cold_tick_snowing_bonus;
                     }
                     playerEntity.addStatusEffect(
@@ -41,8 +45,6 @@ public class TemperatureAspects {
         }
     }
 
-    // Check if wearsArmorModifier can be removed and be 1 - 4
-    // Should work
     public static void hotEnvironment(PlayerEntity playerEntity) {
         if (!ConfigInit.CONFIG.excluded_heat_names.contains(playerEntity.getName().asString())) {
             if (!playerEntity.hasStatusEffect(EffectInit.COOLING) && OverheatingEffect.wearsArmor(playerEntity)
@@ -56,7 +58,11 @@ public class TemperatureAspects {
                         thirstManager.addDehydration(ConfigInit.CONFIG.overheating_dehydration_thirst);
                     }
                 }
-                if (dehydrationTimer >= ConfigInit.CONFIG.overheating_tick_interval) {
+                int wetBonus = 0;
+                if (playerEntity.hasStatusEffect(EffectInit.WET)) {
+                    wetBonus = ConfigInit.CONFIG.wet_bonus_malus;
+                }
+                if (dehydrationTimer >= (ConfigInit.CONFIG.overheating_tick_interval + wetBonus)) {
                     if (FabricLoader.getInstance().isModLoaded("dehydration")) {
                         ThirstManager thirstManager = ((ThristManagerAccess) playerEntity)
                                 .getThirstManager(playerEntity);
@@ -77,7 +83,6 @@ public class TemperatureAspects {
         }
     }
 
-    // Checked nach warm block, biome temp, effect warming
     public static void acclimatize(PlayerEntity playerEntity) {
         if (playerEntity.hasStatusEffect(EffectInit.COLDNESS)) {
             if (ColdEffect.isWarmBlockNearBy(playerEntity)
@@ -131,6 +136,15 @@ public class TemperatureAspects {
                     }
                 }
             }
+        }
+    }
+
+    public static void dryOrWett(PlayerEntity playerEntity) {
+        dryingTimer++;
+        if (dryingTimer >= 5 && playerEntity.isTouchingWaterOrRain()) {
+            playerEntity.addStatusEffect(
+                    new StatusEffectInstance(EffectInit.WET, ConfigInit.CONFIG.wet_effect_time, 0, false, false, true));
+            dryingTimer = 0;
         }
     }
 

@@ -57,10 +57,14 @@ public abstract class InGameHudMixin extends DrawableHelper {
           if (!playerEntity.hasStatusEffect(EffectInit.WARMING)
               && ColdEffect.warmClothingModifier(playerEntity) != (ConfigInit.CONFIG.warm_armor_tick_modifier * 4)
               && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
+            int wetMalus = 0;
+            if (playerEntity.hasStatusEffect(EffectInit.WET)) {
+              wetMalus = ConfigInit.CONFIG.wet_bonus_malus;
+            }
             if (smoothFreezingIconRendering < 1.0F) {
-              smoothFreezingIconRendering = smoothFreezingIconRendering + (1.0F
-                  / ((float) (ConfigInit.CONFIG.cold_tick_interval + ConfigInit.CONFIG.warm_armor_tick_modifier))
-                  / 2.8F);
+              smoothFreezingIconRendering = smoothFreezingIconRendering
+                  + (1.0F / ((float) (ConfigInit.CONFIG.cold_tick_interval + ConfigInit.CONFIG.warm_armor_tick_modifier
+                      - wetMalus)) / 2.8F);
             }
             if (smoothFreezingIconRendering > 1.0F) {
               smoothFreezingIconRendering = 1.0F;
@@ -78,9 +82,13 @@ public abstract class InGameHudMixin extends DrawableHelper {
           isInHotBiome = true;
           if (OverheatingEffect.wearsArmor(playerEntity) && playerEntity.world.isSkyVisible(playerEntity.getBlockPos())
               && ((int) playerEntity.world.getTimeOfDay() > 23000 || (int) playerEntity.world.getTimeOfDay() < 12000)) {
+            int wetBonus = 0;
+            if (playerEntity.hasStatusEffect(EffectInit.WET)) {
+              wetBonus = ConfigInit.CONFIG.wet_bonus_malus;
+            }
             if (smoothThirstRendering < 1.0F) {
               smoothThirstRendering = smoothThirstRendering
-                  + (1.0F / ((float) (ConfigInit.CONFIG.overheating_tick_interval)) / 2.8F);
+                  + (1.0F / ((float) (ConfigInit.CONFIG.overheating_tick_interval + wetBonus)) / 2.8F);
             }
             if (smoothThirstRendering > 1.0F) {
               smoothThirstRendering = 1.0F;
@@ -103,9 +111,6 @@ public abstract class InGameHudMixin extends DrawableHelper {
         }
       } else if (!ConfigInit.CONFIG.excluded_heat_names.contains(playerEntity.getName().asString())
           && (isInHotBiome && smoothThirstRendering > 0.0F)) {
-
-        // Render HeatingIconBackground
-        // Use Identifier and only one method to render background and icon
         this.renderIconBackgroundOverlay(matrixStack, OVERHEATING_ICON);
         if (smoothThirstRendering > 0.0F) {
           this.renderIconOverlay(matrixStack, smoothThirstRendering, OVERHEATING_ICON);

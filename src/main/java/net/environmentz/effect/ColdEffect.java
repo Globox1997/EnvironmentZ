@@ -3,6 +3,7 @@ package net.environmentz.effect;
 import java.util.UUID;
 
 import net.environmentz.init.ConfigInit;
+import net.environmentz.init.EffectInit;
 import net.environmentz.init.TagInit;
 import net.environmentz.mixin.DamageSourceAccessor;
 import net.minecraft.block.AbstractFurnaceBlock;
@@ -29,12 +30,12 @@ public class ColdEffect extends StatusEffect implements DamageSourceAccessor {
   @Override
   public void applyUpdateEffect(LivingEntity entity, int amplifier) {
     if (!entity.world.isClient && !isWarmBlockNearBy(entity)) {
-      float snowMultiplicator = 1.0F;
-      if (entity.world.isRaining()) {
-        snowMultiplicator = 2.0F;
+      float wetMultiplicator = 1.0F;
+      if (entity.hasStatusEffect(EffectInit.WET)) {
+        wetMultiplicator = 2.0F;
       }
       DamageSource damageSource = createDamageSource();
-      entity.damage(damageSource, ConfigInit.CONFIG.cold_damage * snowMultiplicator);
+      entity.damage(damageSource, ConfigInit.CONFIG.cold_damage * wetMultiplicator);
       if (entity instanceof PlayerEntity) {
         ((PlayerEntity) entity).addExhaustion(0.005F);
       }
