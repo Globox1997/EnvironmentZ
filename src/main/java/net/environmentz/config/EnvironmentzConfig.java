@@ -16,14 +16,15 @@ public class EnvironmentzConfig implements ConfigData {
   @ConfigEntry.Category("general_settings")
   public float acclimatize_biome_temp = 1.0F;
   @ConfigEntry.Category("general_settings")
+  public int wet_effect_time = 609;
+  @ConfigEntry.Category("general_settings")
+  @Comment("Wet modificator - every other second")
+  public int wet_bonus_malus = 2;
+  @ConfigEntry.Category("general_settings")
   @ConfigEntry.Gui.PrefixText
   public int icon_x = 7;
   @ConfigEntry.Category("general_settings")
   public int icon_y = 52;
-  @ConfigEntry.Category("general_settings")
-  public int wet_effect_time = 409;
-  @ConfigEntry.Category("general_settings")
-  public int wet_bonus_malus = 30;
 
   // Freezing Settings
   @ConfigEntry.Category("freezing_settings")

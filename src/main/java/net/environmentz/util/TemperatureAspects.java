@@ -24,11 +24,13 @@ public class TemperatureAspects {
                     && warmClothingModifier != ConfigInit.CONFIG.warm_armor_tick_modifier * 4
                     && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
                 coldnessTimer++;
-                int wetMalus = 0;
-                if (playerEntity.hasStatusEffect(EffectInit.WET)) {
-                    wetMalus = ConfigInit.CONFIG.wet_bonus_malus;
+                if (playerEntity.hasStatusEffect(EffectInit.WET)
+                        && dryingTimer % ConfigInit.CONFIG.wet_bonus_malus == 0) {
+                    System.out.println("TEST" + coldnessTimer);
+                    coldnessTimer += 1;
+
                 }
-                if (coldnessTimer >= (ConfigInit.CONFIG.cold_tick_interval + warmClothingModifier - wetMalus)) {
+                if (coldnessTimer >= (ConfigInit.CONFIG.cold_tick_interval + warmClothingModifier)) {
                     int coldDamageEffectTime = ConfigInit.CONFIG.cold_damage_effect_time;
                     if (playerEntity.world.getLevelProperties().isRaining()) {
                         coldDamageEffectTime += ConfigInit.CONFIG.cold_tick_snowing_bonus;
@@ -58,11 +60,11 @@ public class TemperatureAspects {
                         thirstManager.addDehydration(ConfigInit.CONFIG.overheating_dehydration_thirst);
                     }
                 }
-                int wetBonus = 0;
-                if (playerEntity.hasStatusEffect(EffectInit.WET)) {
-                    wetBonus = ConfigInit.CONFIG.wet_bonus_malus;
+                if (playerEntity.hasStatusEffect(EffectInit.WET)
+                        && dehydrationTimer % ConfigInit.CONFIG.wet_bonus_malus == 0) {
+                    dehydrationTimer -= 1;
                 }
-                if (dehydrationTimer >= (ConfigInit.CONFIG.overheating_tick_interval + wetBonus)) {
+                if (dehydrationTimer >= (ConfigInit.CONFIG.overheating_tick_interval)) {
                     if (FabricLoader.getInstance().isModLoaded("dehydration")) {
                         ThirstManager thirstManager = ((ThristManagerAccess) playerEntity)
                                 .getThirstManager(playerEntity);

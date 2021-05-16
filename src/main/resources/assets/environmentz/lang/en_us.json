@@ -18,7 +18,7 @@
   "text.autoconfig.environmentz.option.icon_y": "y position",
   "text.autoconfig.environmentz.option.acclimatize_biome_temp": "Acclimatization temperature",
   "text.autoconfig.environmentz.option.wet_effect_time": "Wet time",
-  "text.autoconfig.environmentz.option.wet_bonus_malus": "Wet bonus malus time",
+  "text.autoconfig.environmentz.option.wet_bonus_malus": "Wet bonus malus",
 
   "text.autoconfig.environmentz.option.allow_all_armor": "All armor protect against freezing",
   "text.autoconfig.environmentz.option.cold_tick_interval.@PrefixText": "Duration in ticks (1s = 20ticks)",

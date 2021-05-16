@@ -29,14 +29,12 @@ public abstract class PlayerEntityMixin extends LivingEntity {
       if (ticker >= 20) {
         if (this.world.getBiome(this.getBlockPos()).getTemperature() <= ConfigInit.CONFIG.biome_freeze_temp) {
           TemperatureAspects.coldEnvironment(playerEntity);
-          if (TemperatureAspects.dehydrationTimer > 0) {
-            TemperatureAspects.dehydrationTimer = 0;
-          }
+        } else if (TemperatureAspects.coldnessTimer > 0) {
+          TemperatureAspects.coldnessTimer = 0;
         } else if (this.world.getBiome(this.getBlockPos()).getTemperature() >= ConfigInit.CONFIG.biome_overheat_temp) {
           TemperatureAspects.hotEnvironment(playerEntity);
-          if (TemperatureAspects.coldnessTimer > 0) {
-            TemperatureAspects.coldnessTimer = 0;
-          }
+        } else if (TemperatureAspects.dehydrationTimer > 0) {
+          TemperatureAspects.dehydrationTimer = 0;
         }
         if (this.hasStatusEffect(EffectInit.COLDNESS) || this.hasStatusEffect(EffectInit.OVERHEATING)) {
           TemperatureAspects.acclimatize(playerEntity);
