@@ -63,7 +63,7 @@ public class OverheatingEffect extends StatusEffect {
   }
 
   public static boolean wearsArmor(LivingEntity livingEntity) {
-    boolean wearsArmor = true;
+    boolean wearsArmor = false;
     boolean armorDebuff = ConfigInit.CONFIG.disable_armor_debuff;
     ItemStack headStack = livingEntity.getEquippedStack(EquipmentSlot.HEAD);
     ItemStack chestStack = livingEntity.getEquippedStack(EquipmentSlot.CHEST);
@@ -71,17 +71,17 @@ public class OverheatingEffect extends StatusEffect {
     ItemStack feetStack = livingEntity.getEquippedStack(EquipmentSlot.FEET);
 
     if (!armorDebuff) {
-      if (headStack.isEmpty() || headStack.getItem().isIn(TagInit.ALLOWED_ARMOR)) {
-        wearsArmor = false;
+      if (!headStack.isEmpty() || !headStack.getItem().isIn(TagInit.ALLOWED_ARMOR)) {
+        wearsArmor = true;
       }
-      if (chestStack.isEmpty() || chestStack.getItem().isIn(TagInit.ALLOWED_ARMOR)) {
-        wearsArmor = false;
+      if (!chestStack.isEmpty() || !chestStack.getItem().isIn(TagInit.ALLOWED_ARMOR)) {
+        wearsArmor = true;
       }
-      if (legStack.isEmpty() || legStack.getItem().isIn(TagInit.ALLOWED_ARMOR)) {
-        wearsArmor = false;
+      if (!legStack.isEmpty() || !legStack.getItem().isIn(TagInit.ALLOWED_ARMOR)) {
+        wearsArmor = true;
       }
-      if (feetStack.isEmpty() || feetStack.getItem().isIn(TagInit.ALLOWED_ARMOR)) {
-        wearsArmor = false;
+      if (!feetStack.isEmpty() || !feetStack.getItem().isIn(TagInit.ALLOWED_ARMOR)) {
+        wearsArmor = true;
       }
       return wearsArmor;
     } else
@@ -89,3 +89,14 @@ public class OverheatingEffect extends StatusEffect {
   }
 
 }
+
+// if (headStack.isEmpty() && chestStack.isEmpty() && legStack.isEmpty() &&
+// feetStack.isEmpty()) {
+// wearsArmor = false;
+// }
+// if (headStack.getItem().isIn(TagInit.ALLOWED_ARMOR) &&
+// chestStack.getItem().isIn(TagInit.ALLOWED_ARMOR)
+// && legStack.getItem().isIn(TagInit.ALLOWED_ARMOR) &&
+// feetStack.getItem().isIn(TagInit.ALLOWED_ARMOR)) {
+// wearsArmor = false;
+// }
