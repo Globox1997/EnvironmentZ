@@ -38,7 +38,7 @@ public abstract class InGameHudMixin extends DrawableHelper {
   private void renderMixin(MatrixStack matrixStack, float f, CallbackInfo info) {
     // Gets ticked 60 times per second
     PlayerEntity playerEntity = client.player;
-    if (!playerEntity.isCreative() && !playerEntity.isSpectator()) {
+    if (!playerEntity.isCreative() && !playerEntity.isSpectator() && !playerEntity.isInvulnerable()) {
       ticker++;
       if (ticker >= 60 && !client.isPaused()) {
         wetTimer++;
