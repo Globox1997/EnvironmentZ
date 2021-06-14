@@ -2,6 +2,7 @@ package net.environmentz.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import net.minecraft.client.render.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -13,10 +14,6 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameOverlayRenderer;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
@@ -29,7 +26,7 @@ public abstract class InGameOverlayRendererMixin {
   private static float smoothFreezingRendering;
   private static int ticker;
 
-  @Inject(method = "renderOverlays", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;enableAlphaTest()V"))
+  @Inject(method = "renderOverlays", at = @At(value = "TAIL"))
   private static void renderOverlaysMixin(MinecraftClient minecraftClient, MatrixStack matrixStack, CallbackInfo info) {
     PlayerEntity playerEntity = minecraftClient.player;
     if (!playerEntity.isCreative() && !playerEntity.isSpectator()) {
@@ -56,16 +53,17 @@ public abstract class InGameOverlayRendererMixin {
   }
 
   private static void renderWinterOverlay(MinecraftClient minecraftClient, MatrixStack matrixStack, float smooth) {
+    RenderSystem.setShader(GameRenderer::getPositionTexShader);
     RenderSystem.enableTexture();
-    minecraftClient.getTextureManager().bindTexture(WINTER_TEX);
+    RenderSystem.setShaderTexture(0, WINTER_TEX);
     BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
     float f = minecraftClient.player.getBrightnessAtEyes();
     RenderSystem.enableBlend();
     RenderSystem.defaultBlendFunc();
-    float m = -minecraftClient.player.yaw / 64.0F;
-    float n = minecraftClient.player.pitch / 64.0F;
+    float m = -minecraftClient.player.getYaw() / 64.0F;
+    float n = minecraftClient.player.getPitch() / 64.0F;
     Matrix4f matrix4f = matrixStack.peek().getModel();
-    bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_TEXTURE);
+    bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
     bufferBuilder.vertex(matrix4f, -1.0F, -1.0F, -0.5F).color(f, f, f, smooth).texture(4.0F + m, 4.0F + n).next();
     bufferBuilder.vertex(matrix4f, 1.0F, -1.0F, -0.5F).color(f, f, f, smooth).texture(0.0F + m, 4.0F + n).next();
     bufferBuilder.vertex(matrix4f, 1.0F, 1.0F, -0.5F).color(f, f, f, smooth).texture(0.0F + m, 0.0F + n).next();
