@@ -2,6 +2,7 @@ package net.environmentz.mixin;
 
 import java.util.List;
 
+import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 
@@ -11,7 +12,6 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.World;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -28,7 +28,7 @@ public class ArmorItemMixin extends Item {
     @Environment(EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         super.appendTooltip(stack, world, tooltip, context);
-        CompoundTag tag = stack.getTag();
+        NbtCompound tag = stack.getTag();
         if (stack.hasTag() && tag.contains("environmentz")) {
             tooltip.add(new TranslatableText("item.environmentz.fur_insolated.tooltip").formatted(Formatting.BLUE));
         }

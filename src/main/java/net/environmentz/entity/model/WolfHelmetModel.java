@@ -1,70 +1,65 @@
 package net.environmentz.entity.model;
 
-import net.minecraft.client.model.Model;
-import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.*;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 
 public class WolfHelmetModel extends Model {
-    private final ModelPart Helmet;
-    private final ModelPart FurSides;
-    private final ModelPart Snout;
-    private final ModelPart Ears;
-    private final ModelPart Left;
-    private final ModelPart EarTip_r1;
-    private final ModelPart Right;
-    private final ModelPart EarTip_r2;
+    private final ModelPart root;
+    private final ModelPart helmet;
+    private final ModelPart furSides;
+    private final ModelPart snout;
+    private final ModelPart ears;
+    private final ModelPart left;
+    private final ModelPart earTip_r1;
+    private final ModelPart right;
+    private final ModelPart earTip_r2;
 
-    public WolfHelmetModel() {
-        super(RenderLayer::getEntityCutout);
-        Helmet = new ModelPart(64, 32, 0, 0);
-        Helmet.setPivot(0.0F, 24.0F, 0.0F);
-        Helmet.setTextureOffset(0, 0).addCuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, 0.0F, false);
+    public WolfHelmetModel(ModelPart root) {
+        super(RenderLayer::getArmorCutoutNoCull);
+        this.root = root;
+        this.helmet = root.getChild("helmet");
+        this.furSides = root.getChild("furSides");
+        this.snout = root.getChild("snout");
+        this.ears = root.getChild("ears");
+        this.left = this.ears.getChild("left");
+        this.earTip_r1 = this.left.getChild("earTip_r1");
+        this.right = this.ears.getChild("right");
+        this.earTip_r2 = this.right.getChild("earTip_r2");
+    }
 
-        FurSides = new ModelPart(64, 32, 0, 0);
-        FurSides.setPivot(0.0F, 24.0F, 0.0F);
-        FurSides.setTextureOffset(0, 0).addCuboid(-4.0F, -4.0F, -4.0F, 1.0F, 5.0F, 1.0F, 0.0F, false);
-        FurSides.setTextureOffset(0, 0).addCuboid(3.0F, -4.0F, -4.0F, 1.0F, 5.0F, 1.0F, 0.0F, false);
-
-        Snout = new ModelPart(64, 32, 0, 0);
-        Snout.setPivot(0.0F, 24.0F, 0.0F);
-        Snout.setTextureOffset(0, 16).addCuboid(-2.0F, -5.0F, -7.0F, 4.0F, 2.0F, 3.0F, 0.0F, false);
-
-        Ears = new ModelPart(64, 32, 0, 0);
-        Ears.setPivot(0.0F, 24.0F, 0.0F);
-
-        Left = new ModelPart(64, 32, 0, 0);
-        Left.setPivot(-8.0F, -8.0F, 8.0F);
-        Ears.addChild(Left);
-
-        EarTip_r1 = new ModelPart(64, 32, 0, 0);
-        EarTip_r1.setPivot(10.5F, 0.0F, -8.0F);
-        Left.addChild(EarTip_r1);
-        EarTip_r1.setTextureOffset(43, 3).addCuboid(-1.5F, -3.55F, -1.0F, 2.0F, 1.0F, 1.0F, -0.0001F, false);
-        EarTip_r1.setTextureOffset(32, 0).addCuboid(-1.5F, -2.55F, -1.0F, 3.0F, 3.0F, 2.0F, -0.001F, false);
-
-        Right = new ModelPart(64, 32, 0, 0);
-        Right.setPivot(-8.0F, -8.0F, 8.0F);
-        Ears.addChild(Right);
-
-        EarTip_r2 = new ModelPart(64, 32, 0, 0);
-        EarTip_r2.setPivot(10.5F, 0.0F, -8.0F);
-        Right.addChild(EarTip_r2);
-        EarTip_r2.setTextureOffset(43, 0).addCuboid(-5.5F, -3.55F, -1.0F, 2.0F, 1.0F, 1.0F, -0.0001F, false);
-        EarTip_r2.setTextureOffset(32, 5).addCuboid(-6.5F, -2.55F, -1.0F, 3.0F, 3.0F, 2.0F, -0.001F, false);
+    public static TexturedModelData getTexturedModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
+    modelPartData.addChild("helmet",ModelPartBuilder.create().uv(0,0)
+            .cuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F),ModelTransform.pivot(0.0F, 24.0F, 0.0F));
+        modelPartData.addChild("furSides",ModelPartBuilder.create().uv(0,0)
+                .cuboid(-4.0F, -4.0F, -4.0F, 1.0F, 5.0F, 1.0F)
+                .cuboid(3.0F, -4.0F, -4.0F, 1.0F, 5.0F, 1.0F),ModelTransform.pivot(0.0F, 24.0F, 0.0F));
+        modelPartData.addChild("snout",ModelPartBuilder.create().uv(0,16)
+                .cuboid(-2.0F, -5.0F, -7.0F, 4.0F, 2.0F, 3.0F),ModelTransform.pivot(0.0F, 24.0F, 0.0F));
+        ModelPartData modelPartData2 = modelPartData.addChild("ears",ModelPartBuilder.create()
+                ,ModelTransform.pivot(0.0F, 24.0F, 0.0F));
+        modelPartData2.addChild("left",ModelPartBuilder.create(),ModelTransform.pivot(-8.0F, -8.0F, 8.0F)).addChild("earTip_r1",ModelPartBuilder.create().uv(43, 3)
+                .cuboid(-1.5F, -3.55F, -1.0F, 2.0F, 1.0F, 1.0F).uv(32, 0)
+                .cuboid(-1.5F, -2.55F, -1.0F, 3.0F, 3.0F, 2.0F),ModelTransform.pivot(10.5F, 0.0F, -8.0F));
+        modelPartData2.addChild("right",ModelPartBuilder.create(),ModelTransform.pivot(-8.0F, -8.0F, 8.0F)).addChild("earTip_r2",ModelPartBuilder.create().uv(43, 0)
+                .cuboid(-5.5F, -3.55F, -1.0F, 2.0F, 1.0F, 1.0F).uv(32, 5)
+                .cuboid(-6.5F, -2.55F, -1.0F, 3.0F, 3.0F, 2.0F),ModelTransform.pivot(10.5F, 0.0F, -8.0F));
+        return TexturedModelData.of(modelData, 64, 32);
     }
 
     @Override
     public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red,
             float green, float blue, float alpha) {
-        this.EarTip_r1.pitch = -0.3927F;
-        this.EarTip_r2.pitch = -0.3927F;
+        this.earTip_r1.pitch = -0.3927F;
+        this.earTip_r2.pitch = -0.3927F;
 
-        Helmet.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
-        FurSides.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
-        Snout.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
-        Ears.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        helmet.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        furSides.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        snout.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        ears.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
     }
 
 }

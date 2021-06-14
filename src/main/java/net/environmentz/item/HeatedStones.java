@@ -27,7 +27,7 @@ public class HeatedStones extends Item {
                     }
                 }
             } else {
-                playerEntity.inventory.setStack(slot, new ItemStack(ItemInit.HEATING_STONES));
+                playerEntity.getInventory().setStack(slot, new ItemStack(ItemInit.HEATING_STONES));
             }
         }
     }

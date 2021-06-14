@@ -1,5 +1,6 @@
 package net.environmentz.mixin;
 
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,13 +24,16 @@ import net.minecraft.client.render.item.ItemRenderer;
 @Mixin(HeadFeatureRenderer.class)
 public class HeadFeatureRendererMixin {
   @Shadow
-  private float field_24474;
+  @Final
+  private float scaleX;
   @Shadow
-  private float field_24475;
+  @Final
+  private float scaleY;
   @Shadow
-  private float field_24476;
+  @Final
+  private float scaleZ;
 
-  private final WolfHelmetModel wolfHelmetModel = new WolfHelmetModel();
+  private final WolfHelmetModel wolfHelmetModel = new WolfHelmetModel(WolfHelmetModel.getTexturedModelData().createModel());
 
   @Inject(method = "render", at = @At("HEAD"), cancellable = true)
   public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i,
@@ -37,7 +41,7 @@ public class HeadFeatureRendererMixin {
     ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.HEAD);
     if (!(itemStack.isEmpty()) && (itemStack.getItem() == ItemInit.WOLF_HELMET)) {
       matrixStack.push();
-      matrixStack.scale(this.field_24474, this.field_24475, this.field_24476);
+      matrixStack.scale(this.scaleX, this.scaleY, this.scaleZ);
       ((ModelWithHead) ((HeadFeatureRenderer) (Object) this).getContextModel()).getHead().rotate(matrixStack);
       matrixStack.translate(0.0D, -1.75D, 0.0D);
       matrixStack.scale(1.18F, 1.18F, 1.18F);

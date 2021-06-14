@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "id": "environmentz",
-  "version": "1.1.1",
+  "version": "${version}",
   "name": "EnvironmentZ",
-  "description": "Some harder and colder environmentz",
+  "description": "Harsh environments will now affect you",
   "authors": [
     "Globox_Z"
   ],
@@ -32,7 +32,7 @@
   "depends": {
     "fabricloader": ">=0.7.4",
     "fabric": "*",
-    "minecraft": "1.16.x"
+    "minecraft": "1.17.x"
   },
   "suggests": {
     "flamingo": "*"

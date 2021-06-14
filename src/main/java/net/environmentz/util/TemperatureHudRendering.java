@@ -86,8 +86,8 @@ public class TemperatureHudRendering {
             MinecraftClient client) {
         int scaledWidth = client.getWindow().getScaledWidth();
         int scaledHeight = client.getWindow().getScaledHeight();
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        client.getTextureManager().bindTexture(identifier);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderTexture(0, identifier);
         DrawableHelper.drawTexture(matrixStack, (scaledWidth / 2) - ConfigInit.CONFIG.icon_x,
                 scaledHeight - ConfigInit.CONFIG.icon_y + (13 - iconTexture(smooth)), 13.0F,
                 13.0F - (iconTexture(smooth) - 13), 13, iconTexture(smooth), 26, 13);
@@ -97,8 +97,8 @@ public class TemperatureHudRendering {
             MinecraftClient client) {
         int scaledWidth = client.getWindow().getScaledWidth();
         int scaledHeight = client.getWindow().getScaledHeight();
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        client.getTextureManager().bindTexture(identifier);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderTexture(0, identifier);
         DrawableHelper.drawTexture(matrixStack, (scaledWidth / 2) - ConfigInit.CONFIG.icon_x,
                 scaledHeight - ConfigInit.CONFIG.icon_y, 0.0F, 0.0F, 13, 13, 26, 13);
     }

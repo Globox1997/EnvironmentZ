@@ -1,5 +1,6 @@
 package net.environmentz.mixin;
 
+import net.minecraft.nbt.NbtCompound;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -11,7 +12,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.screen.ForgingScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
@@ -30,9 +30,9 @@ public abstract class SmithingScreenHandlerMixin extends ForgingScreenHandler {
         ItemStack itemStack = this.input.getStack(0);
         ItemStack itemStack2 = this.input.getStack(1);
         if (itemStack.getItem() instanceof ArmorItem && !itemStack.getTag().contains("environmentz")
-                && itemStack2.getItem().isIn(TagInit.INSOLATING_ITEM)) {
+                && itemStack2.isIn(TagInit.INSOLATING_ITEM)) {
             ItemStack itemStack3 = itemStack.copy();
-            CompoundTag tag = new CompoundTag();
+            NbtCompound tag = new NbtCompound();
             tag.putString("environmentz", "fur_insolated");
             itemStack3.setTag(tag);
             this.output.setStack(0, itemStack3);
@@ -44,7 +44,7 @@ public abstract class SmithingScreenHandlerMixin extends ForgingScreenHandler {
     public void canTakeOutputMixin(PlayerEntity player, boolean present, CallbackInfoReturnable<Boolean> info) {
         ItemStack itemStack = this.input.getStack(0);
         ItemStack itemStack2 = this.input.getStack(1);
-        if (itemStack.getItem() instanceof ArmorItem && itemStack2.getItem().isIn(TagInit.INSOLATING_ITEM)) {
+        if (itemStack.getItem() instanceof ArmorItem && itemStack2.isIn(TagInit.INSOLATING_ITEM)) {
             info.setReturnValue(true);
         }
     }

@@ -71,16 +71,16 @@ public class OverheatingEffect extends StatusEffect {
     ItemStack feetStack = livingEntity.getEquippedStack(EquipmentSlot.FEET);
 
     if (!armorDebuff) {
-      if (!headStack.isEmpty() || !headStack.getItem().isIn(TagInit.ALLOWED_ARMOR)) {
+      if (!headStack.isEmpty() || !headStack.isIn(TagInit.ALLOWED_ARMOR)) {
         wearsArmor = true;
       }
-      if (!chestStack.isEmpty() || !chestStack.getItem().isIn(TagInit.ALLOWED_ARMOR)) {
+      if (!chestStack.isEmpty() || !chestStack.isIn(TagInit.ALLOWED_ARMOR)) {
         wearsArmor = true;
       }
-      if (!legStack.isEmpty() || !legStack.getItem().isIn(TagInit.ALLOWED_ARMOR)) {
+      if (!legStack.isEmpty() || !legStack.isIn(TagInit.ALLOWED_ARMOR)) {
         wearsArmor = true;
       }
-      if (!feetStack.isEmpty() || !feetStack.getItem().isIn(TagInit.ALLOWED_ARMOR)) {
+      if (!feetStack.isEmpty() || !feetStack.isIn(TagInit.ALLOWED_ARMOR)) {
         wearsArmor = true;
       }
       return wearsArmor;
@@ -89,14 +89,3 @@ public class OverheatingEffect extends StatusEffect {
   }
 
 }
-
-// if (headStack.isEmpty() && chestStack.isEmpty() && legStack.isEmpty() &&
-// feetStack.isEmpty()) {
-// wearsArmor = false;
-// }
-// if (headStack.getItem().isIn(TagInit.ALLOWED_ARMOR) &&
-// chestStack.getItem().isIn(TagInit.ALLOWED_ARMOR)
-// && legStack.getItem().isIn(TagInit.ALLOWED_ARMOR) &&
-// feetStack.getItem().isIn(TagInit.ALLOWED_ARMOR)) {
-// wearsArmor = false;
-// }
