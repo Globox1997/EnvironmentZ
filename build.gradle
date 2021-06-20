@@ -36,7 +36,7 @@ dependencies {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 	// Dehydration
-	modCompileOnly ('com.github.Globox1997:Dehydration:c3a1727f28') {
+	modCompileOnly ('com.github.Globox1997:Dehydration:16e13e3160') {
         exclude(group: "net.fabricmc.fabric-api")
 		exclude(group: "me.shedaniel.cloth")
 		exclude(group: "io.github.prospector")
