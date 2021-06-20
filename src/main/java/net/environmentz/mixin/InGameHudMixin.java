@@ -22,48 +22,46 @@ import net.minecraft.entity.player.PlayerEntity;
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin extends DrawableHelper {
 
-  @Shadow
-  @Final
-  @Mutable
-  private final MinecraftClient client;
+    @Shadow
+    @Final
+    @Mutable
+    private final MinecraftClient client;
 
-  private int ticker;
-  private int wetTimer;
+    private int ticker;
+    private int wetTimer;
 
-  public InGameHudMixin(MinecraftClient client) {
-    this.client = client;
-  }
-
-  @Inject(method = "Lnet/minecraft/client/gui/hud/InGameHud;render(Lnet/minecraft/client/util/math/MatrixStack;F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHotbar(FLnet/minecraft/client/util/math/MatrixStack;)V"))
-  private void renderMixin(MatrixStack matrixStack, float f, CallbackInfo info) {
-    // Gets ticked 60 times per second
-    PlayerEntity playerEntity = client.player;
-    if (!playerEntity.isCreative() && !playerEntity.isSpectator() && !playerEntity.isInvulnerable()) {
-      ticker++;
-      if (ticker >= 60 && !client.isPaused()) {
-        wetTimer++;
-        if (playerEntity.world.getBiome(playerEntity.getBlockPos())
-            .getTemperature() <= ConfigInit.CONFIG.biome_freeze_temp) {
-          TemperatureHudRendering.coldEnvRendering(playerEntity, wetTimer);
-        } else if (TemperatureHudRendering.isInColdBiome) {
-          TemperatureHudRendering.isInColdBiome = false;
-          TemperatureHudRendering.smoothFreezingIconRendering = 0.0F;
-
-        } else if (playerEntity.world.getBiome(playerEntity.getBlockPos())
-            .getTemperature() >= ConfigInit.CONFIG.biome_overheat_temp) {
-          TemperatureHudRendering.hotEnvRendering(playerEntity, wetTimer);
-        } else if (TemperatureHudRendering.isInHotBiome) {
-          TemperatureHudRendering.isInHotBiome = false;
-          TemperatureHudRendering.smoothThirstRendering = 0.0F;
-        }
-        // Ticker zeroing
-        ticker = 0;
-        if (wetTimer >= ConfigInit.CONFIG.wet_bonus_malus) {
-          wetTimer = 0;
-        }
-      }
-      TemperatureHudRendering.renderTemperatureAspect(matrixStack, playerEntity, client);
+    public InGameHudMixin(MinecraftClient client) {
+        this.client = client;
     }
-  }
+
+    @Inject(method = "Lnet/minecraft/client/gui/hud/InGameHud;render(Lnet/minecraft/client/util/math/MatrixStack;F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHotbar(FLnet/minecraft/client/util/math/MatrixStack;)V"))
+    private void renderMixin(MatrixStack matrixStack, float f, CallbackInfo info) {
+        // Gets ticked 60 times per second
+        PlayerEntity playerEntity = client.player;
+        if (!playerEntity.isCreative() && !playerEntity.isSpectator() && !playerEntity.isInvulnerable()) {
+            ticker++;
+            if (ticker >= 60 && !client.isPaused()) {
+                wetTimer++;
+                if (playerEntity.world.getBiome(playerEntity.getBlockPos()).getTemperature() <= ConfigInit.CONFIG.biome_freeze_temp) {
+                    TemperatureHudRendering.coldEnvRendering(playerEntity, wetTimer);
+                } else if (TemperatureHudRendering.isInColdBiome) {
+                    TemperatureHudRendering.isInColdBiome = false;
+                    TemperatureHudRendering.smoothFreezingIconRendering = 0.0F;
+
+                } else if (playerEntity.world.getBiome(playerEntity.getBlockPos()).getTemperature() >= ConfigInit.CONFIG.biome_overheat_temp) {
+                    TemperatureHudRendering.hotEnvRendering(playerEntity, wetTimer);
+                } else if (TemperatureHudRendering.isInHotBiome) {
+                    TemperatureHudRendering.isInHotBiome = false;
+                    TemperatureHudRendering.smoothThirstRendering = 0.0F;
+                }
+                // Ticker zeroing
+                ticker = 0;
+                if (wetTimer >= ConfigInit.CONFIG.wet_bonus_malus) {
+                    wetTimer = 0;
+                }
+            }
+            TemperatureHudRendering.renderTemperatureAspect(matrixStack, playerEntity, client);
+        }
+    }
 
 }

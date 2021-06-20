@@ -6,8 +6,8 @@ import net.minecraft.item.ArmorMaterial;
 
 public class WolfArmor extends ArmorItem {
 
-  public WolfArmor(ArmorMaterial material, EquipmentSlot slot, Settings settings) {
-    super(material, slot, settings);
-  }
+    public WolfArmor(ArmorMaterial material, EquipmentSlot slot, Settings settings) {
+        super(material, slot, settings);
+    }
 
 }

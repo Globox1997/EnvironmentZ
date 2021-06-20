@@ -22,56 +22,55 @@ import net.minecraft.util.math.Matrix4f;
 @Environment(EnvType.CLIENT)
 @Mixin(InGameOverlayRenderer.class)
 public abstract class InGameOverlayRendererMixin {
-  private static final Identifier WINTER_TEX = new Identifier("environmentz:textures/gui/coldness_overlay.png");
-  private static float smoothFreezingRendering;
-  private static int ticker;
+    private static final Identifier WINTER_TEX = new Identifier("environmentz:textures/gui/coldness_overlay.png");
+    private static float smoothFreezingRendering;
+    private static int ticker;
 
-  @Inject(method = "renderOverlays", at = @At(value = "TAIL"))
-  private static void renderOverlaysMixin(MinecraftClient minecraftClient, MatrixStack matrixStack, CallbackInfo info) {
-    PlayerEntity playerEntity = minecraftClient.player;
-    if (!playerEntity.isCreative() && !playerEntity.isSpectator()) {
-      ticker++;
-      if (ticker >= 10) {
-        if (playerEntity.world.getBiome(playerEntity.getBlockPos())
-            .getTemperature() <= ConfigInit.CONFIG.biome_freeze_temp && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
-          float maxWhitening = 0.3F;
-          if (playerEntity.world.isRaining()) {
-            maxWhitening = 0.5F;
-          }
-          if (smoothFreezingRendering < maxWhitening) {
-            smoothFreezingRendering = smoothFreezingRendering + 0.02F;
-          }
-        } else if (smoothFreezingRendering > 0.0F) {
-          smoothFreezingRendering = smoothFreezingRendering - 0.02F;
+    @Inject(method = "renderOverlays", at = @At(value = "TAIL"))
+    private static void renderOverlaysMixin(MinecraftClient minecraftClient, MatrixStack matrixStack, CallbackInfo info) {
+        PlayerEntity playerEntity = minecraftClient.player;
+        if (!playerEntity.isCreative() && !playerEntity.isSpectator()) {
+            ticker++;
+            if (ticker >= 10) {
+                if (playerEntity.world.getBiome(playerEntity.getBlockPos()).getTemperature() <= ConfigInit.CONFIG.biome_freeze_temp && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
+                    float maxWhitening = 0.3F;
+                    if (playerEntity.world.isRaining()) {
+                        maxWhitening = 0.5F;
+                    }
+                    if (smoothFreezingRendering < maxWhitening) {
+                        smoothFreezingRendering = smoothFreezingRendering + 0.02F;
+                    }
+                } else if (smoothFreezingRendering > 0.0F) {
+                    smoothFreezingRendering = smoothFreezingRendering - 0.02F;
+                }
+                ticker = 0;
+            }
+            if (smoothFreezingRendering > 0.0F) {
+                renderWinterOverlay(minecraftClient, matrixStack, smoothFreezingRendering);
+            }
         }
-        ticker = 0;
-      }
-      if (smoothFreezingRendering > 0.0F) {
-        renderWinterOverlay(minecraftClient, matrixStack, smoothFreezingRendering);
-      }
     }
-  }
 
-  private static void renderWinterOverlay(MinecraftClient minecraftClient, MatrixStack matrixStack, float smooth) {
-    RenderSystem.setShader(GameRenderer::getPositionTexShader);
-    RenderSystem.enableTexture();
-    RenderSystem.setShaderTexture(0, WINTER_TEX);
-    BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-    float f = minecraftClient.player.getBrightnessAtEyes();
-    RenderSystem.enableBlend();
-    RenderSystem.defaultBlendFunc();
-    RenderSystem.setShaderColor(f, f, f, smooth);
-    float m = -minecraftClient.player.getYaw() / 64.0F;
-    float n = minecraftClient.player.getPitch() / 64.0F;
-    Matrix4f matrix4f = matrixStack.peek().getModel();
-    bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-    bufferBuilder.vertex(matrix4f, -1.0F, -1.0F, -0.5F).texture(4.0F + m, 4.0F + n).next();
-    bufferBuilder.vertex(matrix4f, 1.0F, -1.0F, -0.5F).texture(0.0F + m, 4.0F + n).next();
-    bufferBuilder.vertex(matrix4f, 1.0F, 1.0F, -0.5F).texture(0.0F + m, 0.0F + n).next();
-    bufferBuilder.vertex(matrix4f, -1.0F, 1.0F, -0.5F).texture(4.0F + m, 0.0F + n).next();
-    bufferBuilder.end();
-    BufferRenderer.draw(bufferBuilder);
-    RenderSystem.disableBlend();
-  }
+    private static void renderWinterOverlay(MinecraftClient minecraftClient, MatrixStack matrixStack, float smooth) {
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.enableTexture();
+        RenderSystem.setShaderTexture(0, WINTER_TEX);
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        float f = minecraftClient.player.getBrightnessAtEyes();
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShaderColor(f, f, f, smooth);
+        float m = -minecraftClient.player.getYaw() / 64.0F;
+        float n = minecraftClient.player.getPitch() / 64.0F;
+        Matrix4f matrix4f = matrixStack.peek().getModel();
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        bufferBuilder.vertex(matrix4f, -1.0F, -1.0F, -0.5F).texture(4.0F + m, 4.0F + n).next();
+        bufferBuilder.vertex(matrix4f, 1.0F, -1.0F, -0.5F).texture(0.0F + m, 4.0F + n).next();
+        bufferBuilder.vertex(matrix4f, 1.0F, 1.0F, -0.5F).texture(0.0F + m, 0.0F + n).next();
+        bufferBuilder.vertex(matrix4f, -1.0F, 1.0F, -0.5F).texture(4.0F + m, 0.0F + n).next();
+        bufferBuilder.end();
+        BufferRenderer.draw(bufferBuilder);
+        RenderSystem.disableBlend();
+    }
 
 }

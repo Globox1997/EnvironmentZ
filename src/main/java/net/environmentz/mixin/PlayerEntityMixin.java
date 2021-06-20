@@ -15,35 +15,35 @@ import net.minecraft.world.World;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity {
-  private int ticker;
+    private int ticker;
 
-  public PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
-    super(entityType, world);
-  }
-
-  @Inject(method = "tick", at = @At("TAIL"))
-  public void tickMixin(CallbackInfo info) {
-    PlayerEntity playerEntity = (PlayerEntity) (Object) this;
-    if (!this.world.isClient && !playerEntity.isCreative() && !playerEntity.isSpectator() && playerEntity.isAlive()) {
-      ticker++;
-      if (ticker >= 20) {
-        if (this.world.getBiome(this.getBlockPos()).getTemperature() <= ConfigInit.CONFIG.biome_freeze_temp) {
-          TemperatureAspects.coldEnvironment(playerEntity);
-        } else if (TemperatureAspects.coldnessTimer > 0) {
-          TemperatureAspects.coldnessTimer = 0;
-        } else if (this.world.getBiome(this.getBlockPos()).getTemperature() >= ConfigInit.CONFIG.biome_overheat_temp) {
-          TemperatureAspects.hotEnvironment(playerEntity);
-        } else if (TemperatureAspects.dehydrationTimer > 0) {
-          TemperatureAspects.dehydrationTimer = 0;
-        }
-        if (this.hasStatusEffect(EffectInit.COLDNESS) || this.hasStatusEffect(EffectInit.OVERHEATING)) {
-          TemperatureAspects.acclimatize(playerEntity);
-        } else if (TemperatureAspects.acclimatizeTimer > 0) {
-          TemperatureAspects.acclimatizeTimer = 0;
-        }
-        TemperatureAspects.dryOrWett(playerEntity);
-        ticker = 0;
-      }
+    public PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
+        super(entityType, world);
     }
-  }
+
+    @Inject(method = "tick", at = @At("TAIL"))
+    public void tickMixin(CallbackInfo info) {
+        PlayerEntity playerEntity = (PlayerEntity) (Object) this;
+        if (!this.world.isClient && !playerEntity.isCreative() && !playerEntity.isSpectator() && playerEntity.isAlive()) {
+            ticker++;
+            if (ticker >= 20) {
+                if (this.world.getBiome(this.getBlockPos()).getTemperature() <= ConfigInit.CONFIG.biome_freeze_temp) {
+                    TemperatureAspects.coldEnvironment(playerEntity);
+                } else if (TemperatureAspects.coldnessTimer > 0) {
+                    TemperatureAspects.coldnessTimer = 0;
+                } else if (this.world.getBiome(this.getBlockPos()).getTemperature() >= ConfigInit.CONFIG.biome_overheat_temp) {
+                    TemperatureAspects.hotEnvironment(playerEntity);
+                } else if (TemperatureAspects.dehydrationTimer > 0) {
+                    TemperatureAspects.dehydrationTimer = 0;
+                }
+                if (this.hasStatusEffect(EffectInit.COLDNESS) || this.hasStatusEffect(EffectInit.OVERHEATING)) {
+                    TemperatureAspects.acclimatize(playerEntity);
+                } else if (TemperatureAspects.acclimatizeTimer > 0) {
+                    TemperatureAspects.acclimatizeTimer = 0;
+                }
+                TemperatureAspects.dryOrWett(playerEntity);
+                ticker = 0;
+            }
+        }
+    }
 }

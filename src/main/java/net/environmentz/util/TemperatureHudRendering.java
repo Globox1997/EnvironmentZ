@@ -25,15 +25,13 @@ public class TemperatureHudRendering {
     public static void hotEnvRendering(PlayerEntity playerEntity, int wetTimer) {
         isInHotBiome = true;
         if (OverheatingEffect.wearsArmor(playerEntity) && playerEntity.world.isSkyVisible(playerEntity.getBlockPos())
-                && ((int) playerEntity.world.getTimeOfDay() > 23000
-                        || (int) playerEntity.world.getTimeOfDay() < 12000)) {
+                && ((int) playerEntity.world.getTimeOfDay() > 23000 || (int) playerEntity.world.getTimeOfDay() < 12000)) {
             float wetBonus = 0.0F;
             if (playerEntity.hasStatusEffect(EffectInit.WET) && wetTimer == ConfigInit.CONFIG.wet_bonus_malus) {
                 wetBonus = 0.5F;
             }
             if (smoothThirstRendering < 1.0F) {
-                smoothThirstRendering += (1.0F
-                        / ((float) (ConfigInit.CONFIG.overheating_tick_interval * (1F + wetBonus))));
+                smoothThirstRendering += (1.0F / ((float) (ConfigInit.CONFIG.overheating_tick_interval * (1F + wetBonus))));
             }
             if (smoothThirstRendering > 1.0F) {
                 smoothThirstRendering = 1.0F;
@@ -46,16 +44,13 @@ public class TemperatureHudRendering {
     public static void coldEnvRendering(PlayerEntity playerEntity, int wetTimer) {
         isInColdBiome = true;
         int warmClothingModifier = ColdEffect.warmClothingModifier(playerEntity);
-        if (!playerEntity.hasStatusEffect(EffectInit.WARMING)
-                && warmClothingModifier != (ConfigInit.CONFIG.warm_armor_tick_modifier * 4)
-                && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
+        if (!playerEntity.hasStatusEffect(EffectInit.WARMING) && warmClothingModifier != (ConfigInit.CONFIG.warm_armor_tick_modifier * 4) && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
             float wetMalus = 1.0F;
             if (playerEntity.hasStatusEffect(EffectInit.WET) && wetTimer == ConfigInit.CONFIG.wet_bonus_malus) {
                 wetMalus = 0.5F;
             }
             if (smoothFreezingIconRendering < 1.0F) {
-                smoothFreezingIconRendering += (1.0F
-                        / ((float) (ConfigInit.CONFIG.cold_tick_interval + warmClothingModifier) * wetMalus));
+                smoothFreezingIconRendering += (1.0F / ((float) (ConfigInit.CONFIG.cold_tick_interval + warmClothingModifier) * wetMalus));
             }
             if (smoothFreezingIconRendering > 1.0F) {
                 smoothFreezingIconRendering = 1.0F;
@@ -65,16 +60,13 @@ public class TemperatureHudRendering {
         }
     }
 
-    public static void renderTemperatureAspect(MatrixStack matrixStack, PlayerEntity playerEntity,
-            MinecraftClient client) {
-        if (!ConfigInit.CONFIG.excluded_cold_names.contains(playerEntity.getName().asString())
-                && (isInColdBiome && smoothFreezingIconRendering > 0.0F)) {
+    public static void renderTemperatureAspect(MatrixStack matrixStack, PlayerEntity playerEntity, MinecraftClient client) {
+        if (!ConfigInit.CONFIG.excluded_cold_names.contains(playerEntity.getName().asString()) && (isInColdBiome && smoothFreezingIconRendering > 0.0F)) {
             renderIconBackgroundOverlay(matrixStack, FREEZING_ICON, client);
             if (smoothFreezingIconRendering > 0.0F) {
                 renderIconOverlay(matrixStack, smoothFreezingIconRendering, FREEZING_ICON, client);
             }
-        } else if (!ConfigInit.CONFIG.excluded_heat_names.contains(playerEntity.getName().asString())
-                && (isInHotBiome && smoothThirstRendering > 0.0F)) {
+        } else if (!ConfigInit.CONFIG.excluded_heat_names.contains(playerEntity.getName().asString()) && (isInHotBiome && smoothThirstRendering > 0.0F)) {
             renderIconBackgroundOverlay(matrixStack, OVERHEATING_ICON, client);
             if (smoothThirstRendering > 0.0F) {
                 renderIconOverlay(matrixStack, smoothThirstRendering, OVERHEATING_ICON, client);
@@ -82,25 +74,21 @@ public class TemperatureHudRendering {
         }
     }
 
-    public static void renderIconOverlay(MatrixStack matrixStack, float smooth, Identifier identifier,
-            MinecraftClient client) {
+    public static void renderIconOverlay(MatrixStack matrixStack, float smooth, Identifier identifier, MinecraftClient client) {
         int scaledWidth = client.getWindow().getScaledWidth();
         int scaledHeight = client.getWindow().getScaledHeight();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, identifier);
-        DrawableHelper.drawTexture(matrixStack, (scaledWidth / 2) - ConfigInit.CONFIG.icon_x,
-                scaledHeight - ConfigInit.CONFIG.icon_y + (13 - iconTexture(smooth)), 13.0F,
+        DrawableHelper.drawTexture(matrixStack, (scaledWidth / 2) - ConfigInit.CONFIG.icon_x, scaledHeight - ConfigInit.CONFIG.icon_y + (13 - iconTexture(smooth)), 13.0F,
                 13.0F - (iconTexture(smooth) - 13), 13, iconTexture(smooth), 26, 13);
     }
 
-    public static void renderIconBackgroundOverlay(MatrixStack matrixStack, Identifier identifier,
-            MinecraftClient client) {
+    public static void renderIconBackgroundOverlay(MatrixStack matrixStack, Identifier identifier, MinecraftClient client) {
         int scaledWidth = client.getWindow().getScaledWidth();
         int scaledHeight = client.getWindow().getScaledHeight();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, identifier);
-        DrawableHelper.drawTexture(matrixStack, (scaledWidth / 2) - ConfigInit.CONFIG.icon_x,
-                scaledHeight - ConfigInit.CONFIG.icon_y, 0.0F, 0.0F, 13, 13, 26, 13);
+        DrawableHelper.drawTexture(matrixStack, (scaledWidth / 2) - ConfigInit.CONFIG.icon_x, scaledHeight - ConfigInit.CONFIG.icon_y, 0.0F, 0.0F, 13, 13, 26, 13);
     }
 
     private static int iconTexture(float smooth) {

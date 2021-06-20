@@ -5,11 +5,11 @@ import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 import net.environmentz.config.EnvironmentzConfig;
 
 public class ConfigInit {
-  public static EnvironmentzConfig CONFIG = new EnvironmentzConfig();
+    public static EnvironmentzConfig CONFIG = new EnvironmentzConfig();
 
-  public static void init() {
-    AutoConfig.register(EnvironmentzConfig.class, JanksonConfigSerializer::new);
-    CONFIG = AutoConfig.getConfigHolder(EnvironmentzConfig.class).getConfig();
-  }
+    public static void init() {
+        AutoConfig.register(EnvironmentzConfig.class, JanksonConfigSerializer::new);
+        CONFIG = AutoConfig.getConfigHolder(EnvironmentzConfig.class).getConfig();
+    }
 
 }

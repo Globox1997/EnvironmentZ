@@ -20,8 +20,7 @@ import net.minecraft.screen.SmithingScreenHandler;
 @Mixin(SmithingScreenHandler.class)
 public abstract class SmithingScreenHandlerMixin extends ForgingScreenHandler {
 
-    public SmithingScreenHandlerMixin(ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory,
-            ScreenHandlerContext context) {
+    public SmithingScreenHandlerMixin(ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
         super(type, syncId, playerInventory, context);
     }
 
@@ -29,8 +28,7 @@ public abstract class SmithingScreenHandlerMixin extends ForgingScreenHandler {
     private void updateResultMixin(CallbackInfo info) {
         ItemStack itemStack = this.input.getStack(0);
         ItemStack itemStack2 = this.input.getStack(1);
-        if (itemStack.getItem() instanceof ArmorItem && !itemStack.getTag().contains("environmentz")
-                && itemStack2.isIn(TagInit.INSOLATING_ITEM)) {
+        if (itemStack.getItem() instanceof ArmorItem && !itemStack.getTag().contains("environmentz") && itemStack2.isIn(TagInit.INSOLATING_ITEM)) {
             ItemStack itemStack3 = itemStack.copy();
             NbtCompound tag = new NbtCompound();
             tag.putString("environmentz", "fur_insolated");

@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 public class RenderInit {
     public static final EntityModelLayer WOLF_HELMET_LAYER = new EntityModelLayer(new Identifier("environmentz:wolf_helmet_render_layer"), "wolf_helmet_render_layer");
 
-    public static void init(){
+    public static void init() {
         EntityModelLayerRegistry.registerModelLayer(WOLF_HELMET_LAYER, WolfHelmetModel::getTexturedModelData);
     }
 }
