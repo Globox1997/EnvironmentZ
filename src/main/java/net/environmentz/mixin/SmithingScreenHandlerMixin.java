@@ -31,6 +31,9 @@ public abstract class SmithingScreenHandlerMixin extends ForgingScreenHandler {
         if (itemStack.getItem() instanceof ArmorItem && !itemStack.getTag().contains("environmentz") && itemStack2.isIn(TagInit.INSOLATING_ITEM)) {
             ItemStack itemStack3 = itemStack.copy();
             NbtCompound tag = new NbtCompound();
+            if (itemStack3.hasTag()) {
+                tag = itemStack3.getTag();
+            }
             tag.putString("environmentz", "fur_insolated");
             itemStack3.setTag(tag);
             this.output.setStack(0, itemStack3);
