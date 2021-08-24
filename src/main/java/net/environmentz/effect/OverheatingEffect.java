@@ -2,7 +2,7 @@ package net.environmentz.effect;
 
 import java.util.UUID;
 
-import net.dehydration.access.ThristManagerAccess;
+import net.dehydration.access.ThirstManagerAccess;
 import net.environmentz.init.ConfigInit;
 import net.environmentz.init.TagInit;
 import net.fabricmc.loader.api.FabricLoader;
@@ -28,7 +28,7 @@ public class OverheatingEffect extends StatusEffect {
     public void applyUpdateEffect(LivingEntity entity, int amplifier) {
         if (entity instanceof PlayerEntity && FabricLoader.getInstance().isModLoaded("dehydration")) {
             PlayerEntity player = (PlayerEntity) entity;
-            ((ThristManagerAccess) player).getThirstManager(player).addDehydration(0.5F + (float) amplifier);
+            ((ThirstManagerAccess) player).getThirstManager(player).addDehydration(0.5F + (float) amplifier);
         }
     }
 
