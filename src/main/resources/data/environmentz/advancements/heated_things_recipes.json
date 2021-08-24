@@ -14,7 +14,9 @@
             "conditions": {
                 "items": [
                     {
-                        "item": "minecraft:cobblestone"
+                        "items": [
+                            "minecraft:cobblestone"
+                        ]
                     }
                 ]
             }

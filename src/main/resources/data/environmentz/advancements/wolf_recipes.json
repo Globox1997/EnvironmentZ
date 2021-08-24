@@ -14,7 +14,9 @@
             "conditions": {
                 "items": [
                     {
-                        "item": "environmentz:wolf_pelt"
+                        "items": [
+                            "environmentz:wolf_pelt"
+                        ]
                     }
                 ]
             }
