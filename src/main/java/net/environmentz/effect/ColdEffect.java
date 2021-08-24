@@ -82,16 +82,16 @@ public class ColdEffect extends StatusEffect implements DamageSourceAccessor {
         ItemStack legStack = livingEntity.getEquippedStack(EquipmentSlot.LEGS);
         ItemStack feetStack = livingEntity.getEquippedStack(EquipmentSlot.FEET);
 
-        if (headStack.isIn(TagInit.WARM_ARMOR) || (allowAllArmor && !headStack.isEmpty()) || (headStack.hasTag() && headStack.getTag().contains("environmentz"))) {
+        if (headStack.isIn(TagInit.WARM_ARMOR) || (allowAllArmor && !headStack.isEmpty()) || (headStack.hasNbt() && headStack.getNbt().contains("environmentz"))) {
             warmingModifier += configAddition;
         }
-        if (chestStack.isIn(TagInit.WARM_ARMOR) || (allowAllArmor && !chestStack.isEmpty()) || (chestStack.hasTag() && chestStack.getTag().contains("environmentz"))) {
+        if (chestStack.isIn(TagInit.WARM_ARMOR) || (allowAllArmor && !chestStack.isEmpty()) || (chestStack.hasNbt() && chestStack.getNbt().contains("environmentz"))) {
             warmingModifier += configAddition;
         }
-        if (legStack.isIn(TagInit.WARM_ARMOR) || (allowAllArmor && !legStack.isEmpty()) || (legStack.hasTag() && legStack.getTag().contains("environmentz"))) {
+        if (legStack.isIn(TagInit.WARM_ARMOR) || (allowAllArmor && !legStack.isEmpty()) || (legStack.hasNbt() && legStack.getNbt().contains("environmentz"))) {
             warmingModifier += configAddition;
         }
-        if (feetStack.isIn(TagInit.WARM_ARMOR) || (allowAllArmor && !feetStack.isEmpty()) || (feetStack.hasTag() && feetStack.getTag().contains("environmentz"))) {
+        if (feetStack.isIn(TagInit.WARM_ARMOR) || (allowAllArmor && !feetStack.isEmpty()) || (feetStack.hasNbt() && feetStack.getNbt().contains("environmentz"))) {
             warmingModifier += configAddition;
         }
         return warmingModifier;
