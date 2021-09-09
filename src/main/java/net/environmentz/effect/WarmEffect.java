@@ -1,11 +1,11 @@
 package net.environmentz.effect;
 
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectType;
+import net.minecraft.entity.effect.StatusEffectCategory;
 
 public class WarmEffect extends StatusEffect {
 
-    public WarmEffect(StatusEffectType type, int color) {
+    public WarmEffect(StatusEffectCategory type, int color) {
         super(type, color);
     }
 

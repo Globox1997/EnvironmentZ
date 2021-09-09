@@ -6,7 +6,6 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 
 public class WolfHelmetModel extends Model {
-    private final ModelPart root;
     private final ModelPart helmet;
     private final ModelPart furSides;
     private final ModelPart snout;
@@ -18,7 +17,6 @@ public class WolfHelmetModel extends Model {
 
     public WolfHelmetModel(ModelPart root) {
         super(RenderLayer::getArmorCutoutNoCull);
-        this.root = root;
         this.helmet = root.getChild("helmet");
         this.furSides = root.getChild("furSides");
         this.snout = root.getChild("snout");
@@ -37,10 +35,12 @@ public class WolfHelmetModel extends Model {
                 ModelTransform.pivot(0.0F, 24.0F, 0.0F));
         modelPartData.addChild("snout", ModelPartBuilder.create().uv(0, 16).cuboid(-2.0F, -5.0F, -7.0F, 4.0F, 2.0F, 3.0F), ModelTransform.pivot(0.0F, 24.0F, 0.0F));
         ModelPartData modelPartData2 = modelPartData.addChild("ears", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 24.0F, 0.0F));
-        modelPartData2.addChild("left", ModelPartBuilder.create(), ModelTransform.pivot(-8.0F, -8.0F, 8.0F)).addChild("earTip_r1",
-                ModelPartBuilder.create().uv(43, 3).cuboid(-1.5F, -3.55F, -1.0F, 2.0F, 1.0F, 1.0F).uv(32, 0).cuboid(-1.5F, -2.55F, -1.0F, 3.0F, 3.0F, 2.0F), ModelTransform.pivot(10.5F, 0.0F, -8.0F));
-        modelPartData2.addChild("right", ModelPartBuilder.create(), ModelTransform.pivot(-8.0F, -8.0F, 8.0F)).addChild("earTip_r2",
-                ModelPartBuilder.create().uv(43, 0).cuboid(-5.5F, -3.55F, -1.0F, 2.0F, 1.0F, 1.0F).uv(32, 5).cuboid(-6.5F, -2.55F, -1.0F, 3.0F, 3.0F, 2.0F), ModelTransform.pivot(10.5F, 0.0F, -8.0F));
+        modelPartData2.addChild("left", ModelPartBuilder.create(), ModelTransform.pivot(-8.0F, -8.0F, 8.0F)).addChild("earTip_r1", ModelPartBuilder.create().uv(43, 3)
+                .cuboid(-1.5F, -3.55F, -1.0F, 2.0F, 1.0F, 1.0F, new Dilation(-0.0001F)).uv(32, 0).cuboid(-1.5F, -2.55F, -1.0F, 3.0F, 3.0F, 2.0F, new Dilation(-0.001F)),
+                ModelTransform.pivot(10.5F, 0.0F, -8.0F));
+        modelPartData2.addChild("right", ModelPartBuilder.create(), ModelTransform.pivot(-8.0F, -8.0F, 8.0F)).addChild("earTip_r2", ModelPartBuilder.create().uv(43, 0)
+                .cuboid(-5.5F, -3.55F, -1.0F, 2.0F, 1.0F, 1.0F, new Dilation(-0.0001F)).uv(32, 5).cuboid(-6.5F, -2.55F, -1.0F, 3.0F, 3.0F, 2.0F, new Dilation(-0.001F)),
+                ModelTransform.pivot(10.5F, 0.0F, -8.0F));
         return TexturedModelData.of(modelData, 64, 32);
     }
 
