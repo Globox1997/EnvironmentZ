@@ -39,8 +39,9 @@ public class WolfArmorMaterial implements ArmorMaterial {
     }
 
     @Environment(EnvType.CLIENT)
+    @Override
     public String getName() {
-        return "wolf_armor";
+        return "wolf_pelt";
     }
 
     @Override
