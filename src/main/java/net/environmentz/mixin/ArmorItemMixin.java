@@ -28,8 +28,8 @@ public class ArmorItemMixin extends Item {
     @Environment(EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         super.appendTooltip(stack, world, tooltip, context);
-        NbtCompound tag = stack.getTag();
-        if (stack.hasTag() && tag.contains("environmentz")) {
+        NbtCompound tag = stack.getNbt();
+        if (stack.hasNbt() && tag.contains("environmentz")) {
             tooltip.add(new TranslatableText("item.environmentz.fur_insolated.tooltip").formatted(Formatting.BLUE));
         }
 

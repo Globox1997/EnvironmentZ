@@ -1,6 +1,6 @@
 package net.environmentz.util;
 
-import net.dehydration.access.ThristManagerAccess;
+import net.dehydration.access.ThirstManagerAccess;
 import net.dehydration.thirst.ThirstManager;
 import net.environmentz.effect.ColdEffect;
 import net.environmentz.effect.OverheatingEffect;
@@ -50,7 +50,7 @@ public class TemperatureAspects {
                 dehydrationTimer++;
                 if (FabricLoader.getInstance().isModLoaded("dehydration")) {
                     if (dehydrationTimer % ConfigInit.CONFIG.overheating_dehydration_timer == 0) {
-                        ThirstManager thirstManager = ((ThristManagerAccess) playerEntity).getThirstManager(playerEntity);
+                        ThirstManager thirstManager = ((ThirstManagerAccess) playerEntity).getThirstManager(playerEntity);
                         thirstManager.addDehydration(ConfigInit.CONFIG.overheating_dehydration_thirst);
                     }
                 }
@@ -59,7 +59,7 @@ public class TemperatureAspects {
                 }
                 if (dehydrationTimer >= (ConfigInit.CONFIG.overheating_tick_interval)) {
                     if (FabricLoader.getInstance().isModLoaded("dehydration")) {
-                        ThirstManager thirstManager = ((ThristManagerAccess) playerEntity).getThirstManager(playerEntity);
+                        ThirstManager thirstManager = ((ThirstManagerAccess) playerEntity).getThirstManager(playerEntity);
                         if (thirstManager.getThirstLevel() < 14) {
                             playerEntity.addStatusEffect(new StatusEffectInstance(EffectInit.OVERHEATING, ConfigInit.CONFIG.overheating_damage_effect_time, 0, false, false, true));
                         }
@@ -96,7 +96,7 @@ public class TemperatureAspects {
                     || playerEntity.isTouchingWaterOrRain() || playerEntity.hasStatusEffect(EffectInit.COOLING)) {
                 acclimatizeTimer++;
                 if (FabricLoader.getInstance().isModLoaded("dehydration")) {
-                    ThirstManager thirstManager = ((ThristManagerAccess) playerEntity).getThirstManager(playerEntity);
+                    ThirstManager thirstManager = ((ThirstManagerAccess) playerEntity).getThirstManager(playerEntity);
                     if (thirstManager.getThirstLevel() > 17) {
                         if (acclimatizeTimer >= ConfigInit.CONFIG.cooling_down_interval) {
                             int coldDuration = playerEntity.getStatusEffect(EffectInit.OVERHEATING).getDuration();

@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.8-SNAPSHOT'
+	id 'fabric-loom' version '0.9-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -10,8 +10,8 @@ archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
-minecraft {
-	accessWidener "src/main/resources/environmentz.aw"
+loom {
+	accessWidenerPath = file("src/main/resources/environmentz.aw")
 }
 
 repositories {
@@ -36,7 +36,7 @@ dependencies {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 	// Dehydration
-	modCompileOnly ('com.github.Globox1997:Dehydration:16e13e3160') {
+	modCompileOnly ('com.github.Globox1997:Dehydration:c9236af489') {
         exclude(group: "net.fabricmc.fabric-api")
 		exclude(group: "me.shedaniel.cloth")
 		exclude(group: "io.github.prospector")
