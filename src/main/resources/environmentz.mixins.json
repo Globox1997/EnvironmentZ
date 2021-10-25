@@ -8,7 +8,11 @@
     "DamageSourceAccessor",
     "SmithingScreenHandlerMixin",
     "ArmorItemMixin",
-    "BrewingRecipeRegistryMixin"
+    "BrewingRecipeRegistryMixin",
+    "ServerPlayerEntityMixin",
+    "PlayerManagerMixin",
+    "compat.OriginCommandMixin",
+    "compat.PlayerOriginComponentMixin"
   ],
   "client": [
     "InGameOverlayRendererMixin",

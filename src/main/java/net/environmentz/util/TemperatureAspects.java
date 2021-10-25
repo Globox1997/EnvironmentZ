@@ -2,6 +2,7 @@ package net.environmentz.util;
 
 import net.dehydration.access.ThirstManagerAccess;
 import net.dehydration.thirst.ThirstManager;
+import net.environmentz.access.PlayerEnvAccess;
 import net.environmentz.effect.ColdEffect;
 import net.environmentz.effect.OverheatingEffect;
 import net.environmentz.init.ConfigInit;
@@ -18,7 +19,7 @@ public class TemperatureAspects {
     private static int dryingTimer;
 
     public static void coldEnvironment(PlayerEntity playerEntity) {
-        if (!ConfigInit.CONFIG.excluded_cold_names.contains(playerEntity.getName().asString())) {
+        if (((PlayerEnvAccess) playerEntity).isColdEnvAffected()) {
             int warmClothingModifier = ColdEffect.warmClothingModifier(playerEntity);
             if (!playerEntity.hasStatusEffect(EffectInit.WARMING) && warmClothingModifier != ConfigInit.CONFIG.warm_armor_tick_modifier * 4 && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
                 coldnessTimer++;
@@ -44,7 +45,7 @@ public class TemperatureAspects {
     }
 
     public static void hotEnvironment(PlayerEntity playerEntity) {
-        if (!ConfigInit.CONFIG.excluded_heat_names.contains(playerEntity.getName().asString())) {
+        if (((PlayerEnvAccess) playerEntity).isHotEnvAffected()) {
             if (!playerEntity.hasStatusEffect(EffectInit.COOLING) && OverheatingEffect.wearsArmor(playerEntity) && !playerEntity.isTouchingWaterOrRain()
                     && playerEntity.world.isSkyVisible(playerEntity.getBlockPos()) && playerEntity.world.isDay()) {
                 dehydrationTimer++;

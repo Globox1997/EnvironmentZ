@@ -2,6 +2,7 @@ package net.environmentz.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import net.environmentz.access.PlayerEnvAccess;
 import net.environmentz.effect.ColdEffect;
 import net.environmentz.effect.OverheatingEffect;
 import net.environmentz.init.ConfigInit;
@@ -61,12 +62,12 @@ public class TemperatureHudRendering {
     }
 
     public static void renderTemperatureAspect(MatrixStack matrixStack, PlayerEntity playerEntity, MinecraftClient client) {
-        if (!ConfigInit.CONFIG.excluded_cold_names.contains(playerEntity.getName().asString()) && (isInColdBiome && smoothFreezingIconRendering > 0.0F)) {
+        if (((PlayerEnvAccess) playerEntity).isColdEnvAffected() && (isInColdBiome && smoothFreezingIconRendering > 0.0F)) {
             renderIconBackgroundOverlay(matrixStack, FREEZING_ICON, client);
             if (smoothFreezingIconRendering > 0.0F) {
                 renderIconOverlay(matrixStack, smoothFreezingIconRendering, FREEZING_ICON, client);
             }
-        } else if (!ConfigInit.CONFIG.excluded_heat_names.contains(playerEntity.getName().asString()) && (isInHotBiome && smoothThirstRendering > 0.0F)) {
+        } else if (((PlayerEnvAccess) playerEntity).isHotEnvAffected() && (isInHotBiome && smoothThirstRendering > 0.0F)) {
             renderIconBackgroundOverlay(matrixStack, OVERHEATING_ICON, client);
             if (smoothThirstRendering > 0.0F) {
                 renderIconOverlay(matrixStack, smoothThirstRendering, OVERHEATING_ICON, client);

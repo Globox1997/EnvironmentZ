@@ -29,7 +29,7 @@ public abstract class InGameOverlayRendererMixin {
     @Inject(method = "renderOverlays", at = @At(value = "TAIL"))
     private static void renderOverlaysMixin(MinecraftClient minecraftClient, MatrixStack matrixStack, CallbackInfo info) {
         PlayerEntity playerEntity = minecraftClient.player;
-        if (!playerEntity.isCreative() && !playerEntity.isSpectator()) {
+        if (!playerEntity.isCreative() && !playerEntity.isSpectator() && !ConfigInit.CONFIG.disable_cold_overlay) {
             ticker++;
             if (ticker >= 10) {
                 if (playerEntity.world.getBiome(playerEntity.getBlockPos()).getTemperature() <= ConfigInit.CONFIG.biome_freeze_temp && !ColdEffect.isWarmBlockNearBy(playerEntity)) {

@@ -1,8 +1,5 @@
 package net.environmentz.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.autoconfig.annotation.Config;
@@ -59,8 +56,8 @@ public class EnvironmentzConfig implements ConfigData {
     @Comment("Below this biome temp - start freezing")
     public float biome_freeze_temp = 0.2F;
     @ConfigEntry.Category("freezing_settings")
-    @Comment("Players listed here won't have thirst")
-    public List<String> excluded_cold_names = new ArrayList<>();
+    @Comment("Disables white overlay")
+    public boolean disable_cold_overlay = false;
 
     // Overheating Settings
     @ConfigEntry.Category("overheating_settings")
@@ -80,9 +77,6 @@ public class EnvironmentzConfig implements ConfigData {
     @ConfigEntry.Category("overheating_settings")
     @Comment("Above this biome temp - start overheating")
     public float biome_overheat_temp = 2.0F;
-    @ConfigEntry.Category("overheating_settings")
-    @Comment("Players listed here won't overheat")
-    public List<String> excluded_heat_names = new ArrayList<>();
 
     // Dehydration Compatibility Settings
     @ConfigEntry.Category("dehydration_settings")
@@ -91,8 +85,4 @@ public class EnvironmentzConfig implements ConfigData {
     public int overheating_dehydration_timer = 4;
     @ConfigEntry.Category("dehydration_settings")
     public float overheating_dehydration_thirst = 0.5F;
-
-    // public double test1 = 0.0D;
-    // public double test2 = -1.75D;
-    // public double test3 = -0.1D;
 }

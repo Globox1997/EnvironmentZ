@@ -6,19 +6,35 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.At;
 
 import net.environmentz.util.TemperatureAspects;
+import net.environmentz.access.PlayerEnvAccess;
 import net.environmentz.init.ConfigInit;
 import net.environmentz.init.EffectInit;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.World;
 
 @Mixin(PlayerEntity.class)
-public abstract class PlayerEntityMixin extends LivingEntity {
+public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEnvAccess {
     private int ticker;
+    private boolean isHotEnvAffected = true;
+    private boolean isColdEnvAffected = true;
 
     public PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
+    }
+
+    @Inject(method = "readCustomDataFromNbt", at = @At(value = "TAIL"))
+    private void readCustomDataFromTagMixin(NbtCompound tag, CallbackInfo info) {
+        this.isHotEnvAffected = tag.getBoolean("IsHotEnvAffected");
+        this.isColdEnvAffected = tag.getBoolean("IsColdEnvAffected");
+    }
+
+    @Inject(method = "writeCustomDataToNbt", at = @At(value = "TAIL"))
+    private void writeCustomDataToTagMixin(NbtCompound tag, CallbackInfo info) {
+        tag.putBoolean("IsHotEnvAffected", this.isHotEnvAffected);
+        tag.putBoolean("IsColdEnvAffected", this.isColdEnvAffected);
     }
 
     @Inject(method = "tick", at = @At("TAIL"))
@@ -45,5 +61,25 @@ public abstract class PlayerEntityMixin extends LivingEntity {
                 ticker = 0;
             }
         }
+    }
+
+    @Override
+    public void setHotEnvAffected(boolean affected) {
+        this.isHotEnvAffected = affected;
+    }
+
+    @Override
+    public void setColdEnvAffected(boolean affected) {
+        this.isColdEnvAffected = affected;
+    }
+
+    @Override
+    public boolean isHotEnvAffected() {
+        return this.isHotEnvAffected;
+    }
+
+    @Override
+    public boolean isColdEnvAffected() {
+        return this.isColdEnvAffected;
     }
 }

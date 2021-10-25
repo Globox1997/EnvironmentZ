@@ -34,7 +34,7 @@
   "text.autoconfig.environmentz.option.biome_freeze_temp": "Biome freeze temperature",
   "text.autoconfig.environmentz.option.heating_up_biome_temp": "Heating biome temperature",
   "text.autoconfig.environmentz.option.cold_tick_snowing_bonus": "Cold tick snowing bonus time",
-  "text.autoconfig.environmentz.option.excluded_cold_names": "Exluded freezing name list",
+  "text.autoconfig.environmentz.option.disable_cold_overlay": "Disable cold overlay",
 
   "text.autoconfig.environmentz.option.disable_armor_debuff": "Disable overheating armor debuff",
   "text.autoconfig.environmentz.option.overheating_tick_interval": "Overheating tick interval",
@@ -44,7 +44,6 @@
   "text.autoconfig.environmentz.option.cooling_down_interval": "Cooling down interval",
   "text.autoconfig.environmentz.option.cooling_down_tick_decrease": "Cooling down tick decrease",
   "text.autoconfig.environmentz.option.biome_overheat_temp": "Biome overheat temperature",
-  "text.autoconfig.environmentz.option.excluded_heat_names": "Excluded overheating name list",
   
   "text.autoconfig.environmentz.option.overheating_dehydration_timer": "Overheating thirst timer",
   "text.autoconfig.environmentz.option.overheating_dehydration_timer.@PrefixText": "Dehydration compatibility",
@@ -78,5 +77,7 @@
   "item.minecraft.splash_potion.effect.overheating_resistance": "Splash Potion of Overheating Resistance",
   "item.minecraft.splash_potion.effect.long_overheating_resistance": "Splash Potion of Overheating Resistance",
   "item.minecraft.tipped_arrow.effect.overheating_resistance": "Arrow of Overheating Resistance",
-  "item.minecraft.tipped_arrow.effect.long_overheating_resistance": "Arrow of Overheating Resistance"
+  "item.minecraft.tipped_arrow.effect.long_overheating_resistance": "Arrow of Overheating Resistance",
+
+  "commands.environment.changed": "Environment affection got changed"
 }
