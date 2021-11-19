@@ -24,9 +24,7 @@ public class TemperatureAspects {
             if (!playerEntity.hasStatusEffect(EffectInit.WARMING) && warmClothingModifier != ConfigInit.CONFIG.warm_armor_tick_modifier * 4 && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
                 coldnessTimer++;
                 if (playerEntity.hasStatusEffect(EffectInit.WET) && dryingTimer % ConfigInit.CONFIG.wet_bonus_malus == 0) {
-                    System.out.println("TEST" + coldnessTimer);
                     coldnessTimer += 1;
-
                 }
                 if (coldnessTimer >= (ConfigInit.CONFIG.cold_tick_interval + warmClothingModifier)) {
                     int coldDamageEffectTime = ConfigInit.CONFIG.cold_damage_effect_time;
