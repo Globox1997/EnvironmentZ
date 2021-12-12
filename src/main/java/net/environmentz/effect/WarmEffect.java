@@ -1,6 +1,7 @@
 package net.environmentz.effect;
 
 import net.environmentz.access.PlayerEnvAccess;
+import net.environmentz.init.ConfigInit;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
@@ -17,8 +18,8 @@ public class WarmEffect extends StatusEffect {
         if (entity instanceof PlayerEntity) {
             PlayerEntity playerEntity = (PlayerEntity) entity;
             int coldProtectionAmount = ((PlayerEnvAccess) playerEntity).getPlayerColdProtectionAmount();
-            if (coldProtectionAmount < 120)
-                ((PlayerEnvAccess) playerEntity).setPlayerColdProtectionAmount(coldProtectionAmount + 2);
+            if (coldProtectionAmount < ConfigInit.CONFIG.max_cold_protection_amount)
+                ((PlayerEnvAccess) playerEntity).setPlayerColdProtectionAmount(coldProtectionAmount + ConfigInit.CONFIG.cold_protection_amount_addition);
         }
     }
 

@@ -25,11 +25,15 @@ public class EnvironmentzConfig implements ConfigData {
     @ConfigEntry.Category("freezing_settings")
     public boolean allow_all_armor = false;
     @ConfigEntry.Category("freezing_settings")
-    @ConfigEntry.Gui.Tooltip
     @Comment("Caution! This could decrease performance")
     public int heating_up_block_range = 3;
     @ConfigEntry.Category("freezing_settings")
-    @ConfigEntry.Gui.Tooltip
+    @Comment("Protection amount is reduced every second")
+    public int max_cold_protection_amount = 120;
+    @ConfigEntry.Category("freezing_settings")
+    @Comment("Protection amount is added every second")
+    public int cold_protection_amount_addition = 2;
+    @ConfigEntry.Category("freezing_settings")
     @Comment("Disables white overlay")
     public boolean cold_overlay = true;
 
@@ -38,11 +42,16 @@ public class EnvironmentzConfig implements ConfigData {
     @Comment("Above this biome temp - start overheating")
     public float biome_hot_temp = 1.2F;
     @ConfigEntry.Category("overheating_settings")
-    @ConfigEntry.Gui.Tooltip
     @Comment("Above this biome temp - start overheating")
     public float biome_overheat_temp = 1.6F;
     @ConfigEntry.Category("overheating_settings")
     @Comment("Handles thirst when Dehydration mod is loaded")
     public float overheating_exhaustion = 0.2F;
+    @ConfigEntry.Category("overheating_settings")
+    @Comment("Protection amount is reduced every second")
+    public int max_heat_protection_amount = 120;
+    @ConfigEntry.Category("overheating_settings")
+    @Comment("Protection amount is added every second")
+    public int heat_protection_amount_addition = 2;
 
 }

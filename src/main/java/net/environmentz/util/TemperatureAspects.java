@@ -247,8 +247,8 @@ public class TemperatureAspects {
             if (!list.isEmpty())
                 for (int i = 0; i < list.size(); i++) {
                     int coldProtectionAmount = ((PlayerEnvAccess) list.get(i)).getPlayerColdProtectionAmount();
-                    if (coldProtectionAmount < 120)
-                        ((PlayerEnvAccess) list.get(i)).setPlayerColdProtectionAmount(coldProtectionAmount + 3);
+                    if (coldProtectionAmount < ConfigInit.CONFIG.max_cold_protection_amount)
+                        ((PlayerEnvAccess) list.get(i)).setPlayerColdProtectionAmount(coldProtectionAmount + ConfigInit.CONFIG.cold_protection_amount_addition + 1);
                     int playerTemperature = ((PlayerEnvAccess) list.get(i)).getPlayerTemperature();
                     if (playerTemperature < 0)
                         ((PlayerEnvAccess) list.get(i)).setPlayerTemperature(playerTemperature + 1);
