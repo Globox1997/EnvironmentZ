@@ -25,9 +25,11 @@ public class EnvironmentzConfig implements ConfigData {
     @ConfigEntry.Category("freezing_settings")
     public boolean allow_all_armor = false;
     @ConfigEntry.Category("freezing_settings")
+    @ConfigEntry.Gui.Tooltip
     @Comment("Caution! This could decrease performance")
     public int heating_up_block_range = 3;
     @ConfigEntry.Category("freezing_settings")
+    @ConfigEntry.Gui.Tooltip
     @Comment("Disables white overlay")
     public boolean cold_overlay = true;
 
@@ -36,6 +38,7 @@ public class EnvironmentzConfig implements ConfigData {
     @Comment("Above this biome temp - start overheating")
     public float biome_hot_temp = 1.2F;
     @ConfigEntry.Category("overheating_settings")
+    @ConfigEntry.Gui.Tooltip
     @Comment("Above this biome temp - start overheating")
     public float biome_overheat_temp = 1.6F;
     @ConfigEntry.Category("overheating_settings")
