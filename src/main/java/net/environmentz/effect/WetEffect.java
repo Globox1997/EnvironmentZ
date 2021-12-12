@@ -1,12 +1,12 @@
-package net.environmentz.effect;
+// package net.environmentz.effect;
 
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectCategory;
+// import net.minecraft.entity.effect.StatusEffect;
+// import net.minecraft.entity.effect.StatusEffectCategory;
 
-public class WetEffect extends StatusEffect {
+// public class WetEffect extends StatusEffect {
 
-    public WetEffect(StatusEffectCategory type, int color) {
-        super(type, color);
-    }
+// public WetEffect(StatusEffectCategory type, int color) {
+// super(type, color);
+// }
 
-}
+// }

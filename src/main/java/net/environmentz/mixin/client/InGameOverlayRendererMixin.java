@@ -1,4 +1,4 @@
-package net.environmentz.mixin;
+package net.environmentz.mixin.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.At;
 
-import net.environmentz.effect.ColdEffect;
+import net.environmentz.access.PlayerEnvAccess;
 import net.environmentz.init.ConfigInit;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvType;
@@ -22,17 +22,18 @@ import net.minecraft.util.math.Matrix4f;
 @Environment(EnvType.CLIENT)
 @Mixin(InGameOverlayRenderer.class)
 public abstract class InGameOverlayRendererMixin {
-    private static final Identifier WINTER_TEX = new Identifier("environmentz:textures/gui/coldness_overlay.png");
+    private static final Identifier COLDNESS_OVERLAY = new Identifier("environmentz:textures/gui/coldness_overlay.png");
     private static float smoothFreezingRendering;
     private static int ticker;
 
     @Inject(method = "renderOverlays", at = @At(value = "TAIL"))
     private static void renderOverlaysMixin(MinecraftClient minecraftClient, MatrixStack matrixStack, CallbackInfo info) {
         PlayerEntity playerEntity = minecraftClient.player;
-        if (!playerEntity.isCreative() && !playerEntity.isSpectator() && !ConfigInit.CONFIG.disable_cold_overlay) {
+        if (!playerEntity.isCreative() && !playerEntity.isSpectator() && ConfigInit.CONFIG.cold_overlay) {
             ticker++;
-            if (ticker >= 10) {
-                if (playerEntity.world.getBiome(playerEntity.getBlockPos()).getTemperature() <= ConfigInit.CONFIG.biome_freeze_temp && !ColdEffect.isWarmBlockNearBy(playerEntity)) {
+            if (ticker >= 20) {
+                if (playerEntity.world.getBiome(playerEntity.getBlockPos()).getTemperature() <= ConfigInit.CONFIG.biome_freeze_temp
+                        && ((PlayerEnvAccess) playerEntity).getPlayerColdProtectionAmount() <= 0) {
                     float maxWhitening = 0.3F;
                     if (playerEntity.world.isRaining()) {
                         maxWhitening = 0.5F;
@@ -45,7 +46,7 @@ public abstract class InGameOverlayRendererMixin {
                 }
                 ticker = 0;
             }
-            if (smoothFreezingRendering > 0.0F) {
+            if (smoothFreezingRendering > 0.01F) {
                 renderWinterOverlay(minecraftClient, matrixStack, smoothFreezingRendering);
             }
         }
@@ -54,7 +55,7 @@ public abstract class InGameOverlayRendererMixin {
     private static void renderWinterOverlay(MinecraftClient minecraftClient, MatrixStack matrixStack, float smooth) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.enableTexture();
-        RenderSystem.setShaderTexture(0, WINTER_TEX);
+        RenderSystem.setShaderTexture(0, COLDNESS_OVERLAY);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         float f = minecraftClient.player.getBrightnessAtEyes();
         RenderSystem.enableBlend();

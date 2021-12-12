@@ -14,5 +14,13 @@ public class EnvironmentClientPacket {
                 ((PlayerEnvAccess) client.player).setColdEnvAffected(isColdAffected);
             });
         });
+        ClientPlayNetworking.registerGlobalReceiver(EnvironmentServerPacket.TEMPERATURE_UPDATE, (client, handler, buffer, responseSender) -> {
+            int temperature = buffer.readInt();
+            int wetness = buffer.readInt();
+            client.execute(() -> {
+                ((PlayerEnvAccess) client.player).setPlayerTemperature(temperature);
+                ((PlayerEnvAccess) client.player).setPlayerWetIntensityValue(wetness);
+            });
+        });
     }
 }

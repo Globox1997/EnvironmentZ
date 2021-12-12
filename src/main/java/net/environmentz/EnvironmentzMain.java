@@ -8,6 +8,7 @@ public class EnvironmentzMain implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        BlockInit.init();
         CommandInit.init();
         ConfigInit.init();
         EffectInit.init();

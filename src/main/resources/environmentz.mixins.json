@@ -5,19 +5,22 @@
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "PlayerEntityMixin",
-    "DamageSourceAccessor",
     "SmithingScreenHandlerMixin",
     "ArmorItemMixin",
     "BrewingRecipeRegistryMixin",
     "ServerPlayerEntityMixin",
     "PlayerManagerMixin",
+    "CampfireBlockEntityMixin",
+    "AbstractFurnaceBlockEntityMixin",
+    "LavaCauldronBlockMixin",
+    "access.EntityAccessor",
     "compat.OriginCommandMixin",
     "compat.PlayerOriginComponentMixin"
   ],
   "client": [
-    "InGameOverlayRendererMixin",
-    "InGameHudMixin",
-    "HeadFeatureRendererMixin"
+    "client.InGameOverlayRendererMixin",
+    "client.InGameHudMixin",
+    "client.HeadFeatureRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -24,6 +24,7 @@ public class PlayerManagerMixin {
     @Inject(method = "onPlayerConnect", at = @At(value = "TAIL"))
     private void onPlayerConnectMixin(ClientConnection connection, ServerPlayerEntity player, CallbackInfo info) {
         EnvironmentServerPacket.writeS2CSyncEnvPacket(player, ((PlayerEnvAccess) player).isHotEnvAffected(), ((PlayerEnvAccess) player).isColdEnvAffected());
+        EnvironmentServerPacket.writeS2CTemperaturePacket(player, ((PlayerEnvAccess) player).getPlayerTemperature(), ((PlayerEnvAccess) player).getPlayerWetIntensityValue());
     }
 
     @Inject(method = "respawnPlayer", at = @At(value = "TAIL"), locals = LocalCapture.CAPTURE_FAILSOFT)

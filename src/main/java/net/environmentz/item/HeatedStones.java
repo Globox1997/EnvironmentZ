@@ -1,9 +1,8 @@
 package net.environmentz.item;
 
-import net.environmentz.init.EffectInit;
+import net.environmentz.access.PlayerEnvAccess;
 import net.environmentz.init.ItemInit;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,11 +16,16 @@ public class HeatedStones extends Item {
 
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
-        if (entity instanceof PlayerEntity) {
+        if (!world.isClient && entity instanceof PlayerEntity) {
             PlayerEntity playerEntity = (PlayerEntity) entity;
             if (stack.getMaxDamage() - stack.getDamage() > 1) {
-                if (playerEntity.age % 40 == 0 && !world.isClient) {
-                    playerEntity.addStatusEffect(new StatusEffectInstance(EffectInit.WARMING, 101, 0, false, false));
+                if (playerEntity.age % 20 == 0) {
+                    int coldProtectionAmount = ((PlayerEnvAccess) playerEntity).getPlayerColdProtectionAmount();
+                    int heatProtectionAmount = ((PlayerEnvAccess) playerEntity).getPlayerHeatProtectionAmount();
+                    if (coldProtectionAmount < 120)
+                        ((PlayerEnvAccess) playerEntity).setPlayerColdProtectionAmount(coldProtectionAmount + 2);
+                    if (heatProtectionAmount > 0)
+                        ((PlayerEnvAccess) playerEntity).setPlayerHeatProtectionAmount(heatProtectionAmount - 1);
                     if (!playerEntity.isCreative()) {
                         stack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(p.getActiveHand()));
                     }

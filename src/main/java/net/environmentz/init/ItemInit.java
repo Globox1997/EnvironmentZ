@@ -13,7 +13,7 @@ import net.minecraft.util.registry.Registry;
 public class ItemInit {
     // Item
     public static final HeatingStones HEATING_STONES = new HeatingStones(new Item.Settings().group(ItemGroup.MISC));
-    public static final HeatedStones HEATED_STONES = new HeatedStones(new Item.Settings().group(ItemGroup.MISC).maxDamage(100));
+    public static final HeatedStones HEATED_STONES = new HeatedStones(new Item.Settings().group(ItemGroup.MISC).maxDamage(60));
     public static final WolfPeltItem WOLF_PELT_ITEM = new WolfPeltItem(new Item.Settings().group(ItemGroup.MISC));
     public static final PolarBearFurItem POLAR_BEAR_FUR_ITEM = new PolarBearFurItem(new Item.Settings().group(ItemGroup.MISC));
     // Armor

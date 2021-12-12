@@ -1,4 +1,4 @@
-package net.environmentz.mixin;
+package net.environmentz.mixin.client;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -9,6 +9,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.environmentz.entity.model.WolfHelmetModel;
 import net.environmentz.init.ItemInit;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -21,6 +23,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.client.render.entity.model.ModelWithHead;
 import net.minecraft.client.render.item.ItemRenderer;
 
+@Environment(EnvType.CLIENT)
 @Mixin(HeadFeatureRenderer.class)
 public class HeadFeatureRendererMixin {
     @Shadow
