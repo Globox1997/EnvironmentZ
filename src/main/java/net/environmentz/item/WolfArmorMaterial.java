@@ -1,8 +1,6 @@
 package net.environmentz.item;
 
 import net.environmentz.init.ItemInit;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.recipe.Ingredient;
@@ -38,7 +36,6 @@ public class WolfArmorMaterial implements ArmorMaterial {
         return Ingredient.ofItems(ItemInit.WOLF_PELT_ITEM);
     }
 
-    @Environment(EnvType.CLIENT)
     @Override
     public String getName() {
         return "wolf_pelt";
