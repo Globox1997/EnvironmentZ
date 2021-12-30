@@ -27,9 +27,11 @@ public class PlayerManagerMixin {
         EnvironmentServerPacket.writeS2CTemperaturePacket(player, ((PlayerEnvAccess) player).getPlayerTemperature(), ((PlayerEnvAccess) player).getPlayerWetIntensityValue());
     }
 
-    @Inject(method = "respawnPlayer", at = @At(value = "TAIL"), locals = LocalCapture.CAPTURE_FAILSOFT)
+    @Inject(method = "respawnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;onPlayerRespawned(Lnet/minecraft/server/network/ServerPlayerEntity;)V"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void respawnPlayerMixin(ServerPlayerEntity player, boolean alive, CallbackInfoReturnable<ServerPlayerEntity> info, BlockPos blockPos, float f, boolean bl, ServerWorld serverWorld,
             Optional<Vec3d> optional2, ServerWorld serverWorld2, ServerPlayerEntity serverPlayerEntity) {
         EnvironmentServerPacket.writeS2CSyncEnvPacket(player, ((PlayerEnvAccess) player).isHotEnvAffected(), ((PlayerEnvAccess) player).isColdEnvAffected());
+        EnvironmentServerPacket.writeS2CTemperaturePacket(serverPlayerEntity, ((PlayerEnvAccess) serverPlayerEntity).getPlayerTemperature(),
+                ((PlayerEnvAccess) serverPlayerEntity).getPlayerWetIntensityValue());
     }
 }
