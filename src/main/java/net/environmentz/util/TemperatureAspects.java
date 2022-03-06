@@ -48,7 +48,7 @@ public class TemperatureAspects {
     // 0.8 is normal temperature
     public static void tickPlayerEnvironment(PlayerEntity playerEntity, int timer) {
         int playerTemperature = ((PlayerEnvAccess) playerEntity).getPlayerTemperature();
-        float biomeTemperature = playerEntity.world.getBiome(playerEntity.getBlockPos()).getTemperature();
+        float biomeTemperature = playerEntity.world.getBiome(playerEntity.getBlockPos()).value().getTemperature();
 
         // System.out.println("Temperature: " + playerTemperature + " :: " + biomeTemperature + " :: " + ((PlayerEnvAccess) playerEntity).getPlayerColdProtectionAmount() + " :: "
         // + ((PlayerEnvAccess) playerEntity).getPlayerWetIntensityValue());
@@ -73,7 +73,7 @@ public class TemperatureAspects {
                 }
             }
             // Hot environment
-        } else if (playerEntity.world.getBiome(playerEntity.getBlockPos()).getTemperature() >= ConfigInit.CONFIG.biome_hot_temp) {
+        } else if (playerEntity.world.getBiome(playerEntity.getBlockPos()).value().getTemperature() >= ConfigInit.CONFIG.biome_hot_temp) {
             if (((PlayerEnvAccess) playerEntity).isHotEnvAffected()) {
                 int armorPartsValue = wearsArmorPartsValue(playerEntity);
                 if (armorPartsValue > 0 && playerEntity.world.isSkyVisible(playerEntity.getBlockPos()) && playerEntity.world.isDay()) {
@@ -156,7 +156,7 @@ public class TemperatureAspects {
 
             } else if (playerTemperature >= 120) {
                 int hotProtectionAmount = ((PlayerEnvAccess) playerEntity).getPlayerHeatProtectionAmount();
-                if (playerTemperature <= -220) {
+                if (playerTemperature >= 220) {
                     if (!entityStrengthAttributeInstance.hasModifier(OVERHEATING_DEBUFF) && hotProtectionAmount <= 0) {
                         entityStrengthAttributeInstance.addTemporaryModifier(OVERHEATING_DEBUFF);
                         if (!entityAttackSpeedAttributeInstance.hasModifier(GENERAL_DEBUFF))
