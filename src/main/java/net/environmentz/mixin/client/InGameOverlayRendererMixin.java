@@ -32,7 +32,7 @@ public abstract class InGameOverlayRendererMixin {
         if (!playerEntity.isCreative() && !playerEntity.isSpectator() && ConfigInit.CONFIG.cold_overlay) {
             ticker++;
             if (ticker >= 20) {
-                if (playerEntity.world.getBiome(playerEntity.getBlockPos()).getTemperature() <= ConfigInit.CONFIG.biome_freeze_temp
+                if (playerEntity.world.getBiome(playerEntity.getBlockPos()).value().getTemperature() <= ConfigInit.CONFIG.biome_freeze_temp
                         && ((PlayerEnvAccess) playerEntity).getPlayerColdProtectionAmount() <= 0) {
                     float maxWhitening = 0.3F;
                     if (playerEntity.world.isRaining()) {

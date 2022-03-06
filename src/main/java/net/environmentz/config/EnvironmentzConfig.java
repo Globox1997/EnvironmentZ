@@ -46,7 +46,7 @@ public class EnvironmentzConfig implements ConfigData {
     public float biome_overheat_temp = 1.6F;
     @ConfigEntry.Category("overheating_settings")
     @Comment("Handles thirst when Dehydration mod is loaded")
-    public float overheating_exhaustion = 0.2F;
+    public float overheating_exhaustion = 0.5F;
     @ConfigEntry.Category("overheating_settings")
     @Comment("Protection amount is reduced every second")
     public int max_heat_protection_amount = 120;
