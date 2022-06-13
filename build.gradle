@@ -52,9 +52,9 @@ dependencies {
 		exclude(group: "maven.modrinth")
 		exclude(group: "me.shedaniel.cloth")
 	}
-	modCompileOnly "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:4.0.1"
-    modCompileOnly "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:4.0.1"
-	modCompileOnly "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:4.0.1"
+	modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:4.0.1"
+    modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:4.0.1"
+	modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:4.0.1"
 
 }
 
