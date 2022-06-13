@@ -38,6 +38,7 @@ public class HeadFeatureRendererMixin {
 
     private final WolfHelmetModel wolfHelmetModel = new WolfHelmetModel(WolfHelmetModel.getTexturedModelData().createModel());
 
+    @SuppressWarnings("rawtypes")
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, LivingEntity livingEntity, float f, float g, float h, float j, float k, float l,
             CallbackInfo info) {
