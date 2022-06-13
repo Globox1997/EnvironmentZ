@@ -47,7 +47,7 @@ dependencies {
 		exclude(group: "curse.maven:motschens-puddles-463169")
     }
 	// Origins
-	modCompileOnly 'com.github.apace100:origins-fabric:v1.3.0',{
+	modCompileOnly 'com.github.apace100:origins-fabric:v1.4.1',{
 		exclude(group: "net.fabricmc.fabric-api")
 		exclude(group: "maven.modrinth")
 		exclude(group: "me.shedaniel.cloth")
