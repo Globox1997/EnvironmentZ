@@ -14,7 +14,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 @Mixin(ArmorItem.class)
@@ -30,7 +29,7 @@ public class ArmorItemMixin extends Item {
         super.appendTooltip(stack, world, tooltip, context);
         NbtCompound tag = stack.getNbt();
         if (stack.hasNbt() && tag.contains("environmentz")) {
-            tooltip.add(new TranslatableText("item.environmentz.fur_insolated.tooltip").formatted(Formatting.BLUE));
+            tooltip.add(Text.translatable("item.environmentz.fur_insolated.tooltip").formatted(Formatting.BLUE));
         }
 
     }

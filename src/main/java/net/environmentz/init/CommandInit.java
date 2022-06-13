@@ -2,12 +2,12 @@ package net.environmentz.init;
 
 import net.environmentz.access.PlayerEnvAccess;
 import net.environmentz.network.EnvironmentServerPacket;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -17,7 +17,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 public class CommandInit {
 
     public static void init() {
-        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
             dispatcher.register((CommandManager.literal("environment").requires((serverCommandSource) -> {
                 return serverCommandSource.hasPermissionLevel(3);
             })).then(CommandManager.argument("targets", EntityArgumentType.players())
@@ -40,7 +40,7 @@ public class CommandInit {
                 ((PlayerEnvAccess) serverPlayerEntity).setColdEnvAffected(affected);
             EnvironmentServerPacket.writeS2CSyncEnvPacket(serverPlayerEntity, ((PlayerEnvAccess) serverPlayerEntity).isHotEnvAffected(), ((PlayerEnvAccess) serverPlayerEntity).isColdEnvAffected());
         }
-        source.sendFeedback(new TranslatableText("commands.environment.changed"), true);
+        source.sendFeedback(Text.translatable("commands.environment.changed"), true);
 
         return targets.size();
     }

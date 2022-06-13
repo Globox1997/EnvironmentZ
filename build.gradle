@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.11-SNAPSHOT'
+	id 'fabric-loom' version '0.12-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -47,14 +47,13 @@ dependencies {
 		exclude(group: "curse.maven:motschens-puddles-463169")
     }
 	// Origins
+	modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.0.0-beta.1")
+	modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.0.0-beta.1")
 	modCompileOnly 'com.github.apace100:origins-fabric:v1.4.1',{
 		exclude(group: "net.fabricmc.fabric-api")
 		exclude(group: "maven.modrinth")
 		exclude(group: "me.shedaniel.cloth")
 	}
-	modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:4.0.1"
-    modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:4.0.1"
-	modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-world:4.0.1"
 
 }
 
