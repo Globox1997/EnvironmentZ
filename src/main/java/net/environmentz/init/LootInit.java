@@ -14,7 +14,7 @@ public class LootInit {
                 supplier.pool(pool);
             }
             if ("minecraft:entities/polar_bear".equals(id.toString())) {
-                LootPool pool = LootPool.builder().with(ItemEntry.builder(ItemInit.WOLF_PELT_ITEM).build()).rolls(BinomialLootNumberProvider.create(2, 0.5F)).build();
+                LootPool pool = LootPool.builder().with(ItemEntry.builder(ItemInit.POLAR_BEAR_FUR_ITEM).build()).rolls(BinomialLootNumberProvider.create(2, 0.5F)).build();
                 supplier.pool(pool);
             }
         });
