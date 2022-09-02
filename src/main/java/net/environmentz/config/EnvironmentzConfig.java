@@ -11,6 +11,9 @@ public class EnvironmentzConfig implements ConfigData {
 
     // General Settings
     @ConfigEntry.Category("general_settings")
+    @Comment("Increase for less harsh environments")
+    public int temperature_calculation_time = 20;
+    @ConfigEntry.Category("general_settings")
     public int icon_x = 7;
     @ConfigEntry.Category("general_settings")
     public int icon_y = 52;
@@ -36,6 +39,8 @@ public class EnvironmentzConfig implements ConfigData {
     @ConfigEntry.Category("freezing_settings")
     @Comment("White overlay while in cold biomes")
     public boolean cold_overlay = true;
+    @ConfigEntry.Category("freezing_settings")
+    public boolean shaking_screen_effect = true;
 
     // Overheating Settings
     @ConfigEntry.Category("overheating_settings")
@@ -53,5 +58,8 @@ public class EnvironmentzConfig implements ConfigData {
     @ConfigEntry.Category("overheating_settings")
     @Comment("Protection amount is added every second")
     public int heat_protection_amount_addition = 2;
+    @ConfigEntry.Gui.RequiresRestart
+    @ConfigEntry.Category("overheating_settings")
+    public boolean blur_screen_effect = true;
 
 }

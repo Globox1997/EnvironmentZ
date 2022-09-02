@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 import net.environmentz.util.TemperatureAspects;
 import net.environmentz.access.PlayerEnvAccess;
+import net.environmentz.init.ConfigInit;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -58,26 +59,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
     public void tickMixin(CallbackInfo info) {
         PlayerEntity playerEntity = (PlayerEntity) (Object) this;
         if (!this.world.isClient && !playerEntity.isCreative() && !playerEntity.isSpectator() && playerEntity.isAlive()) {
-            if (environmentTicker++ >= 20) {
+            if (environmentTicker++ >= ConfigInit.CONFIG.temperature_calculation_time) {
                 TemperatureAspects.tickPlayerEnvironment(playerEntity, environmentTicker);
-                // System.out.println(UUID.randomUUID());
-                // System.out.println("Environment: " + TemperatureAspects.dehydrationTimer);
-
-                // if (this.world.getBiome(this.getBlockPos()).getTemperature() <= ConfigInit.CONFIG.biome_freeze_temp) {
-                // TemperatureAspects.coldEnvironment(playerEntity);
-                // } else if (TemperatureAspects.coldnessTimer > 0) {
-                // TemperatureAspects.coldnessTimer -= 2;
-                // } else if (this.world.getBiome(this.getBlockPos()).getTemperature() >= ConfigInit.CONFIG.biome_overheat_temp) {
-                // TemperatureAspects.hotEnvironment(playerEntity);
-                // } else if (TemperatureAspects.dehydrationTimer > 0) {
-                // TemperatureAspects.dehydrationTimer -= 2;
-                // }
-                // if (this.hasStatusEffect(EffectInit.COLDNESS) || this.hasStatusEffect(EffectInit.OVERHEATING)) {
-                // TemperatureAspects.acclimatize(playerEntity);
-                // } else if (TemperatureAspects.acclimatizeTimer > 0) {
-                // TemperatureAspects.acclimatizeTimer -= 2;
-                // }
-                // TemperatureAspects.dryOrWett(playerEntity);
                 environmentTicker = 0;
             }
         }
