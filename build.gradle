@@ -54,7 +54,9 @@ dependencies {
 		exclude(group: "maven.modrinth")
 		exclude(group: "me.shedaniel.cloth")
 	}
-
+	// Satin
+	modImplementation "io.github.ladysnake:satin:${satin_version}"
+	include "io.github.ladysnake:satin:${satin_version}"
 }
 
 processResources {

@@ -12,6 +12,7 @@
   "text.autoconfig.environmentz.category.overheating_settings": "Overheating Settings",
   "text.autoconfig.environmentz.category.general_settings": "General Settings",
 
+  "text.autoconfig.environmentz.option.temperature_calculation_time": "Temperature Calculation Time",
   "text.autoconfig.environmentz.option.icon_x": "Icon X Position",
   "text.autoconfig.environmentz.option.icon_y": "Icon Y Position",
 
@@ -22,12 +23,14 @@
   "text.autoconfig.environmentz.option.cold_overlay": "Show Cold Overlay",
   "text.autoconfig.environmentz.option.max_cold_protection_amount": "Max Cold Protection",
   "text.autoconfig.environmentz.option.cold_protection_amount_addition": "Cold Protection Addition",
+  "text.autoconfig.environmentz.option.shaking_screen_effect": "Shaking Screen Effect",
 
   "text.autoconfig.environmentz.option.biome_hot_temp": "Biome Hot Temperature",
   "text.autoconfig.environmentz.option.biome_overheat_temp": "Biome Overheat Temperature",
   "text.autoconfig.environmentz.option.overheating_exhaustion": "Overheating Exhaustion Amount",
   "text.autoconfig.environmentz.option.max_heat_protection_amount": "Max Heat Protection",
   "text.autoconfig.environmentz.option.heat_protection_amount_addition": "Heat Protection Addition",
+  "text.autoconfig.environmentz.option.blur_screen_effect": "Blur Screen Effect",
 
   "item.environmentz.heating_stones": "Heating Stones",
   "item.environmentz.ice_pack": "Ice Pack",
@@ -56,5 +59,6 @@
   "item.minecraft.tipped_arrow.effect.overheating_resistance": "Arrow of Overheating Resistance",
   "item.minecraft.tipped_arrow.effect.long_overheating_resistance": "Arrow of Overheating Resistance",
   
-  "commands.environment.changed": "Environment affection got changed"
+  "commands.environment.changed": "Environment affection got changed",
+  "commands.environment.affected": "%s Hot Env: %s Cold Env: %s"
 }

@@ -3,12 +3,15 @@ package net.environmentz.util;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.environmentz.init.ConfigInit;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
+@Environment(EnvType.CLIENT)
 public class TemperatureHudRendering {
 
     private static final Identifier INDICATOR_ICON = new Identifier("environmentz:textures/gui/indicator_icon.png");

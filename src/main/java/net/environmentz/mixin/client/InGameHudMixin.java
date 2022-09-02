@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 import net.fabricmc.api.Environment;
 import net.environmentz.access.PlayerEnvAccess;
+import net.environmentz.init.RenderInit;
 import net.environmentz.util.TemperatureHudRendering;
 import net.fabricmc.api.EnvType;
 import net.minecraft.client.MinecraftClient;
@@ -61,6 +62,8 @@ public abstract class InGameHudMixin extends DrawableHelper {
                             xEnvPosition = 0;
                             yEnvPosition = 26;
                             envIntensity = Math.abs(playerTemperature - 120);
+                            if (playerTemperature > 200)
+                                RenderInit.setBlurProgress((float) (playerTemperature - 200) / 40f * this.client.options.getDistortionEffectScale().getValue().floatValue());
                         } else {
                             xEnvPosition = 13;
                             yEnvPosition = 0;
