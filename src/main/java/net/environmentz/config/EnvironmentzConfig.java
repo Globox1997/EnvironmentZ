@@ -34,7 +34,7 @@ public class EnvironmentzConfig implements ConfigData {
     @Comment("Protection amount is added every second")
     public int cold_protection_amount_addition = 2;
     @ConfigEntry.Category("freezing_settings")
-    @Comment("Disables white overlay")
+    @Comment("White overlay while in cold biomes")
     public boolean cold_overlay = true;
 
     // Overheating Settings

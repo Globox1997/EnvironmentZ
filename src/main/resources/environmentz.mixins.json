@@ -29,7 +29,9 @@
   "client": [
     "client.InGameOverlayRendererMixin",
     "client.InGameHudMixin",
-    "client.HeadFeatureRendererMixin"
+    "client.HeadFeatureRendererMixin",
+    "client.PlayerEntityRendererMixin",
+    "client.GameRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
