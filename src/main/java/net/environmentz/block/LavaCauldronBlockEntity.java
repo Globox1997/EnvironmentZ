@@ -1,6 +1,7 @@
 package net.environmentz.block;
 
 import net.environmentz.init.BlockInit;
+import net.environmentz.init.ConfigInit;
 import net.environmentz.util.TemperatureAspects;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -14,7 +15,8 @@ public class LavaCauldronBlockEntity extends BlockEntity {
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, LavaCauldronBlockEntity blockEntity) {
-        TemperatureAspects.heatPlayerWithBlock(world, pos);
+        if (world.getTime() % 20 == 0)
+            TemperatureAspects.heatPlayerWithBlock(null, world, pos, ConfigInit.CONFIG.heating_up_block_range, ConfigInit.CONFIG.cold_protection_amount_addition);
     }
 
 }

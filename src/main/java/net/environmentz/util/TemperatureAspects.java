@@ -3,6 +3,8 @@ package net.environmentz.util;
 import java.util.List;
 import java.util.UUID;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.dehydration.access.ThirstManagerAccess;
 import net.dehydration.thirst.ThirstManager;
 import net.environmentz.access.PlayerEnvAccess;
@@ -240,15 +242,27 @@ public class TemperatureAspects {
         return returnValue;
     }
 
-    public static void heatPlayerWithBlock(World world, BlockPos pos) {
-        if (world.getTime() % 20 == 0) {
-            List<PlayerEntity> list = world.getPlayers(TargetPredicate.createAttackable().setBaseMaxDistance(ConfigInit.CONFIG.heating_up_block_range), null,
-                    new Box(pos).expand(ConfigInit.CONFIG.heating_up_block_range, ConfigInit.CONFIG.heating_up_block_range - 1, ConfigInit.CONFIG.heating_up_block_range));
+    public static void heatPlayerWithItem(PlayerEntity playerEntity, int strength) {
+        int playerTemperature = ((PlayerEnvAccess) playerEntity).getPlayerTemperature();
+        if (playerTemperature < 0)
+            ((PlayerEnvAccess) playerEntity).setPlayerTemperature(playerTemperature + 1);
+    }
+
+    public static void heatPlayerWithBlock(@Nullable PlayerEntity playerEntity, World world, BlockPos pos, int range, int strength) {
+        if (playerEntity != null) {
+            int coldProtectionAmount = ((PlayerEnvAccess) playerEntity).getPlayerColdProtectionAmount();
+            if (coldProtectionAmount < ConfigInit.CONFIG.max_cold_protection_amount)
+                ((PlayerEnvAccess) playerEntity).setPlayerColdProtectionAmount(coldProtectionAmount + strength + 1);
+            int playerTemperature = ((PlayerEnvAccess) playerEntity).getPlayerTemperature();
+            if (playerTemperature < 0)
+                ((PlayerEnvAccess) playerEntity).setPlayerTemperature(playerTemperature + 1);
+        } else {
+            List<PlayerEntity> list = world.getPlayers(TargetPredicate.createAttackable().setBaseMaxDistance(range), null, new Box(pos).expand(range, range - 1, range));
             if (!list.isEmpty())
                 for (int i = 0; i < list.size(); i++) {
                     int coldProtectionAmount = ((PlayerEnvAccess) list.get(i)).getPlayerColdProtectionAmount();
                     if (coldProtectionAmount < ConfigInit.CONFIG.max_cold_protection_amount)
-                        ((PlayerEnvAccess) list.get(i)).setPlayerColdProtectionAmount(coldProtectionAmount + ConfigInit.CONFIG.cold_protection_amount_addition + 1);
+                        ((PlayerEnvAccess) list.get(i)).setPlayerColdProtectionAmount(coldProtectionAmount + strength + 1);
                     int playerTemperature = ((PlayerEnvAccess) list.get(i)).getPlayerTemperature();
                     if (playerTemperature < 0)
                         ((PlayerEnvAccess) list.get(i)).setPlayerTemperature(playerTemperature + 1);
