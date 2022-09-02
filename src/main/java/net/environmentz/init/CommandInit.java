@@ -18,6 +18,13 @@ public class CommandInit {
 
     public static void init() {
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
+            dispatcher.register((CommandManager.literal("info").requires((serverCommandSource) -> {
+                return serverCommandSource.hasPermissionLevel(3);
+            })).then(CommandManager.literal("affected").then(CommandManager.argument("targets", EntityArgumentType.players()).executes((commandContext) -> {
+                return executeInfoAffected(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"));
+            }))));
+        });
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
             dispatcher.register((CommandManager.literal("environment").requires((serverCommandSource) -> {
                 return serverCommandSource.hasPermissionLevel(3);
             })).then(CommandManager.argument("targets", EntityArgumentType.players())
@@ -43,6 +50,17 @@ public class CommandInit {
         source.sendFeedback(Text.translatable("commands.environment.changed"), true);
 
         return targets.size();
+    }
+
+    private static int executeInfoAffected(ServerCommandSource source, Collection<ServerPlayerEntity> targets) {
+        Iterator<ServerPlayerEntity> var3 = targets.iterator();
+        // loop over players
+        while (var3.hasNext()) {
+            ServerPlayerEntity serverPlayerEntity = var3.next();
+            source.sendFeedback(Text.translatable("commands.environment.affected", serverPlayerEntity.getDisplayName(), ((PlayerEnvAccess) serverPlayerEntity).isHotEnvAffected(),
+                    ((PlayerEnvAccess) serverPlayerEntity).isColdEnvAffected()), true);
+        }
+        return 1;
     }
 
 }
