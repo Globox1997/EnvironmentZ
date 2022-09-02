@@ -31,6 +31,7 @@
   "text.autoconfig.environmentz.option.max_heat_protection_amount": "Max Heat Protection",
   "text.autoconfig.environmentz.option.heat_protection_amount_addition": "Heat Protection Addition",
   "text.autoconfig.environmentz.option.blur_screen_effect": "Blur Screen Effect",
+  "text.autoconfig.environmentz.option.exhaustion_instead_dehydration": "Exhaustion Instead Dehydration",
 
   "item.environmentz.heating_stones": "Heating Stones",
   "item.environmentz.ice_pack": "Ice Pack",

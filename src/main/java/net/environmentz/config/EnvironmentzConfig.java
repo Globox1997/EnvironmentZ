@@ -58,6 +58,9 @@ public class EnvironmentzConfig implements ConfigData {
     @ConfigEntry.Category("overheating_settings")
     @Comment("Protection amount is added every second")
     public int heat_protection_amount_addition = 2;
+    @ConfigEntry.Category("overheating_settings")
+    @Comment("Undo dehydration mod compat")
+    public boolean exhaustion_instead_dehydration = false;
     @ConfigEntry.Gui.RequiresRestart
     @ConfigEntry.Category("overheating_settings")
     public boolean blur_screen_effect = true;

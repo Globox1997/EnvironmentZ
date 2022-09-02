@@ -88,10 +88,10 @@ public class TemperatureAspects {
                         if (biomeTemperature >= ConfigInit.CONFIG.biome_overheat_temp) {
                             if (playerTemperature < 240)
                                 playerTemperature = playerTemperature + 1;
-                            if (isDehydrationLoaded)
+                            if (isDehydrationLoaded && !ConfigInit.CONFIG.exhaustion_instead_dehydration)
                                 ((ThirstManagerAccess) playerEntity).getThirstManager(playerEntity).addDehydration(ConfigInit.CONFIG.overheating_exhaustion);
                         }
-                        if (isDehydrationLoaded) {
+                        if (isDehydrationLoaded && !ConfigInit.CONFIG.exhaustion_instead_dehydration) {
                             ThirstManager thirstManager = ((ThirstManagerAccess) playerEntity).getThirstManager(playerEntity);
                             if (thirstManager.getThirstLevel() > 8)
                                 playerTemperature = playerTemperature - 1;
@@ -188,7 +188,7 @@ public class TemperatureAspects {
         if (playerTemperature <= -240)
             playerEntity.damage(FREEZING_DAMAGE, 1.0F);
         else if (playerTemperature >= 240) {
-            if (isDehydrationLoaded)
+            if (isDehydrationLoaded && !ConfigInit.CONFIG.exhaustion_instead_dehydration)
                 ((ThirstManagerAccess) playerEntity).getThirstManager(playerEntity).addDehydration(ConfigInit.CONFIG.overheating_exhaustion);
             else
                 playerEntity.addExhaustion(ConfigInit.CONFIG.overheating_exhaustion);
