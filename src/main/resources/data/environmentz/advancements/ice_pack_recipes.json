@@ -2,20 +2,18 @@
     "parent": "minecraft:recipes/root",
     "rewards": {
         "recipes": [
-            "environmentz:heating_stones_blasting",
-            "environmentz:heating_stones_fire",
-            "environmentz:heating_stones_furnace",
-            "environmentz:heating_stones"
+            "environmentz:ice_pack",
+            "environmentz:ice_pack_refill"
         ]
     },
     "criteria": {
-        "got_heating_things": {
+        "got_ice_things": {
             "trigger": "minecraft:inventory_changed",
             "conditions": {
                 "items": [
                     {
                         "items": [
-                            "minecraft:cobblestone"
+                            "minecraft:iron_ingot"
                         ]
                     }
                 ]

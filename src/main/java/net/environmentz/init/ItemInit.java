@@ -12,10 +12,10 @@ import net.minecraft.util.registry.Registry;
 
 public class ItemInit {
     // Item
-    public static final HeatingStones HEATING_STONES = new HeatingStones(new Item.Settings().group(ItemGroup.MISC));
-    public static final HeatedStones HEATED_STONES = new HeatedStones(new Item.Settings().group(ItemGroup.MISC).maxDamage(60));
+    public static final HeatingStones HEATING_STONES_ITEM = new HeatingStones(new Item.Settings().group(ItemGroup.MISC).maxDamage(60));
     public static final WolfPeltItem WOLF_PELT_ITEM = new WolfPeltItem(new Item.Settings().group(ItemGroup.MISC));
     public static final PolarBearFurItem POLAR_BEAR_FUR_ITEM = new PolarBearFurItem(new Item.Settings().group(ItemGroup.MISC));
+    public static final IcePack ICE_PACK_ITEM = new IcePack(new Item.Settings().group(ItemGroup.MISC).maxDamage(60));
     // Armor
     public static final ArmorMaterial WOLF_ARMOR_MATERIAL = new WolfArmorMaterial();
     public static final Item WOLF_HELMET = new WolfArmor(WOLF_ARMOR_MATERIAL, EquipmentSlot.HEAD, new Item.Settings().group(ItemGroup.COMBAT));
@@ -30,10 +30,10 @@ public class ItemInit {
 
     public static void init() {
         // Item
-        Registry.register(Registry.ITEM, new Identifier("environmentz", "heating_stones"), HEATING_STONES);
-        Registry.register(Registry.ITEM, new Identifier("environmentz", "heated_stones"), HEATED_STONES);
+        Registry.register(Registry.ITEM, new Identifier("environmentz", "heating_stones"), HEATING_STONES_ITEM);
         Registry.register(Registry.ITEM, new Identifier("environmentz", "wolf_pelt"), WOLF_PELT_ITEM);
         Registry.register(Registry.ITEM, new Identifier("environmentz", "polar_bear_fur"), POLAR_BEAR_FUR_ITEM);
+        Registry.register(Registry.ITEM, new Identifier("environmentz", "ice_pack"), ICE_PACK_ITEM);
         // Armor
         Registry.register(Registry.ITEM, new Identifier("environmentz", "wolf_helmet"), WOLF_HELMET);
         Registry.register(Registry.ITEM, new Identifier("environmentz", "wolf_chestplate"), WOLF_CHESTPLATE);

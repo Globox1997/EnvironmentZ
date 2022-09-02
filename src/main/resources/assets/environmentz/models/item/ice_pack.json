@@ -1,0 +1,29 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "environmentz:item/ice_pack"
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "melting": 1.0,
+                "melt": 0.3
+            },
+            "model": "environmentz:item/melting_ice_pack"
+        },
+        {
+            "predicate": {
+                "melting": 1.0,
+                "melt": 0.7
+            },
+            "model": "environmentz:item/almost_empty_ice_pack"
+        },
+        {
+            "predicate": {
+                "melting": 1.0,
+                "melt": 0.95
+            },
+            "model": "environmentz:item/empty_ice_pack"
+        }
+    ]
+}

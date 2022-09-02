@@ -2,7 +2,7 @@
     "replace": false,
     "values": [
         "environmentz:heating_stones",
-        "environmentz:heated_stones",
+        "environmentz:ice_pack",
         "environmentz:wolf_pelt",
         "environmentz:polar_bear_fur",
         "environmentz:wolf_helmet",

@@ -3,7 +3,7 @@
     "ingredient": {
         "item": "environmentz:heating_stones"
     },
-    "result": "environmentz:heated_stones",
+    "result": "environmentz:heating_stones",
     "experience": 0,
     "cookingtime": 600
 }

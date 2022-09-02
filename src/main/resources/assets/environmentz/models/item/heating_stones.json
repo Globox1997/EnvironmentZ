@@ -2,5 +2,13 @@
     "parent": "item/generated",
     "textures": {
         "layer0": "environmentz:item/heating_stones"
-    }
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "heated": 1
+            },
+            "model": "environmentz:item/heated_stones"
+        }
+    ]
 }

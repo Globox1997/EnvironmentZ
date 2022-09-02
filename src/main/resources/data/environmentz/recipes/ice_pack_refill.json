@@ -1,0 +1,14 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        {
+            "item": "environmentz:ice_pack"
+        },
+        {
+            "tag": "environmentz:ice_items"
+        }
+    ],
+    "result": {
+        "item": "environmentz:ice_pack"
+    }
+}

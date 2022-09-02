@@ -1,0 +1,22 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        " b ",
+        "aca",
+        " a "
+    ],
+    "key": {
+        "a": {
+            "item": "minecraft:leather"
+        },
+        "b": {
+            "item": "minecraft:iron_ingot"
+        },
+        "c": {
+            "tag": "environmentz:ice_items"
+        }
+    },
+    "result": {
+        "item": "environmentz:ice_pack"
+    }
+}
