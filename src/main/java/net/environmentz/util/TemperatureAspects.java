@@ -51,9 +51,10 @@ public class TemperatureAspects {
     public static void tickPlayerEnvironment(PlayerEntity playerEntity, int timer) {
         int playerTemperature = ((PlayerEnvAccess) playerEntity).getPlayerTemperature();
         float biomeTemperature = playerEntity.world.getBiome(playerEntity.getBlockPos()).value().getTemperature();
+        int playerPositionHeight = playerEntity.getBlockY();
 
-        // System.out.println("Temperature: " + playerTemperature + " :: " + biomeTemperature + " :: " + ((PlayerEnvAccess) playerEntity).getPlayerColdProtectionAmount() + " :: "
-        // + ((PlayerEnvAccess) playerEntity).getPlayerWetIntensityValue());
+        // System.out.println("Temperature: " + playerTemperature + " :: " + biomeTemperature + " :: " + ((PlayerEnvAccess) playerEntity).getPlayerHeatProtectionAmount() + " :: "
+        // + ((PlayerEnvAccess) playerEntity).getPlayerColdProtectionAmount() + " :: " + ((PlayerEnvAccess) playerEntity).getPlayerWetIntensityValue());
 
         // Cold environment
         if (biomeTemperature <= ConfigInit.CONFIG.biome_cold_temp) {
@@ -62,23 +63,24 @@ public class TemperatureAspects {
                 if (protectiveArmorValue != 5) {
                     int coldProtectionAmount = ((PlayerEnvAccess) playerEntity).getPlayerColdProtectionAmount();
                     if (coldProtectionAmount <= 0) {
-                        if (timer % protectiveArmorValue == 0) {
-                            if (playerTemperature > -120)
-                                playerTemperature = playerTemperature - (((PlayerEnvAccess) playerEntity).getPlayerWetIntensityValue() > 0 ? 2 : 1);
+                        if (playerTemperature > -120)
+                            playerTemperature = playerTemperature - (((PlayerEnvAccess) playerEntity).getPlayerWetIntensityValue() > 0 ? 2 : 1);
 
-                            if (biomeTemperature <= ConfigInit.CONFIG.biome_freeze_temp)
-                                if (playerTemperature > -240)
-                                    playerTemperature = playerTemperature - 1;
-                        }
+                        if (biomeTemperature <= ConfigInit.CONFIG.biome_freeze_temp && playerPositionHeight >= 0)
+                            if (playerTemperature > -240)
+                                playerTemperature = playerTemperature - 1;
                     } else
                         ((PlayerEnvAccess) playerEntity).setPlayerColdProtectionAmount(coldProtectionAmount - (biomeTemperature <= ConfigInit.CONFIG.biome_freeze_temp ? 2 : 1));
                 }
+                // Height check
+                if (playerTemperature > -240 && playerPositionHeight > playerEntity.world.getDimension().height() / 0.9f)
+                    playerTemperature = playerTemperature - 1;
             }
             // Hot environment
-        } else if (playerEntity.world.getBiome(playerEntity.getBlockPos()).value().getTemperature() >= ConfigInit.CONFIG.biome_hot_temp) {
+        } else if (biomeTemperature >= ConfigInit.CONFIG.biome_hot_temp) {
             if (((PlayerEnvAccess) playerEntity).isHotEnvAffected()) {
                 int armorPartsValue = wearsArmorPartsValue(playerEntity);
-                if (armorPartsValue > 0 && playerEntity.world.isSkyVisible(playerEntity.getBlockPos()) && playerEntity.world.isDay()) {
+                if (armorPartsValue > 0 && ((playerEntity.world.isSkyVisible(playerEntity.getBlockPos()) && playerEntity.world.isDay()) || playerEntity.world.getDimension().ultrawarm())) {
                     int hotProtectionAmount = ((PlayerEnvAccess) playerEntity).getPlayerHeatProtectionAmount();
                     if (hotProtectionAmount <= 0) {
                         if (playerTemperature < 120)
@@ -94,6 +96,10 @@ public class TemperatureAspects {
                             if (thirstManager.getThirstLevel() > 8)
                                 playerTemperature = playerTemperature - 1;
                         }
+                        // Height check
+                        if (playerTemperature > 120 && !playerEntity.world.getDimension().ultrawarm()
+                                && (playerPositionHeight > playerEntity.world.getDimension().height() / 0.9f || playerPositionHeight < 0))
+                            playerTemperature = playerTemperature - 1;
                     } else
                         ((PlayerEnvAccess) playerEntity).setPlayerHeatProtectionAmount(hotProtectionAmount - (biomeTemperature >= ConfigInit.CONFIG.biome_overheat_temp ? 2 : 1));
                 }
