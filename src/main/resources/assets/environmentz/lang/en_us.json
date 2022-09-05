@@ -15,6 +15,9 @@
   "text.autoconfig.environmentz.option.temperature_calculation_time": "Temperature Calculation Time",
   "text.autoconfig.environmentz.option.icon_x": "Icon X Position",
   "text.autoconfig.environmentz.option.icon_y": "Icon Y Position",
+  "text.autoconfig.environmentz.option.thermometer_icon_x": "Thermometer Icon X Position",
+  "text.autoconfig.environmentz.option.thermometer_icon_y": "Thermometer Icon Y Position",
+  "text.autoconfig.environmentz.option.show_thermometer": "Show Thermometer",
 
   "text.autoconfig.environmentz.option.biome_cold_temp": "Biome Cold Temperature",
   "text.autoconfig.environmentz.option.biome_freeze_temp": "Biome Freeze Temperature",

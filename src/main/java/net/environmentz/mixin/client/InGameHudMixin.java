@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 
 import net.fabricmc.api.Environment;
 import net.environmentz.access.PlayerEnvAccess;
+import net.environmentz.init.ConfigInit;
 import net.environmentz.init.RenderInit;
 import net.environmentz.util.TemperatureHudRendering;
 import net.fabricmc.api.EnvType;
@@ -34,6 +35,9 @@ public abstract class InGameHudMixin extends DrawableHelper {
     private int extraEnvPosition;
     private int envIntensity;
 
+    private int thermometerXPosition = 80;
+    private int thermometerYPosition = 11;
+
     public InGameHudMixin(MinecraftClient client) {
         this.client = client;
     }
@@ -42,9 +46,12 @@ public abstract class InGameHudMixin extends DrawableHelper {
     private void renderMixin(MatrixStack matrixStack, float f, CallbackInfo info) {
         // Gets ticked 60 times per second
         PlayerEntity playerEntity = client.player;
+        int scaledWidth = client.getWindow().getScaledWidth();
+        int scaledHeight = client.getWindow().getScaledHeight();
+
         if (!playerEntity.isCreative() && !playerEntity.isSpectator() && !playerEntity.isInvulnerable()) {
             envTicker++;
-            if (envTicker >= 60 && !client.isPaused()) {
+            if (envTicker > 60 && !client.isPaused()) {
                 int playerTemperature = ((PlayerEnvAccess) playerEntity).getPlayerTemperature();
                 if (playerTemperature != 0) {
                     if (playerTemperature < -30) {
@@ -88,7 +95,29 @@ public abstract class InGameHudMixin extends DrawableHelper {
                 }
                 envTicker = 0;
             }
-            TemperatureHudRendering.renderPlayerEnvironmentIcon(matrixStack, client, playerEntity, xEnvPosition, yEnvPosition, extraEnvPosition, envIntensity);
+            TemperatureHudRendering.renderPlayerTemperatureIcon(matrixStack, client, playerEntity, xEnvPosition, yEnvPosition, extraEnvPosition, envIntensity, scaledWidth, scaledHeight);
+
+            if (ConfigInit.CONFIG.show_thermometer) {
+                if (envTicker == 60) {
+                    float temperature = client.world.getBiome(playerEntity.getBlockPos()).value().getTemperature();
+
+                    if (temperature <= ConfigInit.CONFIG.biome_freeze_temp)
+                        thermometerXPosition = 112;
+                    else if (temperature >= ConfigInit.CONFIG.biome_overheat_temp)
+                        thermometerXPosition = 96;
+                    else {
+                        thermometerXPosition = 80;
+                        if (temperature <= ConfigInit.CONFIG.biome_cold_temp)
+                            thermometerYPosition = 18;
+                        else if (temperature >= ConfigInit.CONFIG.biome_hot_temp)
+                            thermometerYPosition = 0;
+                        else
+                            thermometerYPosition = 11;
+                    }
+                }
+
+                TemperatureHudRendering.renderThermometerIcon(matrixStack, client, playerEntity, thermometerXPosition, thermometerYPosition, scaledWidth, scaledHeight);
+            }
         }
     }
 
