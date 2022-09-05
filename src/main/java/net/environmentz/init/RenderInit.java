@@ -5,10 +5,14 @@ import ladysnake.satin.api.managed.ManagedShaderEffect;
 import ladysnake.satin.api.managed.ShaderEffectManager;
 import ladysnake.satin.api.managed.uniform.Uniform1f;
 import net.environmentz.entity.model.WolfHelmetModel;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.util.Identifier;
 
+@Environment(EnvType.CLIENT)
 public class RenderInit {
 
     public static final EntityModelLayer WOLF_HELMET_LAYER = new EntityModelLayer(new Identifier("environmentz:wolf_helmet_render_layer"), "wolf_helmet_render_layer");
@@ -17,13 +21,14 @@ public class RenderInit {
             shader -> shader.setUniformValue("Radius", (float) 8f));
     private static final Uniform1f blurProgress = blurringEffect.findUniform1f("Progress");
     private static float blurProgressValue = 0.0F;
+    private static final MinecraftClient client = MinecraftClient.getInstance();
 
     public static void init() {
         EntityModelLayerRegistry.registerModelLayer(WOLF_HELMET_LAYER, WolfHelmetModel::getTexturedModelData);
 
         if (ConfigInit.CONFIG.blur_screen_effect)
             ShaderEffectRenderCallback.EVENT.register((deltaTick) -> {
-                if (blurProgressValue > 0.01F) {
+                if (blurProgressValue > 0.01F && client.player != null && !client.player.isCreative() && !client.player.isSpectator()) {
                     blurProgress.set(blurProgressValue);
                     blurringEffect.render(deltaTick);
                 }
