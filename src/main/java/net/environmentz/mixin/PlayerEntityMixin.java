@@ -17,6 +17,7 @@ import net.minecraft.world.World;
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEnvAccess {
     private int environmentTicker;
+    private int environmentTickerCount;
     private boolean isHotEnvAffected = true;
     private boolean isColdEnvAffected = true;
 
@@ -26,6 +27,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
     private int playerColdProtectionAmount = 0;
     private int playerHotProtectionAmount = 0;
     private int playerWetIntensityValue = 0;
+    private int playerHeatResistance = 0;
+    private int playerColdResistance = 0;
 
     public PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
@@ -60,8 +63,9 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
         PlayerEntity playerEntity = (PlayerEntity) (Object) this;
         if (!this.world.isClient && !playerEntity.isCreative() && !playerEntity.isSpectator() && playerEntity.isAlive()) {
             if (environmentTicker++ >= ConfigInit.CONFIG.temperature_calculation_time) {
-                TemperatureAspects.tickPlayerEnvironment(playerEntity, environmentTicker);
+                TemperatureAspects.tickPlayerEnvironment(playerEntity, environmentTickerCount);
                 environmentTicker = 0;
+                environmentTickerCount++;
             }
         }
     }
@@ -107,6 +111,16 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
     }
 
     @Override
+    public void setPlayerHeatResistance(int amount) {
+        this.playerHeatResistance = amount;
+    }
+
+    @Override
+    public void setPlayerColdResistance(int amount) {
+        this.playerColdResistance = amount;
+    }
+
+    @Override
     public int getPlayerTemperature() {
         return this.playerTemperature;
     }
@@ -124,5 +138,15 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
     @Override
     public int getPlayerColdProtectionAmount() {
         return this.playerColdProtectionAmount;
+    }
+
+    @Override
+    public int getPlayerHeatResistance() {
+        return this.playerHeatResistance;
+    }
+
+    @Override
+    public int getPlayerColdResistance() {
+        return this.playerColdResistance;
     }
 }

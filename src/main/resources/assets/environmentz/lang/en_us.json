@@ -63,6 +63,11 @@
   "item.minecraft.tipped_arrow.effect.overheating_resistance": "Arrow of Overheating Resistance",
   "item.minecraft.tipped_arrow.effect.long_overheating_resistance": "Arrow of Overheating Resistance",
   
-  "commands.environment.changed": "Environment affection got changed",
-  "commands.environment.affected": "%s Hot Env: %s Cold Env: %s"
+  "commands.environment.affection_changed": "%s environment affection got changed",
+  "commands.environment.resistance_changed": "%s environment resistance got changed",
+  "commands.environment.temperature_changed": "%s temperature got changed",
+  "commands.environment.affection": "%s Hot Env: %s Cold Env: %s",
+  "commands.environment.resistance": "%s Hot Env Resistance: %s Cold Env Resistance: %s",
+  "commands.environment.protection": "%s Hot Env Protection: %s Cold Env Protection: %s",
+  "commands.environment.temperature": "%s Temperature: %s"
 }

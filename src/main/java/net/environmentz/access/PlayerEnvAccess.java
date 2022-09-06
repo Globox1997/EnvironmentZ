@@ -14,6 +14,10 @@ public interface PlayerEnvAccess {
 
     public void setPlayerWetIntensityValue(int amount);
 
+    public void setPlayerHeatResistance(int amount);
+
+    public void setPlayerColdResistance(int amount);
+
     public boolean isHotEnvAffected();
 
     public boolean isColdEnvAffected();
@@ -25,6 +29,10 @@ public interface PlayerEnvAccess {
     public int getPlayerColdProtectionAmount();
 
     public int getPlayerTemperature();
+
+    public int getPlayerHeatResistance();
+
+    public int getPlayerColdResistance();
 
     public void compatSync();
 }
