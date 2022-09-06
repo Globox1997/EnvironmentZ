@@ -38,4 +38,8 @@ public class RenderInit {
     public static void setBlurProgress(float blurProgress) {
         blurProgressValue = blurProgress;
     }
+
+    public static float getBlurProgress() {
+        return blurProgressValue;
+    }
 }

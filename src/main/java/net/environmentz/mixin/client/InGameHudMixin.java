@@ -86,6 +86,8 @@ public abstract class InGameHudMixin extends DrawableHelper {
                     yEnvPosition = 0;
                     envIntensity = 0;
                 }
+                if (playerTemperature <= 200 && RenderInit.getBlurProgress() > 0.01F)
+                    RenderInit.setBlurProgress(0.0F);
 
                 int playerWetIntensityValue = ((PlayerEnvAccess) playerEntity).getPlayerWetIntensityValue();
                 if (playerWetIntensityValue <= 0)
