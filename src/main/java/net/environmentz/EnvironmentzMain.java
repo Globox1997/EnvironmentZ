@@ -12,6 +12,7 @@ public class EnvironmentzMain implements ModInitializer {
         CommandInit.init();
         ConfigInit.init();
         EffectInit.init();
+        EventInit.init();
         ItemInit.init();
         LootInit.init();
         TagInit.init();
