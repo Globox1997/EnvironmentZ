@@ -24,6 +24,12 @@
     ],
     "modmenu": [
       "net.environmentz.config.ModMenuIntegration"
+    ],
+    "emi": [
+      "net.environmentz.compat.LevelzEmiPlugin"
+    ],
+    "rei_client": [
+      "net.environmentz.compat.LevelzReiPlugin"
     ]
   },
   "mixins": [

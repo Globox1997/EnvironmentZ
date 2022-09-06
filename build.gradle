@@ -57,6 +57,10 @@ dependencies {
 	// Satin
 	modImplementation "io.github.ladysnake:satin:${satin_version}"
 	include "io.github.ladysnake:satin:${satin_version}"
+	// REI
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:9.0.472"
+    // EMI
+    modCompileOnly "dev.emi:emi:0.4.0+1.19"
 }
 
 processResources {
