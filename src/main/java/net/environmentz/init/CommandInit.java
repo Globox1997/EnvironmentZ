@@ -31,28 +31,6 @@ public class CommandInit {
                 return executeInfo(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), 3);
             }))));
         });
-
-        // CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
-        // dispatcher.register((CommandManager.literal("environment").requires((serverCommandSource) -> {
-        // return serverCommandSource.hasPermissionLevel(3);
-        // })).then(CommandManager.literal("affection")
-        // .then(CommandManager.argument("targets", EntityArgumentType.players()).then(CommandManager.argument("affection", BoolArgumentType.bool()).executes((commandContext) -> {
-        // return executeEnvCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "hot", BoolArgumentType.getBool(commandContext, "affection"),
-        // 0);
-        // })))).then(CommandManager.literal("resistance").then(
-        // CommandManager.argument("targets", EntityArgumentType.players()).then(CommandManager.argument("resistance", IntegerArgumentType.integer()).executes((commandContext) -> {
-        // return executeInfo(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), 1);
-        // }))))
-        // .then(CommandManager.literal("protection").then(
-        // CommandManager.argument("targets", EntityArgumentType.players()).then(CommandManager.argument("protection", IntegerArgumentType.integer()).executes((commandContext) -> {
-        // return executeInfo(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), 2);
-        // }))))
-        // .then(CommandManager.literal("temperature").then(
-        // CommandManager.argument("targets", EntityArgumentType.players()).then(CommandManager.argument("temperature", IntegerArgumentType.integer()).executes((commandContext) -> {
-        // return executeInfo(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), 3);
-        // })))));
-        // });
-
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
             dispatcher.register((CommandManager.literal("environment").requires((serverCommandSource) -> {
                 return serverCommandSource.hasPermissionLevel(3);
