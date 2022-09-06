@@ -18,7 +18,7 @@ public class EnvironmentzConfig implements ConfigData {
     @ConfigEntry.Category("general_settings")
     public int icon_y = 52;
     @ConfigEntry.Category("general_settings")
-    public int thermometer_icon_x = 255;
+    public int thermometer_icon_x = 140;
     @ConfigEntry.Category("general_settings")
     public int thermometer_icon_y = 32;
     @ConfigEntry.Category("general_settings")
