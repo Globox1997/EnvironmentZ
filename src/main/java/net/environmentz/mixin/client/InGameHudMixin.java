@@ -100,16 +100,21 @@ public abstract class InGameHudMixin extends DrawableHelper {
             if (ConfigInit.CONFIG.show_thermometer) {
                 if (envTicker == 60) {
                     float temperature = client.world.getBiome(playerEntity.getBlockPos()).value().getTemperature();
+                    int playerPositionHeight = playerEntity.getBlockY();
 
-                    if (temperature <= ConfigInit.CONFIG.biome_freeze_temp)
+                    if (temperature <= ConfigInit.CONFIG.biome_freeze_temp && playerPositionHeight >= 0)
                         thermometerXPosition = 112;
-                    else if (temperature >= ConfigInit.CONFIG.biome_overheat_temp)
+                    else if (((temperature >= ConfigInit.CONFIG.biome_overheat_temp && playerPositionHeight >= 0) || playerEntity.world.getDimension().ultrawarm())
+                            && playerPositionHeight < playerEntity.world.getDimension().height() / 0.9f)
                         thermometerXPosition = 96;
                     else {
                         thermometerXPosition = 80;
-                        if (temperature <= ConfigInit.CONFIG.biome_cold_temp)
+                        if (temperature <= ConfigInit.CONFIG.biome_cold_temp) {
                             thermometerYPosition = 18;
-                        else if (temperature >= ConfigInit.CONFIG.biome_hot_temp)
+                            if (playerPositionHeight > playerEntity.world.getDimension().height() / 0.9f) {
+                                thermometerXPosition = 112;
+                            }
+                        } else if (temperature >= ConfigInit.CONFIG.biome_hot_temp)
                             thermometerYPosition = 0;
                         else
                             thermometerYPosition = 11;
