@@ -8,16 +8,16 @@ EnvironmentZ is a mod built for the [Fabric Loader](https://fabricmc.net/). It r
 EnvironmentZ is licensed under GLPv3.
 
 ### Commands
-`/environment affection hot:cold bool`
+`/environment affection playername hot:cold bool`
 - Set the player environment affection for cold and hot biomes
 
-`/environment resistance hot:cold integer`
+`/environment resistance playername hot:cold integer`
 - Set the player resistance for cold and hot biomes, must be between 0 &ndash; 10
 
-`/environment protection hot:cold integer`
+`/environment protection playername hot:cold integer`
 - Set the current player protection for cold and hot biomes
 
-`/environment temperature integer`
+`/environment temperature playername integer`
 - Set the player temperature, must be between -240 &ndash; 240
 
 `/info ...`
