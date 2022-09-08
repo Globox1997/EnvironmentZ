@@ -49,7 +49,7 @@ dependencies {
 	// Origins
 	modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.0.0-beta.1")
 	modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.0.0-beta.1")
-	modCompileOnly 'com.github.apace100:origins-fabric:v1.4.1',{
+	modCompileOnly 'com.github.apace100:origins-fabric:v1.7.0',{
 		exclude(group: "net.fabricmc.fabric-api")
 		exclude(group: "maven.modrinth")
 		exclude(group: "me.shedaniel.cloth")

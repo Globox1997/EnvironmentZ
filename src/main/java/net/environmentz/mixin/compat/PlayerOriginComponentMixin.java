@@ -11,7 +11,6 @@ import io.github.apace100.origins.Origins;
 import io.github.apace100.origins.component.PlayerOriginComponent;
 import io.github.apace100.origins.origin.Origin;
 import io.github.apace100.origins.origin.OriginLayer;
-import me.shedaniel.autoconfig.ConfigData.ValidationException;
 import net.environmentz.access.PlayerEnvAccess;
 import net.environmentz.network.EnvironmentServerPacket;
 import net.minecraft.entity.player.PlayerEntity;
@@ -24,7 +23,7 @@ public class PlayerOriginComponentMixin {
     private PlayerEntity player;
 
     @Inject(method = "setOrigin", at = @At("TAIL"), remap = false)
-    private void setOriginMixin(OriginLayer layer, Origin origin, CallbackInfo info) throws ValidationException {
+    private void setOriginMixin(OriginLayer layer, Origin origin, CallbackInfo info) {
         if (origin.hasPowerType(new PowerTypeReference<>(Origins.identifier("fire_immunity")))) {
             if (((PlayerEnvAccess) player).isHotEnvAffected()) {
                 ((PlayerEnvAccess) player).setHotEnvAffected(false);
