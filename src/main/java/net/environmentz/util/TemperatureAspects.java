@@ -94,10 +94,10 @@ public class TemperatureAspects {
                                 if (playerTemperature < 240)
                                     playerTemperature = playerTemperature + 1;
                                 if (isDehydrationLoaded && !ConfigInit.CONFIG.exhaustion_instead_dehydration)
-                                    ((ThirstManagerAccess) playerEntity).getThirstManager(playerEntity).addDehydration(ConfigInit.CONFIG.overheating_exhaustion);
+                                    ((ThirstManagerAccess) playerEntity).getThirstManager().addDehydration(ConfigInit.CONFIG.overheating_exhaustion);
                             }
                             if (isDehydrationLoaded && !ConfigInit.CONFIG.exhaustion_instead_dehydration) {
-                                ThirstManager thirstManager = ((ThirstManagerAccess) playerEntity).getThirstManager(playerEntity);
+                                ThirstManager thirstManager = ((ThirstManagerAccess) playerEntity).getThirstManager();
                                 if (thirstManager.getThirstLevel() > 8)
                                     playerTemperature = playerTemperature - 1;
                             }
@@ -194,7 +194,7 @@ public class TemperatureAspects {
             playerEntity.damage(FREEZING_DAMAGE, 1.0F);
         else if (playerTemperature >= 240) {
             if (isDehydrationLoaded && !ConfigInit.CONFIG.exhaustion_instead_dehydration)
-                ((ThirstManagerAccess) playerEntity).getThirstManager(playerEntity).addDehydration(ConfigInit.CONFIG.overheating_exhaustion);
+                ((ThirstManagerAccess) playerEntity).getThirstManager().addDehydration(ConfigInit.CONFIG.overheating_exhaustion);
             else
                 playerEntity.addExhaustion(ConfigInit.CONFIG.overheating_exhaustion);
         }
