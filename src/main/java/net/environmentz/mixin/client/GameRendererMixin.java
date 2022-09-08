@@ -32,7 +32,7 @@ public class GameRendererMixin {
     private void renderWorldMixin(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info, boolean bl, Camera camera, MatrixStack matrixStack, double d, float f) {
         int playerTemperature = ((PlayerEnvAccess) this.client.player).getPlayerTemperature();
         if (ConfigInit.CONFIG.shaking_screen_effect && playerTemperature <= -160 && !this.client.player.isCreative() && !this.client.player.isSpectator()) {
-            if (this.ticks % (480 + playerTemperature * 2) < (((480 + playerTemperature * 2)) / 2)) {
+            if (playerTemperature == -240 || this.ticks % (480 + playerTemperature * 2) < (((480 + playerTemperature * 2)) / 2)) {
                 Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
                 matrix4f.multiplyByTranslation((float) (Math.cos((double) this.ticks * Math.PI)) * 0.01f * this.client.options.getDistortionEffectScale().getValue().floatValue(), 0.0f, 0.0f);
             }
