@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '0.12-SNAPSHOT'
+	id 'fabric-loom' version '1.0-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -61,7 +61,7 @@ dependencies {
 	// REI
     modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:9.0.472"
     // EMI
-    modCompileOnly "dev.emi:emi:0.4.0+1.19"
+    modImplementation "dev.emi:emi:0.4.2+1.19"
 }
 
 processResources {

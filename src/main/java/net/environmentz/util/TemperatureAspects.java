@@ -62,7 +62,7 @@ public class TemperatureAspects {
                 int protectiveArmorValue = wearingProtectiveArmorValue(playerEntity);
                 if (protectiveArmorValue != 5) {
                     int coldResistanceAmount = ((PlayerEnvAccess) playerEntity).getPlayerColdResistance();
-                    if (coldResistanceAmount == 0 || environmentTickCount % Math.abs(coldResistanceAmount - 12) != 0) {
+                    if (coldResistanceAmount == 0 || environmentTickCount % protectiveArmorValue == 0) { // needs an improvement here
                         int coldProtectionAmount = ((PlayerEnvAccess) playerEntity).getPlayerColdProtectionAmount();
                         if (coldProtectionAmount <= 0) {
                             if (playerTemperature > -120)
@@ -73,11 +73,14 @@ public class TemperatureAspects {
                                     playerTemperature = playerTemperature - 1;
                         } else
                             ((PlayerEnvAccess) playerEntity).setPlayerColdProtectionAmount(coldProtectionAmount - (biomeTemperature <= ConfigInit.CONFIG.biome_freeze_temp ? 2 : 1));
-                    }
+
+                        // Height check
+                        if (playerTemperature > -240 && playerPositionHeight > playerEntity.world.getDimension().height() / 0.9f)
+                            playerTemperature = playerTemperature - 1;
+
+                    } else if (coldResistanceAmount > 0)
+                        ((PlayerEnvAccess) playerEntity).setPlayerColdResistance(coldResistanceAmount - 1);
                 }
-                // Height check
-                if (playerTemperature > -240 && playerPositionHeight > playerEntity.world.getDimension().height() / 0.9f)
-                    playerTemperature = playerTemperature - 1;
             }
             // Hot environment
         } else if (biomeTemperature >= ConfigInit.CONFIG.biome_hot_temp) {
@@ -85,7 +88,7 @@ public class TemperatureAspects {
                 int armorPartsValue = wearsArmorPartsValue(playerEntity);
                 if (armorPartsValue > 0 && ((playerEntity.world.isSkyVisible(playerEntity.getBlockPos()) && playerEntity.world.isDay()) || playerEntity.world.getDimension().ultrawarm())) {
                     int heatResistanceAmount = ((PlayerEnvAccess) playerEntity).getPlayerHeatResistance();
-                    if (heatResistanceAmount == 0 || environmentTickCount % Math.abs(heatResistanceAmount - 12) != 0) {
+                    if (heatResistanceAmount == 0) {// || environmentTickCount % Math.abs(heatResistanceAmount - 12) != 0
                         int hotProtectionAmount = ((PlayerEnvAccess) playerEntity).getPlayerHeatProtectionAmount();
                         if (hotProtectionAmount <= 0) {
                             if (playerTemperature < 120)
@@ -107,7 +110,8 @@ public class TemperatureAspects {
                                 playerTemperature = playerTemperature - 1;
                         } else
                             ((PlayerEnvAccess) playerEntity).setPlayerHeatProtectionAmount(hotProtectionAmount - (biomeTemperature >= ConfigInit.CONFIG.biome_overheat_temp ? 2 : 1));
-                    }
+                    } else if (heatResistanceAmount > 0)
+                        ((PlayerEnvAccess) playerEntity).setPlayerHeatResistance(heatResistanceAmount - 1);
                 }
             }
             // Neutral environment
