@@ -18,6 +18,7 @@
     "text.autoconfig.environmentz.option.thermometer_icon_x": "Posição X do Ícone do Termômetro",
     "text.autoconfig.environmentz.option.thermometer_icon_y": "Posição Y do Ícone do Termômetro",
     "text.autoconfig.environmentz.option.show_thermometer": "Mostrar termômetro",
+    "text.autoconfig.environmentz.option.hand_only_comforting_items": "Itens reconfortantes somente para mãos",
   
     "text.autoconfig.environmentz.option.biome_cold_temp": "Temperatura fria do bioma",
     "text.autoconfig.environmentz.option.biome_freeze_temp": "Temperatura de congelamento do bioma",
