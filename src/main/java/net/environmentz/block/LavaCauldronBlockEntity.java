@@ -16,7 +16,7 @@ public class LavaCauldronBlockEntity extends BlockEntity {
 
     public static void serverTick(World world, BlockPos pos, BlockState state, LavaCauldronBlockEntity blockEntity) {
         if (world.getTime() % 20 == 0)
-            TemperatureAspects.heatPlayerWithBlock(null, world, pos, ConfigInit.CONFIG.heating_up_block_range, ConfigInit.CONFIG.cold_protection_amount_addition);
+            TemperatureAspects.heatPlayerWithBlock(null, world, pos, ConfigInit.CONFIG.heating_up_block_range, ConfigInit.CONFIG.cold_protection_amount_addition, false);
     }
 
 }

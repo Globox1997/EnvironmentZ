@@ -18,6 +18,6 @@ public class CampfireBlockEntityMixin {
     @Inject(method = "litServerTick", at = @At("HEAD"))
     private static void litServerTickMixin(World world, BlockPos pos, BlockState state, CampfireBlockEntity campfire, CallbackInfo info) {
         if (world.getTime() % 20 == 0)
-            TemperatureAspects.heatPlayerWithBlock(null, world, pos, ConfigInit.CONFIG.heating_up_block_range, ConfigInit.CONFIG.cold_protection_amount_addition);
+            TemperatureAspects.heatPlayerWithBlock(null, world, pos, ConfigInit.CONFIG.heating_up_block_range, ConfigInit.CONFIG.cold_protection_amount_addition, false);
     }
 }

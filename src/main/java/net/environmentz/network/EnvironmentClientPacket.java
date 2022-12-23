@@ -22,5 +22,11 @@ public class EnvironmentClientPacket {
                 ((PlayerEnvAccess) client.player).setPlayerWetIntensityValue(wetness);
             });
         });
+        ClientPlayNetworking.registerGlobalReceiver(EnvironmentServerPacket.THERMOMETER_CALMING, (client, handler, buffer, responseSender) -> {
+            int ticks = buffer.readInt();
+            client.execute(() -> {
+                ((PlayerEnvAccess) client.player).setThermometerCalm(ticks);
+            });
+        });
     }
 }

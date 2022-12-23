@@ -103,27 +103,34 @@ public abstract class InGameHudMixin extends DrawableHelper {
                 if (envTicker == 60) {
                     float temperature = client.world.getBiome(playerEntity.getBlockPos()).value().getTemperature();
                     int playerPositionHeight = playerEntity.getBlockY();
+                    boolean isDay = client.world.getTimeOfDay() % 24000 > 0 && client.world.getTimeOfDay() % 24000 < 12000;
 
-                    if (temperature <= ConfigInit.CONFIG.biome_freeze_temp && playerPositionHeight >= 0)
+                    if (temperature <= ConfigInit.CONFIG.biome_freeze_temp && playerPositionHeight >= 0) {
                         thermometerXPosition = 112;
-                    else if (((temperature >= ConfigInit.CONFIG.biome_overheat_temp && playerPositionHeight >= 0) || playerEntity.world.getDimension().ultrawarm())
-                            && playerPositionHeight < playerEntity.world.getDimension().height() / 0.9f)
+                    } else if ((temperature >= ConfigInit.CONFIG.biome_overheat_temp && playerPositionHeight >= 0 && playerPositionHeight < playerEntity.world.getDimension().height() / 0.9f
+                            && playerEntity.world.isSkyVisible(playerEntity.getBlockPos()) && isDay) || playerEntity.world.getDimension().ultrawarm()) {
                         thermometerXPosition = 96;
-                    else {
+                    } else {
                         thermometerXPosition = 80;
                         if (temperature <= ConfigInit.CONFIG.biome_cold_temp) {
                             thermometerYPosition = 18;
                             if (playerPositionHeight > playerEntity.world.getDimension().height() / 0.9f) {
                                 thermometerXPosition = 112;
                             }
-                        } else if (temperature >= ConfigInit.CONFIG.biome_hot_temp)
+                        } else if (temperature >= ConfigInit.CONFIG.biome_hot_temp && isDay && playerEntity.world.isSkyVisible(playerEntity.getBlockPos())) {
                             thermometerYPosition = 0;
-                        else
+                        } else {
                             thermometerYPosition = 11;
+                        }
                     }
                 }
 
-                TemperatureHudRendering.renderThermometerIcon(matrixStack, client, playerEntity, thermometerXPosition, thermometerYPosition, scaledWidth, scaledHeight);
+                if (((PlayerEnvAccess) client.player).getThermometerCalm() > 0) {
+                    TemperatureHudRendering.renderThermometerIcon(matrixStack, client, playerEntity, 80, 11, scaledWidth, scaledHeight);
+                    ((PlayerEnvAccess) client.player).setThermometerCalm(((PlayerEnvAccess) client.player).getThermometerCalm() - 1);
+                } else {
+                    TemperatureHudRendering.renderThermometerIcon(matrixStack, client, playerEntity, thermometerXPosition, thermometerYPosition, scaledWidth, scaledHeight);
+                }
             }
         }
     }

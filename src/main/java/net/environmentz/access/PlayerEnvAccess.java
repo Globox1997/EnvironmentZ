@@ -1,5 +1,8 @@
 package net.environmentz.access;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+
 public interface PlayerEnvAccess {
 
     public void setHotEnvAffected(boolean affected);
@@ -35,4 +38,10 @@ public interface PlayerEnvAccess {
     public int getPlayerColdResistance();
 
     public void compatSync();
+
+    @Environment(EnvType.CLIENT)
+    public void setThermometerCalm(int ticks);
+
+    @Environment(EnvType.CLIENT)
+    public int getThermometerCalm();
 }

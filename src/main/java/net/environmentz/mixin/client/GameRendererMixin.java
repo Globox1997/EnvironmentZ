@@ -11,12 +11,15 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import net.environmentz.access.PlayerEnvAccess;
 import net.environmentz.init.ConfigInit;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Matrix4f;
 
+@Environment(EnvType.CLIENT)
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
 

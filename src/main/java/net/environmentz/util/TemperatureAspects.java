@@ -58,6 +58,11 @@ public class TemperatureAspects {
 
         // Cold environment
         if (biomeTemperature <= ConfigInit.CONFIG.biome_cold_temp) {
+            // decrease protection cause of being in other biometemperature
+            int heatProtectionAmount = ((PlayerEnvAccess) playerEntity).getPlayerHeatProtectionAmount();
+            if (heatProtectionAmount > 0)
+                ((PlayerEnvAccess) playerEntity).setPlayerHeatProtectionAmount(heatProtectionAmount - 1);
+
             if (((PlayerEnvAccess) playerEntity).isColdEnvAffected()) {
                 int protectiveArmorValue = wearingProtectiveArmorValue(playerEntity);
                 if (protectiveArmorValue != 5) {
@@ -84,6 +89,11 @@ public class TemperatureAspects {
             }
             // Hot environment
         } else if (biomeTemperature >= ConfigInit.CONFIG.biome_hot_temp) {
+            // decrease protection cause of being in other biometemperature
+            int coldProtectionAmount = ((PlayerEnvAccess) playerEntity).getPlayerColdProtectionAmount();
+            if (coldProtectionAmount > 0)
+                ((PlayerEnvAccess) playerEntity).setPlayerColdProtectionAmount(coldProtectionAmount - 1);
+
             if (((PlayerEnvAccess) playerEntity).isHotEnvAffected()) {
                 int armorPartsValue = wearsArmorPartsValue(playerEntity);
                 if (armorPartsValue > 0 && ((playerEntity.world.isSkyVisible(playerEntity.getBlockPos()) && playerEntity.world.isDay()) || playerEntity.world.getDimension().ultrawarm())) {
@@ -207,7 +217,6 @@ public class TemperatureAspects {
         if ((playerTemperature != 0 && playerTemperature % 2 == 0)
                 || (((PlayerEnvAccess) playerEntity).getPlayerWetIntensityValue() != 0 && ((PlayerEnvAccess) playerEntity).getPlayerWetIntensityValue() % 2 == 0))
             EnvironmentServerPacket.writeS2CTemperaturePacket((ServerPlayerEntity) playerEntity, playerTemperature, ((PlayerEnvAccess) playerEntity).getPlayerWetIntensityValue());
-
     }
 
     public static int wearsArmorPartsValue(PlayerEntity playerEntity) {
@@ -260,17 +269,20 @@ public class TemperatureAspects {
     public static void heatPlayerWithItem(PlayerEntity playerEntity, int strength) {
         int playerTemperature = ((PlayerEnvAccess) playerEntity).getPlayerTemperature();
         if (playerTemperature < 0)
-            ((PlayerEnvAccess) playerEntity).setPlayerTemperature(playerTemperature + 1);
+            ((PlayerEnvAccess) playerEntity).setPlayerTemperature(playerTemperature + strength);
     }
 
-    public static void heatPlayerWithBlock(@Nullable PlayerEntity playerEntity, World world, BlockPos pos, int range, int strength) {
+    public static void heatPlayerWithBlock(@Nullable PlayerEntity playerEntity, World world, BlockPos pos, int range, int strength, boolean isFire) {
         if (playerEntity != null) {
             int coldProtectionAmount = ((PlayerEnvAccess) playerEntity).getPlayerColdProtectionAmount();
             if (coldProtectionAmount < ConfigInit.CONFIG.max_cold_protection_amount)
                 ((PlayerEnvAccess) playerEntity).setPlayerColdProtectionAmount(coldProtectionAmount + strength + 1);
             int playerTemperature = ((PlayerEnvAccess) playerEntity).getPlayerTemperature();
             if (playerTemperature < 0)
-                ((PlayerEnvAccess) playerEntity).setPlayerTemperature(playerTemperature + 1);
+                ((PlayerEnvAccess) playerEntity).setPlayerTemperature(playerTemperature + strength);
+
+            // Send packet for thermometer update
+            EnvironmentServerPacket.writeS2CThermometerCalmPacket((ServerPlayerEntity) playerEntity, isFire ? 140 : 80);
         } else {
             List<PlayerEntity> list = world.getPlayers(TargetPredicate.createAttackable().setBaseMaxDistance(range), null, new Box(pos).expand(range, range - 1, range));
             if (!list.isEmpty())
@@ -280,9 +292,13 @@ public class TemperatureAspects {
                         ((PlayerEnvAccess) list.get(i)).setPlayerColdProtectionAmount(coldProtectionAmount + strength + 1);
                     int playerTemperature = ((PlayerEnvAccess) list.get(i)).getPlayerTemperature();
                     if (playerTemperature < 0)
-                        ((PlayerEnvAccess) list.get(i)).setPlayerTemperature(playerTemperature + 1);
+                        ((PlayerEnvAccess) list.get(i)).setPlayerTemperature(playerTemperature + strength);
+
+                    // Send packet for thermometer update
+                    EnvironmentServerPacket.writeS2CThermometerCalmPacket((ServerPlayerEntity) list.get(i), isFire ? 130 : 70);
                 }
         }
+
     }
 
     private static final DamageSource FREEZING_DAMAGE = new DamageSource("freezing") {

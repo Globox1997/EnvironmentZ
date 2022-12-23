@@ -19,6 +19,6 @@ public class FireBlockMixin {
     @Inject(method = "scheduledTick", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/server/world/ServerWorld;getBlockState(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/BlockState;", ordinal = 0))
     private void scheduledTickMixin(BlockState state, ServerWorld world, BlockPos pos, Random random, CallbackInfo info) {
         if (!world.isClient)
-            TemperatureAspects.heatPlayerWithBlock(null, world, pos, ConfigInit.CONFIG.heating_up_block_range, ConfigInit.CONFIG.cold_protection_amount_addition);
+            TemperatureAspects.heatPlayerWithBlock(null, world, pos, ConfigInit.CONFIG.heating_up_block_range, ConfigInit.CONFIG.cold_protection_amount_addition, true);
     }
 }

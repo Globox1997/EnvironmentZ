@@ -19,6 +19,6 @@ public class MagmaBlockMixin {
     @Inject(method = "onSteppedOn", at = @At("HEAD"))
     private void onSteppedOnMixin(World world, BlockPos pos, BlockState state, Entity entity, CallbackInfo info) {
         if (!world.isClient && entity instanceof PlayerEntity)
-            TemperatureAspects.heatPlayerWithBlock((PlayerEntity) entity, world, pos, 1, 1);
+            TemperatureAspects.heatPlayerWithBlock((PlayerEntity) entity, world, pos, 1, 1, false);
     }
 }

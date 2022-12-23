@@ -21,7 +21,7 @@ public class LavaFluidMixin {
     private void onRandomTickMixin(World world, BlockPos pos, FluidState state, Random random, CallbackInfo info) {
         if (!world.isClient && world.getTime() % 20 == 0)
             if (onlyOneTickAtATime) {
-                TemperatureAspects.heatPlayerWithBlock(null, world, pos, ConfigInit.CONFIG.heating_up_block_range, ConfigInit.CONFIG.cold_protection_amount_addition);
+                TemperatureAspects.heatPlayerWithBlock(null, world, pos, ConfigInit.CONFIG.heating_up_block_range, ConfigInit.CONFIG.cold_protection_amount_addition, false);
                 onlyOneTickAtATime = false;
             } else
                 onlyOneTickAtATime = true;

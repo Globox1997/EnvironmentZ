@@ -41,7 +41,7 @@ public class EnvironmentzConfig implements ConfigData {
     public int max_cold_protection_amount = 120;
     @ConfigEntry.Category("freezing_settings")
     @Comment("Protection amount is added every second")
-    public int cold_protection_amount_addition = 2;
+    public int cold_protection_amount_addition = 3;
     @ConfigEntry.Category("freezing_settings")
     @Comment("White overlay while in cold biomes")
     public boolean cold_overlay = true;
@@ -63,7 +63,7 @@ public class EnvironmentzConfig implements ConfigData {
     public int max_heat_protection_amount = 120;
     @ConfigEntry.Category("overheating_settings")
     @Comment("Protection amount is added every second")
-    public int heat_protection_amount_addition = 2;
+    public int heat_protection_amount_addition = 3;
     @ConfigEntry.Category("overheating_settings")
     @Comment("Undo dehydration mod compat")
     public boolean exhaustion_instead_dehydration = false;

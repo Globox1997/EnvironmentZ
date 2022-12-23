@@ -28,13 +28,13 @@ public abstract class AbstractFireBlockMixin extends Block {
     @Inject(method = "onEntityCollision", at = @At("HEAD"))
     private void onEntityCollisionMixin(BlockState state, World world, BlockPos pos, Entity entity, CallbackInfo info) {
         if (!world.isClient && entity instanceof PlayerEntity)
-            TemperatureAspects.heatPlayerWithBlock((PlayerEntity) entity, world, pos, 1, 1);
+            TemperatureAspects.heatPlayerWithBlock((PlayerEntity) entity, world, pos, 1, 1, false);
     }
 
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (!world.isClient)
-            TemperatureAspects.heatPlayerWithBlock(null, world, pos, ConfigInit.CONFIG.heating_up_block_range, ConfigInit.CONFIG.cold_protection_amount_addition);
+            TemperatureAspects.heatPlayerWithBlock(null, world, pos, ConfigInit.CONFIG.heating_up_block_range, ConfigInit.CONFIG.cold_protection_amount_addition, true);
 
         super.scheduledTick(state, world, pos, random);
     }

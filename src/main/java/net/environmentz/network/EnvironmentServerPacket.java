@@ -10,6 +10,7 @@ public class EnvironmentServerPacket {
 
     public static final Identifier SYNC_ENV_AFFECTED = new Identifier("environmentz", "sync_env_affected");
     public static final Identifier TEMPERATURE_UPDATE = new Identifier("environmentz", "temperature_update");
+    public static final Identifier THERMOMETER_CALMING = new Identifier("environmentz", "thermometer_calming");
 
     public static void init() {
     }
@@ -23,5 +24,11 @@ public class EnvironmentServerPacket {
         buf.writeInt(temperature);
         buf.writeInt(wetness);
         ServerPlayNetworking.send(serverPlayerEntity, TEMPERATURE_UPDATE, buf);
+    }
+
+    public static void writeS2CThermometerCalmPacket(ServerPlayerEntity serverPlayerEntity, int ticks) {
+        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+        buf.writeInt(ticks);
+        ServerPlayNetworking.send(serverPlayerEntity, THERMOMETER_CALMING, buf);
     }
 }

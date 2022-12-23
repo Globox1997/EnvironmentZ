@@ -30,6 +30,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
     private int playerHeatResistance = 0;
     private int playerColdResistance = 0;
 
+    private int thermometerCalming = 0;
+
     public PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
     }
@@ -121,6 +123,11 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
     }
 
     @Override
+    public void setThermometerCalm(int ticks) {
+        this.thermometerCalming = ticks;
+    }
+
+    @Override
     public int getPlayerTemperature() {
         return this.playerTemperature;
     }
@@ -149,4 +156,10 @@ public abstract class PlayerEntityMixin extends LivingEntity implements PlayerEn
     public int getPlayerColdResistance() {
         return this.playerColdResistance;
     }
+
+    @Override
+    public int getThermometerCalm() {
+        return this.thermometerCalming;
+    }
+
 }
