@@ -23,6 +23,9 @@ public class EnvironmentzConfig implements ConfigData {
     public int thermometer_icon_y = 32;
     @ConfigEntry.Category("general_settings")
     public boolean show_thermometer = true;
+    @ConfigEntry.Category("general_settings")
+    @Comment("Heating stones and ice pack only use while holding in hand")
+    public boolean hand_only_comforting_items = true;
 
     // Freezing Settings
     @ConfigEntry.Category("freezing_settings")
