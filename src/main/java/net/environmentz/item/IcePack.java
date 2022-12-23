@@ -31,4 +31,9 @@ public class IcePack extends Item {
         }
     }
 
+    @Override
+    public boolean isEnchantable(ItemStack stack) {
+        return false;
+    }
+
 }

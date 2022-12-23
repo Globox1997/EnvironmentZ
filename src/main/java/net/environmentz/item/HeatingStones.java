@@ -40,4 +40,9 @@ public class HeatingStones extends Item {
         super.onCraft(stack, world, player);
     }
 
+    @Override
+    public boolean isEnchantable(ItemStack stack) {
+        return false;
+    }
+
 }
