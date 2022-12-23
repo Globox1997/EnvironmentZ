@@ -20,6 +20,9 @@ public class WarmEffect extends StatusEffect {
             int coldProtectionAmount = ((PlayerEnvAccess) playerEntity).getPlayerColdProtectionAmount();
             if (coldProtectionAmount < ConfigInit.CONFIG.max_cold_protection_amount)
                 ((PlayerEnvAccess) playerEntity).setPlayerColdProtectionAmount(coldProtectionAmount + ConfigInit.CONFIG.cold_protection_amount_addition);
+            int playerTemperature = ((PlayerEnvAccess) playerEntity).getPlayerTemperature();
+            if (playerTemperature < -100)
+                ((PlayerEnvAccess) playerEntity).setPlayerTemperature(playerTemperature + ConfigInit.CONFIG.cold_protection_amount_addition);
         }
     }
 

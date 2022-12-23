@@ -20,6 +20,9 @@ public class CoolEffect extends StatusEffect {
             int hotProtectionAmount = ((PlayerEnvAccess) playerEntity).getPlayerHeatProtectionAmount();
             if (hotProtectionAmount < ConfigInit.CONFIG.max_heat_protection_amount)
                 ((PlayerEnvAccess) playerEntity).setPlayerHeatProtectionAmount(hotProtectionAmount + ConfigInit.CONFIG.heat_protection_amount_addition);
+            int playerTemperature = ((PlayerEnvAccess) playerEntity).getPlayerTemperature();
+            if (playerTemperature > 100)
+                ((PlayerEnvAccess) playerEntity).setPlayerTemperature(playerTemperature - ConfigInit.CONFIG.heat_protection_amount_addition);
         }
     }
 
