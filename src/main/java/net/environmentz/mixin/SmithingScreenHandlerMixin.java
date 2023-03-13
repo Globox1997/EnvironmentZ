@@ -12,6 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ShearsItem;
 import net.minecraft.screen.ForgingScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
@@ -19,6 +20,8 @@ import net.minecraft.screen.SmithingScreenHandler;
 
 @Mixin(SmithingScreenHandler.class)
 public abstract class SmithingScreenHandlerMixin extends ForgingScreenHandler {
+
+    private boolean removedInsulation = false;
 
     public SmithingScreenHandlerMixin(ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
         super(type, syncId, playerInventory, context);
@@ -28,16 +31,32 @@ public abstract class SmithingScreenHandlerMixin extends ForgingScreenHandler {
     private void updateResultMixin(CallbackInfo info) {
         ItemStack itemStack = this.input.getStack(0);
         ItemStack itemStack2 = this.input.getStack(1);
-        if (itemStack.getItem() instanceof ArmorItem && !itemStack.getNbt().contains("environmentz") && itemStack2.isIn(TagInit.INSOLATING_ITEM)) {
-            ItemStack itemStack3 = itemStack.copy();
-            NbtCompound tag = new NbtCompound();
-            if (itemStack3.hasNbt()) {
-                tag = itemStack3.getNbt();
+
+        if (itemStack.getItem() instanceof ArmorItem) {
+            this.removedInsulation = false;
+            if (!itemStack.getNbt().contains("environmentz")) {
+                if (itemStack2.isIn(TagInit.INSOLATING_ITEM)) {
+                    ItemStack itemStack3 = itemStack.copy();
+                    NbtCompound tag = new NbtCompound();
+                    if (itemStack3.hasNbt()) {
+                        tag = itemStack3.getNbt();
+                    }
+                    tag.putString("environmentz", "fur_insolated");
+                    itemStack3.setNbt(tag);
+                    this.output.setStack(0, itemStack3);
+                    info.cancel();
+                }
+            } else {
+                if (itemStack2.getItem() instanceof ShearsItem) {
+                    ItemStack itemStack3 = itemStack.copy();
+                    NbtCompound tag = itemStack3.getNbt();
+                    tag.remove("environmentz");
+                    itemStack3.setNbt(tag);
+                    this.output.setStack(0, itemStack3);
+                    this.removedInsulation = true;
+                    info.cancel();
+                }
             }
-            tag.putString("environmentz", "fur_insolated");
-            itemStack3.setNbt(tag);
-            this.output.setStack(0, itemStack3);
-            info.cancel();
         }
     }
 
@@ -45,8 +64,18 @@ public abstract class SmithingScreenHandlerMixin extends ForgingScreenHandler {
     public void canTakeOutputMixin(PlayerEntity player, boolean present, CallbackInfoReturnable<Boolean> info) {
         ItemStack itemStack = this.input.getStack(0);
         ItemStack itemStack2 = this.input.getStack(1);
-        if (itemStack.getItem() instanceof ArmorItem && itemStack2.isIn(TagInit.INSOLATING_ITEM)) {
+        if (itemStack.getItem() instanceof ArmorItem && ((itemStack2.isIn(TagInit.INSOLATING_ITEM) && !itemStack.getNbt().contains("environmentz"))
+                || (itemStack2.getItem() instanceof ShearsItem && itemStack.getNbt().contains("environmentz")))) {
             info.setReturnValue(true);
+        }
+    }
+
+    @Inject(method = "decrementStack", at = @At("HEAD"), cancellable = true)
+    private void decrementStackMixin(int slot, CallbackInfo info) {
+        if (slot == 1) {
+            if (this.input.getStack(slot).getItem() instanceof ShearsItem && this.removedInsulation) {
+                info.cancel();
+            }
         }
     }
 

@@ -1,7 +1,8 @@
 package net.environmentz.init;
 
-import net.environmentz.access.PlayerEnvAccess;
+import net.environmentz.access.TemperatureManagerAccess;
 import net.environmentz.network.EnvironmentServerPacket;
+import net.environmentz.temperature.TemperatureManager;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
@@ -33,7 +34,7 @@ public class CommandInit {
         });
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
             dispatcher.register((CommandManager.literal("environment").requires((serverCommandSource) -> {
-                return serverCommandSource.hasPermissionLevel(3);
+                return serverCommandSource.hasPermissionLevel(2);
             })).then(CommandManager.literal("affection").then(CommandManager.argument("targets", EntityArgumentType.players())
                     .then(CommandManager.literal("hot").then(CommandManager.argument("affection", BoolArgumentType.bool()).executes((commandContext) -> {
                         return executeEnvCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "hot", BoolArgumentType.getBool(commandContext, "affection"),
@@ -71,31 +72,32 @@ public class CommandInit {
 
         while (var3.hasNext()) {
             ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity) var3.next();
+            TemperatureManager temperatureManager = ((TemperatureManagerAccess) serverPlayerEntity).getTemperatureManager();
+
             if (mode == 0) {
-                if (environment.equals("hot"))
-                    ((PlayerEnvAccess) serverPlayerEntity).setHotEnvAffected((boolean) object);
-                else if (environment.equals("cold"))
-                    ((PlayerEnvAccess) serverPlayerEntity).setColdEnvAffected((boolean) object);
-                EnvironmentServerPacket.writeS2CSyncEnvPacket(serverPlayerEntity, ((PlayerEnvAccess) serverPlayerEntity).isHotEnvAffected(),
-                        ((PlayerEnvAccess) serverPlayerEntity).isColdEnvAffected());
+                if (environment.equals("hot")) {
+                    temperatureManager.setEnvironmentAffection((boolean) object, temperatureManager.isColdEnvAffected());
+                } else if (environment.equals("cold")) {
+                    temperatureManager.setEnvironmentAffection(temperatureManager.isHotEnvAffected(), (boolean) object);
+                }
+                EnvironmentServerPacket.writeS2CSyncEnvPacket(serverPlayerEntity, temperatureManager.isHotEnvAffected(), temperatureManager.isColdEnvAffected());
                 source.sendFeedback(Text.translatable("commands.environment.affection_changed", serverPlayerEntity.getDisplayName()), true);
             } else if (mode == 1) {
                 if (environment.equals("hot"))
-                    ((PlayerEnvAccess) serverPlayerEntity).setPlayerHeatResistance((int) object);
+                    temperatureManager.setPlayerHeatResistance((int) object);
                 else if (environment.equals("cold"))
-                    ((PlayerEnvAccess) serverPlayerEntity).setPlayerColdResistance((int) object);
+                    temperatureManager.setPlayerColdResistance((int) object);
                 source.sendFeedback(Text.translatable("commands.environment.resistance_changed", serverPlayerEntity.getDisplayName()), true);
             } else if (mode == 2) {
                 if (environment.equals("hot"))
-                    ((PlayerEnvAccess) serverPlayerEntity).setPlayerHeatProtectionAmount((int) object);
+                    temperatureManager.setPlayerHeatProtectionAmount((int) object);
                 else if (environment.equals("cold"))
-                    ((PlayerEnvAccess) serverPlayerEntity).setPlayerColdProtectionAmount((int) object);
+                    temperatureManager.setPlayerColdProtectionAmount((int) object);
                 source.sendFeedback(Text.translatable("commands.environment.protection_changed", serverPlayerEntity.getDisplayName()), true);
             } else if (mode == 3) {
-                ((PlayerEnvAccess) serverPlayerEntity).setPlayerTemperature((int) object);
+                temperatureManager.setPlayerTemperature((int) object);
                 source.sendFeedback(Text.translatable("commands.environment.temperature_changed", serverPlayerEntity.getDisplayName()), true);
-                EnvironmentServerPacket.writeS2CTemperaturePacket(serverPlayerEntity, ((PlayerEnvAccess) serverPlayerEntity).getPlayerTemperature(),
-                        ((PlayerEnvAccess) serverPlayerEntity).getPlayerWetIntensityValue());
+                EnvironmentServerPacket.writeS2CTemperaturePacket(serverPlayerEntity, temperatureManager.getPlayerTemperature(), temperatureManager.getPlayerWetIntensityValue());
             }
         }
 
@@ -108,17 +110,19 @@ public class CommandInit {
         // loop over players
         while (var3.hasNext()) {
             ServerPlayerEntity serverPlayerEntity = var3.next();
+            TemperatureManager temperatureManager = ((TemperatureManagerAccess) serverPlayerEntity).getTemperatureManager();
+
             if (info == 0)
-                source.sendFeedback(Text.translatable("commands.environment.affection", serverPlayerEntity.getDisplayName(), ((PlayerEnvAccess) serverPlayerEntity).isHotEnvAffected(),
-                        ((PlayerEnvAccess) serverPlayerEntity).isColdEnvAffected()), true);
+                source.sendFeedback(
+                        Text.translatable("commands.environment.affection", serverPlayerEntity.getDisplayName(), temperatureManager.isHotEnvAffected(), temperatureManager.isColdEnvAffected()), true);
             else if (info == 1)
-                source.sendFeedback(Text.translatable("commands.environment.resistance", serverPlayerEntity.getDisplayName(), ((PlayerEnvAccess) serverPlayerEntity).getPlayerHeatResistance(),
-                        ((PlayerEnvAccess) serverPlayerEntity).getPlayerColdResistance()), true);
+                source.sendFeedback(Text.translatable("commands.environment.resistance", serverPlayerEntity.getDisplayName(), temperatureManager.getPlayerHeatResistance(),
+                        temperatureManager.getPlayerColdResistance()), true);
             else if (info == 2)
-                source.sendFeedback(Text.translatable("commands.environment.protection", serverPlayerEntity.getDisplayName(), ((PlayerEnvAccess) serverPlayerEntity).getPlayerHeatProtectionAmount(),
-                        ((PlayerEnvAccess) serverPlayerEntity).getPlayerColdProtectionAmount()), true);
+                source.sendFeedback(Text.translatable("commands.environment.protection", serverPlayerEntity.getDisplayName(), temperatureManager.getPlayerHeatProtectionAmount(),
+                        temperatureManager.getPlayerColdProtectionAmount()), true);
             else if (info == 3)
-                source.sendFeedback(Text.translatable("commands.environment.temperature", serverPlayerEntity.getDisplayName(), ((PlayerEnvAccess) serverPlayerEntity).getPlayerTemperature()), true);
+                source.sendFeedback(Text.translatable("commands.environment.temperature", serverPlayerEntity.getDisplayName(), temperatureManager.getPlayerTemperature()), true);
 
         }
         return 1;

@@ -8,8 +8,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.At;
 
-import net.environmentz.access.PlayerEnvAccess;
+import net.environmentz.access.TemperatureManagerAccess;
 import net.environmentz.init.ConfigInit;
+import net.environmentz.temperature.Temperatures;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvType;
 import net.minecraft.client.MinecraftClient;
@@ -32,8 +33,9 @@ public abstract class InGameOverlayRendererMixin {
         if (!playerEntity.isCreative() && !playerEntity.isSpectator() && ConfigInit.CONFIG.cold_overlay) {
             ticker++;
             if (ticker >= 20) {
-                if (playerEntity.world.getBiome(playerEntity.getBlockPos()).value().getTemperature() <= ConfigInit.CONFIG.biome_freeze_temp
-                        && ((PlayerEnvAccess) playerEntity).getPlayerColdProtectionAmount() <= 0) {
+                if (playerEntity.world.getBiome(playerEntity.getBlockPos()).value().getTemperature() <= Temperatures.getBiomeTemperatures(0)
+                        && ((TemperatureManagerAccess) playerEntity).getTemperatureManager().getPlayerColdProtectionAmount() <= 0) {
+
                     float maxWhitening = 0.3F;
                     if (playerEntity.world.isRaining()) {
                         maxWhitening = 0.5F;

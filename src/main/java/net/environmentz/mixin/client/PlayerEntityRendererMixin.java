@@ -2,7 +2,8 @@ package net.environmentz.mixin.client;
 
 import org.spongepowered.asm.mixin.Mixin;
 
-import net.environmentz.access.PlayerEnvAccess;
+import net.environmentz.access.TemperatureManagerAccess;
+import net.environmentz.temperature.Temperatures;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -22,9 +23,9 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     @Override
     protected boolean isShaking(AbstractClientPlayerEntity entity) {
         if (!entity.isCreative() && !entity.isSpectator() && !entity.isInvulnerable())
-            if (((PlayerEnvAccess) entity).getPlayerTemperature() <= -240)
+            if (((TemperatureManagerAccess) entity).getTemperatureManager().getPlayerTemperature() <= Temperatures.getBodyTemperatures(0)) {
                 return true;
-
+            }
         return super.isShaking(entity);
     }
 

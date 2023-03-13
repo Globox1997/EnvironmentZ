@@ -9,8 +9,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import org.spongepowered.asm.mixin.injection.At;
 
-import net.environmentz.access.PlayerEnvAccess;
+import net.environmentz.access.TemperatureManagerAccess;
 import net.environmentz.network.EnvironmentServerPacket;
+import net.environmentz.temperature.TemperatureManager;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -23,13 +24,18 @@ public class PlayerManagerMixin {
 
     @Inject(method = "onPlayerConnect", at = @At(value = "TAIL"))
     private void onPlayerConnectMixin(ClientConnection connection, ServerPlayerEntity player, CallbackInfo info) {
-        EnvironmentServerPacket.writeS2CSyncEnvPacket(player, ((PlayerEnvAccess) player).isHotEnvAffected(), ((PlayerEnvAccess) player).isColdEnvAffected());
-        EnvironmentServerPacket.writeS2CTemperaturePacket(player, ((PlayerEnvAccess) player).getPlayerTemperature(), ((PlayerEnvAccess) player).getPlayerWetIntensityValue());
+        TemperatureManager temperatureManager = ((TemperatureManagerAccess) player).getTemperatureManager();
+
+        EnvironmentServerPacket.writeS2CSyncEnvPacket(player, temperatureManager.isHotEnvAffected(), temperatureManager.isColdEnvAffected());
+        EnvironmentServerPacket.writeS2CTemperaturePacket(player, temperatureManager.getPlayerTemperature(), temperatureManager.getPlayerWetIntensityValue());
+        EnvironmentServerPacket.writeS2CSyncValuesPacket(player);
     }
 
     @Inject(method = "respawnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;onPlayerRespawned(Lnet/minecraft/server/network/ServerPlayerEntity;)V"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void respawnPlayerMixin(ServerPlayerEntity player, boolean alive, CallbackInfoReturnable<ServerPlayerEntity> info, BlockPos blockPos, float f, boolean bl, ServerWorld serverWorld,
             Optional<Vec3d> optional2, ServerWorld serverWorld2, ServerPlayerEntity serverPlayerEntity) {
-        EnvironmentServerPacket.writeS2CSyncEnvPacket(player, ((PlayerEnvAccess) player).isHotEnvAffected(), ((PlayerEnvAccess) player).isColdEnvAffected());
+        TemperatureManager temperatureManager = ((TemperatureManagerAccess) player).getTemperatureManager();
+
+        EnvironmentServerPacket.writeS2CSyncEnvPacket(player, temperatureManager.isHotEnvAffected(), temperatureManager.isColdEnvAffected());
     }
 }

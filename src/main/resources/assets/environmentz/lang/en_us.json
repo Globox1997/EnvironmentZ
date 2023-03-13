@@ -1,9 +1,6 @@
 {
-  "effect.environmentz.coldness": "Frostbite",
   "effect.environmentz.warming": "Warming",
-  "effect.environmentz.overheating": "Overheating",
   "effect.environmentz.cooling": "Cooling",
-  "effect.environmentz.wet": "Wet",
   
   "death.attack.freezing": "%1$s froze to death",
 
@@ -19,6 +16,7 @@
   "text.autoconfig.environmentz.option.thermometer_icon_y": "Thermometer Icon Y Position",
   "text.autoconfig.environmentz.option.show_thermometer": "Show Thermometer",
   "text.autoconfig.environmentz.option.hand_only_comforting_items": "Hand Only Comforting Items",
+  "text.autoconfig.environmentz.option.printInConsole": "Print In Console",
 
   "text.autoconfig.environmentz.option.biome_cold_temp": "Biome Cold Temperature",
   "text.autoconfig.environmentz.option.biome_freeze_temp": "Biome Freeze Temperature",
@@ -36,6 +34,7 @@
   "text.autoconfig.environmentz.option.heat_protection_amount_addition": "Heat Protection Addition",
   "text.autoconfig.environmentz.option.blur_screen_effect": "Blur Screen Effect",
   "text.autoconfig.environmentz.option.exhaustion_instead_dehydration": "Exhaustion Instead Dehydration",
+  "text.autoconfig.environmentz.option.ultrawarm_dimension_heat": "Ultrawarm Dimension Heat",
 
   "item.environmentz.heating_stones": "Heating Stones",
   "item.environmentz.ice_pack": "Ice Pack",

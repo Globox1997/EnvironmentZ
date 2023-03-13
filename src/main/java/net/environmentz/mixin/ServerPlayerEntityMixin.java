@@ -12,7 +12,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.At;
 
 import net.environmentz.access.PlayerEnvAccess;
+import net.environmentz.access.TemperatureManagerAccess;
 import net.environmentz.network.EnvironmentServerPacket;
+import net.environmentz.temperature.TemperatureManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.encryption.PlayerPublicKey;
@@ -34,9 +36,10 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Pl
     public void playerTickMixin(CallbackInfo info) {
         if (compatSync > 0) {
             compatSync--;
-            if (compatSync == 1)
-                EnvironmentServerPacket.writeS2CSyncEnvPacket((ServerPlayerEntity) (Object) this, ((PlayerEnvAccess) (ServerPlayerEntity) (Object) this).isHotEnvAffected(),
-                        ((PlayerEnvAccess) (ServerPlayerEntity) (Object) this).isColdEnvAffected());
+            if (compatSync == 1) {
+                TemperatureManager temperatureManager = ((TemperatureManagerAccess) (ServerPlayerEntity) (Object) this).getTemperatureManager();
+                EnvironmentServerPacket.writeS2CSyncEnvPacket((ServerPlayerEntity) (Object) this, temperatureManager.isHotEnvAffected(), temperatureManager.isColdEnvAffected());
+            }
         }
     }
 

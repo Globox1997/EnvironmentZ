@@ -11,20 +11,8 @@
     "BrewingRecipeRegistryMixin",
     "ServerPlayerEntityMixin",
     "PlayerManagerMixin",
-    "CampfireBlockEntityMixin",
-    "AbstractFurnaceBlockEntityMixin",
-    "LavaCauldronBlockMixin",
     "PowderSnowBlockMixin",
-    "MagmaBlockMixin",
-    "LavaFluidMixin",
-    "FireBlockMixin",
-    "SoulFireBlockMixin",
-    "AbstractFireBlockMixin",
-    "WallStandingBlockItemMixin",
-    "BucketItemMixin",
-    "access.EntityAccessor",
-    "compat.OriginCommandMixin",
-    "compat.PlayerOriginComponentMixin"
+    "access.EntityAccessor"
   ],
   "client": [
     "client.InGameOverlayRendererMixin",

@@ -43,7 +43,7 @@ public class HeadFeatureRendererMixin {
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, LivingEntity livingEntity, float f, float g, float h, float j, float k, float l,
             CallbackInfo info) {
         ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.HEAD);
-        if (!(itemStack.isEmpty()) && (itemStack.getItem() == ItemInit.WOLF_HELMET)) {
+        if (!itemStack.isEmpty() && (itemStack.getItem() == ItemInit.WOLF_HELMET)) {
             matrixStack.push();
             matrixStack.scale(this.scaleX, this.scaleY, this.scaleZ);
             ((ModelWithHead) ((HeadFeatureRenderer) (Object) this).getContextModel()).getHead().rotate(matrixStack);

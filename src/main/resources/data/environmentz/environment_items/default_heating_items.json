@@ -1,0 +1,13 @@
+{
+    "environmentz:heating_stones": {
+        "damage": 1,
+        "temperature": 3,
+        "cold_protection": 1
+    },
+    "minecraft:lava_bucket": {
+        "temperature": 1
+    },
+    "minecraft:torch": {
+        "temperature": 1
+    }
+}

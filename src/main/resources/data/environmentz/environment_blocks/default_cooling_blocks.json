@@ -1,0 +1,58 @@
+{
+    "minecraft:powder_snow": {
+        "max_count": 4,
+        "0": -5,
+        "1": -4,
+        "2": -3,
+        "3": -2
+    },
+    "minecraft:snow": {
+        "max_count": 4,
+        "0": -5,
+        "1": -4,
+        "2": -3,
+        "3": -2
+    },
+    "minecraft:snow_block": {
+        "max_count": 4,
+        "0": -5,
+        "1": -4,
+        "2": -3,
+        "3": -2
+    },
+    "minecraft:powder_snow_cauldron": {
+        "max_count": 4,
+        "0": -5,
+        "1": -4,
+        "2": -3,
+        "3": -2
+    },
+    "minecraft:ice": {
+        "max_count": 4,
+        "0": -5,
+        "1": -4,
+        "2": -3,
+        "3": -2
+    },
+    "minecraft:packed_ice": {
+        "max_count": 4,
+        "0": -5,
+        "1": -4,
+        "2": -3,
+        "3": -2
+    },
+    "minecraft:frosted_ice": {
+        "max_count": 4,
+        "0": -5,
+        "1": -4,
+        "2": -3,
+        "3": -2
+    },
+    "minecraft:blue_ice": {
+        "max_count": 4,
+        "0": -5,
+        "1": -4,
+        "2": -3,
+        "3": -2
+    }
+}

@@ -24,27 +24,12 @@ public class EnvironmentzConfig implements ConfigData {
     @ConfigEntry.Category("general_settings")
     public boolean show_thermometer = true;
     @ConfigEntry.Category("general_settings")
-    @Comment("Heating stones and ice pack only use while holding in hand")
-    public boolean hand_only_comforting_items = true;
+    @Comment("Handle with care!")
+    public int heat_block_radius = 3;
+    @ConfigEntry.Category("general_settings")
+    public boolean printInConsole = false;
 
     // Freezing Settings
-    @ConfigEntry.Category("freezing_settings")
-    @Comment("Below this biome temp - start undercooling")
-    public float biome_cold_temp = 0.4F;
-    @ConfigEntry.Category("freezing_settings")
-    @Comment("Below this biome temp - start freezing")
-    public float biome_freeze_temp = 0.2F;
-    @ConfigEntry.Category("freezing_settings")
-    public boolean allow_all_armor = false;
-    @ConfigEntry.Category("freezing_settings")
-    @Comment("Caution! This could decrease performance")
-    public int heating_up_block_range = 3;
-    @ConfigEntry.Category("freezing_settings")
-    @Comment("Protection amount is reduced every second")
-    public int max_cold_protection_amount = 120;
-    @ConfigEntry.Category("freezing_settings")
-    @Comment("Protection amount is added every second")
-    public int cold_protection_amount_addition = 3;
     @ConfigEntry.Category("freezing_settings")
     @Comment("White overlay while in cold biomes")
     public boolean cold_overlay = true;
@@ -53,20 +38,8 @@ public class EnvironmentzConfig implements ConfigData {
 
     // Overheating Settings
     @ConfigEntry.Category("overheating_settings")
-    @Comment("Above this biome temp - start overheating")
-    public float biome_hot_temp = 1.2F;
-    @ConfigEntry.Category("overheating_settings")
-    @Comment("Above this biome temp - start overheating")
-    public float biome_overheat_temp = 1.6F;
-    @ConfigEntry.Category("overheating_settings")
     @Comment("Handles thirst when Dehydration mod is loaded")
     public float overheating_exhaustion = 0.5F;
-    @ConfigEntry.Category("overheating_settings")
-    @Comment("Protection amount is reduced every second")
-    public int max_heat_protection_amount = 120;
-    @ConfigEntry.Category("overheating_settings")
-    @Comment("Protection amount is added every second")
-    public int heat_protection_amount_addition = 3;
     @ConfigEntry.Category("overheating_settings")
     @Comment("Undo dehydration mod compat")
     public boolean exhaustion_instead_dehydration = false;

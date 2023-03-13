@@ -1,4 +1,4 @@
-package net.environmentz.util;
+package net.environmentz.temperature;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -16,10 +16,12 @@ public class TemperatureHudRendering {
 
     private static final Identifier INDICATOR_ICON = new Identifier("environmentz:textures/gui/indicator_icon.png");
 
-    public static void renderPlayerTemperatureIcon(MatrixStack matrixStack, MinecraftClient client, PlayerEntity playerEntity, int xValue, int yValue, int extra, int intensity, int scaledWidth,
-            int scaledHeight) {
+    public static void renderPlayerTemperatureIcon(MatrixStack matrixStack, MinecraftClient client, PlayerEntity playerEntity, boolean heat, int xValue, int yValue, int extra, int intensity,
+            int scaledWidth, int scaledHeight) {
 
-        RenderSystem.setShaderColor(0.3F + (float) intensity / 120F, 0.3F + (float) intensity / 120F, 0.3F + (float) intensity / 120F, 1.0F);
+        // RenderSystem.setShaderColor(0.3F + (float) intensity / 120F, 0.3F + (float) intensity / 120F, 0.3F + (float) intensity / 120F, 1.0F);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+
         RenderSystem.setShaderTexture(0, INDICATOR_ICON);
         if (yValue != 0) {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -27,17 +29,38 @@ public class TemperatureHudRendering {
             DrawableHelper.drawTexture(matrixStack, (scaledWidth / 2) - ConfigInit.CONFIG.icon_x, scaledHeight - ConfigInit.CONFIG.icon_y, xValue + (extra != 0 ? 26 : 0), yValue, 13, 13, 256, 256);
 
             // Foregound
-            DrawableHelper.drawTexture(matrixStack, (scaledWidth / 2) - ConfigInit.CONFIG.icon_x, scaledHeight - ConfigInit.CONFIG.icon_y + (13 - iconTextureSplitValue((float) intensity / 120F)), 13,
-                    yValue - (iconTextureSplitValue((float) intensity / 120F) - 13), 13, iconTextureSplitValue((float) intensity / 120F), 256, 256);
+            // DrawableHelper.drawTexture(matrixStack, (scaledWidth / 2) - ConfigInit.CONFIG.icon_x, scaledHeight - ConfigInit.CONFIG.icon_y + (13 - iconTextureSplitValue((float) intensity / 120F)),
+            // 13,
+            // yValue - (iconTextureSplitValue((float) intensity / 120F) - 13), 13, iconTextureSplitValue((float) intensity / 120F), 256, 256);
+
+            float smooth = heat ? ((float) intensity / (float) (Temperatures.getBodyTemperatures(6) - Temperatures.getBodyTemperatures(5))
+
+            ) : ((float) intensity / (float) (Math.abs(Temperatures.getBodyTemperatures(0)) - Math.abs(Temperatures.getBodyTemperatures(1))));
+
+            // in
+            // float smooth = heat ? (float) intensity / (Temperatures.getBodyTemperatures(6) - Temperatures.getBodyTemperatures(5))
+            // : (float) intensity / (Math.abs(Temperatures.getBodyTemperatures(0)) - Math.abs(Temperatures.getBodyTemperatures(1)));
+
+            DrawableHelper.drawTexture(matrixStack, (scaledWidth / 2) - ConfigInit.CONFIG.icon_x, scaledHeight - ConfigInit.CONFIG.icon_y + (13 - iconTextureSplitValue(smooth)), 13,
+                    yValue - (iconTextureSplitValue(smooth) - 13), 13, iconTextureSplitValue(smooth), 256, 256);
 
         } else {
-            if (xValue == 0)
-                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            // if (xValue == 0) {
+            // RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            // }
+            // System.out.println(heat + " : " + (intensity / (Math.abs(Temperatures.getBodyTemperatures(1)) - Math.abs(Temperatures.getBodyTemperatures(2)))) + " : "
+            // + Temperatures.getBodyTemperatures(1) + " : " + Temperatures.getBodyTemperatures(2) + " : " + intensity);
+
+            // body rendering
+            DrawableHelper.drawTexture(matrixStack, (scaledWidth / 2) - ConfigInit.CONFIG.icon_x, scaledHeight - ConfigInit.CONFIG.icon_y, 0, 0, 13, 13, 256, 256);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, heat ? ((float) intensity / (float) (Temperatures.getBodyTemperatures(5) - Temperatures.getBodyTemperatures(4)))
+                    : ((float) intensity / (float) (Math.abs(Temperatures.getBodyTemperatures(1)) - Math.abs(Temperatures.getBodyTemperatures(2)))));
+
             DrawableHelper.drawTexture(matrixStack, (scaledWidth / 2) - ConfigInit.CONFIG.icon_x, scaledHeight - ConfigInit.CONFIG.icon_y, xValue, yValue, 13, 13, 256, 256);
         }
-
+        // wetness border
         if (extra != 0 && yValue == 0) {
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, (float) extra / 120.0F);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, (float) extra / Temperatures.getBodyWetness(0));
             DrawableHelper.drawTexture(matrixStack, (scaledWidth / 2) - ConfigInit.CONFIG.icon_x, scaledHeight - ConfigInit.CONFIG.icon_y, 39, 0, 13, 13, 256, 256);
         }
     }
