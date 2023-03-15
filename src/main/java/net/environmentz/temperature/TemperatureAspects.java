@@ -54,9 +54,9 @@ public class TemperatureAspects {
         playerWetness(playerEntity, temperatureManager);
         int playerWetness = temperatureManager.getPlayerWetIntensityValue();
         boolean isSoaked = playerWetness >= Temperatures.getBodyWetness(1);
-        boolean isInShadow = playerEntity.world.isSkyVisible(playerEntity.getBlockPos());
+        boolean isInShadow = !playerEntity.world.isSkyVisible(playerEntity.getBlockPos());
 
-        Identifier dimensionIdentifier = playerEntity.world.getDimensionKey().getValue();
+        Identifier dimensionIdentifier = playerEntity.world.getRegistryKey().getValue();
         if (Temperatures.shouldUseOverworldTemperatures(dimensionIdentifier)) {
             dimensionIdentifier = Temperatures.OVERWORLD;
         }
@@ -137,7 +137,7 @@ public class TemperatureAspects {
             if (ConfigInit.CONFIG.exhaustion_instead_dehydration) {
                 if (playerEntity.getHungerManager().getFoodLevel() > 6) {
                     playerEntity.addExhaustion(ConfigInit.CONFIG.overheating_exhaustion);
-                    int sweatTemperature = Temperatures.getDimensionSweatTemperatures(dimensionIdentifier, environmentCode);
+                    int sweatTemperature = Temperatures.getDimensionSweatTemperatures(dimensionIdentifier, environmentCode - 3);
                     calculatingTemperature += sweatTemperature;
 
                     if (ConfigInit.CONFIG.printInConsole) {
@@ -147,7 +147,7 @@ public class TemperatureAspects {
             } else {
                 if (((ThirstManagerAccess) playerEntity).getThirstManager().getThirstLevel() > 6) {
                     ((ThirstManagerAccess) playerEntity).getThirstManager().addDehydration(ConfigInit.CONFIG.overheating_exhaustion);
-                    int sweatTemperature = Temperatures.getDimensionSweatTemperatures(dimensionIdentifier, environmentCode);
+                    int sweatTemperature = Temperatures.getDimensionSweatTemperatures(dimensionIdentifier, environmentCode - 3);
                     calculatingTemperature += sweatTemperature;
 
                     if (ConfigInit.CONFIG.printInConsole) {
@@ -244,19 +244,20 @@ public class TemperatureAspects {
         }
 
         // Acclimatization
+        int playerTemperature = temperatureManager.getPlayerTemperature();
         int acclimatization = 0;
         if (environmentCode == 1) {
-            if (calculatingTemperature < Temperatures.getAcclimatization(6)) {
+            if (playerTemperature < Temperatures.getAcclimatization(6)) {
                 acclimatization += Temperatures.getAcclimatization(7);
             }
         } else if (environmentCode == 2) {
-            if (calculatingTemperature < Temperatures.getAcclimatization(4)) {
+            if (playerTemperature < Temperatures.getAcclimatization(4)) {
                 acclimatization += Temperatures.getAcclimatization(5);
-            } else if (calculatingTemperature > Temperatures.getAcclimatization(0)) {
+            } else if (playerTemperature > Temperatures.getAcclimatization(0)) {
                 acclimatization += Temperatures.getAcclimatization(1);
             }
         } else if (environmentCode == 3) {
-            if (calculatingTemperature > Temperatures.getAcclimatization(2)) {
+            if (playerTemperature > Temperatures.getAcclimatization(2)) {
                 acclimatization += Temperatures.getAcclimatization(3);
             }
         }
@@ -324,7 +325,7 @@ public class TemperatureAspects {
         // Thermometer Sync
         EnvironmentServerPacket.writeS2CThermometerPacket((ServerPlayerEntity) playerEntity, thermometerCalculatingTemperature);
 
-        int playerTemperature = temperatureManager.getPlayerTemperature() + calculatingTemperature;
+        playerTemperature = temperatureManager.getPlayerTemperature() + calculatingTemperature;
         // Cutoff
         if (environmentCode < 2 && playerTemperature > Temperatures.getBodyTemperatures(4)) {
             playerTemperature = Temperatures.getBodyTemperatures(4);
@@ -350,7 +351,8 @@ public class TemperatureAspects {
 
         // Debug Print
         if (ConfigInit.CONFIG.printInConsole) {
-            System.out.println("Total: " + calculatingTemperature + " New Player Tmp: " + (temperatureManager.getPlayerTemperature() + calculatingTemperature) + debugString);
+            System.out
+                    .println("Total: " + calculatingTemperature + " New Player Tmp: " + (temperatureManager.getPlayerTemperature() + calculatingTemperature) + debugString + " : " + environmentCode);
         }
 
         // Debuffs

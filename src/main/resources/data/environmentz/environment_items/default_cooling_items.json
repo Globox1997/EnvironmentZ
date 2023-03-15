@@ -1,11 +1,11 @@
 {
     "environmentz:ice_pack": {
         "damage": 1,
-        "temperature": -3,
+        "temperature": -5,
         "heat_protection": 1
     },
     "minecraft:powder_snow_bucket": {
-        "temperature": -1
+        "temperature": -2
     },
     "minecraft:snowball": {
         "temperature": -1

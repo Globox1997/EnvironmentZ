@@ -494,7 +494,7 @@ public class Temperatures {
     }
 
     public static boolean shouldUseStandardTemperatures(Identifier dimensionIdentifier) {
-        if (getDimensionDayTemperatures(dimensionIdentifier, 0) != 0 && getDimensionDayTemperatures(dimensionIdentifier, 4) != 0) {
+        if (getDimensionDayTemperatures(dimensionIdentifier, 0) == 0 && getDimensionDayTemperatures(dimensionIdentifier, 4) == 0) {
             return true;
         }
         return false;
