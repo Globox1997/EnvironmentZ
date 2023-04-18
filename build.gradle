@@ -48,15 +48,25 @@ dependencies {
 		exclude(group: "curse.maven:motschens-puddles-463169")
 	}
 	// Origins
-    // modCompileOnly "com.github.DaFuqs:AdditionalEntityAttributes:1.19.2-SNAPSHOT"
+	// modCompileOnly ("curse.maven:origins-391943:4044263"),{
+	//     exclude(group: "net.fabricmc.fabric-api")
+	// 	exclude(group: "me.shedaniel.cloth")
+	// 	exclude(group: "io.github.prospector")
+	// 	exclude(group: "com.github.DaFuqs")
+	// }
+	// modCompileOnly "com.github.apace100:apoli:v2.6.0"
+    //modCompileOnly "com.github.DaFuqs:AdditionalEntityAttributes:8d8c41489b"
 	// modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.0.2")
 	// modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.0.2")
-	// modCompileOnly "com.github.apace100:apoli:v2.6.0"
+	 
 	// modCompileOnly ("com.github.apace100:origins-fabric:v1.7.1"),{
 	// 	exclude(group: "net.fabricmc.fabric-api")
 	// 	exclude(group: "maven.modrinth")
 	// 	exclude(group: "me.shedaniel.cloth")
+	// 	exclude(group: "com.github.DaFuqs")
 	// }
+	// modCompileOnly "com.github.apace100:apoli:v2.6.0"
+
 	// Satin
 	modImplementation "io.github.ladysnake:satin:${satin_version}"
 	include "io.github.ladysnake:satin:${satin_version}"

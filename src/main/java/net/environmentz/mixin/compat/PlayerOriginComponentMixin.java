@@ -24,25 +24,25 @@ public class PlayerOriginComponentMixin {
 
     // @Inject(method = "setOrigin", at = @At("TAIL"), remap = false)
     // private void setOriginMixin(OriginLayer layer, Origin origin, CallbackInfo info) {
-    //     if (origin.hasPowerType(new PowerTypeReference<>(Origins.identifier("fire_immunity")))) {
-    //         if (((PlayerEnvAccess) player).isHotEnvAffected()) {
-    //             ((PlayerEnvAccess) player).setHotEnvAffected(false);
-    //         }
-    //     } else if (!((PlayerEnvAccess) player).isHotEnvAffected()) {
-    //         ((PlayerEnvAccess) player).setHotEnvAffected(true);
-    //     }
-    //     if (origin.hasPowerType(new PowerTypeReference<>(Origins.identifier("freeze")))) {
-    //         if (((PlayerEnvAccess) player).isColdEnvAffected()) {
-    //             ((PlayerEnvAccess) player).setColdEnvAffected(false);
-    //         }
-    //     } else if (!((PlayerEnvAccess) player).isColdEnvAffected()) {
-    //         ((PlayerEnvAccess) player).setColdEnvAffected(true);
-    //     }
+    // if (origin.hasPowerType(new PowerTypeReference<>(Origins.identifier("fire_immunity")))) {
+    // if (((PlayerEnvAccess) player).isHotEnvAffected()) {
+    // ((PlayerEnvAccess) player).setHotEnvAffected(false);
+    // }
+    // } else if (!((PlayerEnvAccess) player).isHotEnvAffected()) {
+    // ((PlayerEnvAccess) player).setHotEnvAffected(true);
+    // }
+    // if (origin.hasPowerType(new PowerTypeReference<>(Origins.identifier("freeze")))) {
+    // if (((PlayerEnvAccess) player).isColdEnvAffected()) {
+    // ((PlayerEnvAccess) player).setColdEnvAffected(false);
+    // }
+    // } else if (!((PlayerEnvAccess) player).isColdEnvAffected()) {
+    // ((PlayerEnvAccess) player).setColdEnvAffected(true);
+    // }
 
-    //     if (player instanceof ServerPlayerEntity) {
-    //         EnvironmentServerPacket.writeS2CSyncEnvPacket((ServerPlayerEntity) player, ((PlayerEnvAccess) player).isHotEnvAffected(), ((PlayerEnvAccess) player).isColdEnvAffected());
-    //         ((PlayerEnvAccess) player).compatSync();
-    //     }
+    // if (player instanceof ServerPlayerEntity) {
+    // EnvironmentServerPacket.writeS2CSyncEnvPacket((ServerPlayerEntity) player, ((PlayerEnvAccess) player).isHotEnvAffected(), ((PlayerEnvAccess) player).isColdEnvAffected());
+    // ((PlayerEnvAccess) player).compatSync();
+    // }
     // }
 
 }
