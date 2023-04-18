@@ -36,6 +36,6 @@ public class PlayerManagerMixin {
             Optional<Vec3d> optional2, ServerWorld serverWorld2, ServerPlayerEntity serverPlayerEntity) {
         TemperatureManager temperatureManager = ((TemperatureManagerAccess) player).getTemperatureManager();
 
-        EnvironmentServerPacket.writeS2CSyncEnvPacket(player, temperatureManager.isHotEnvAffected(), temperatureManager.isColdEnvAffected());
+        EnvironmentServerPacket.writeS2CSyncEnvPacket(serverPlayerEntity, temperatureManager.isHotEnvAffected(), temperatureManager.isColdEnvAffected());
     }
 }
