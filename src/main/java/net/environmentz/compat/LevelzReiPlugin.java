@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.SmithingRecipe;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 
@@ -21,32 +22,25 @@ public class LevelzReiPlugin implements REIClientPlugin {
 
     @Override
     public void registerDisplays(DisplayRegistry registry) {
-
         if (!TagInit.isAutoTagLoaded) {
             Iterator<Item> iterator = Registry.ITEM.iterator();
             while (iterator.hasNext()) {
                 Item item = iterator.next();
-                if (item instanceof ArmorItem) {
-                    ItemStack itemStack = new ItemStack(item);
-
-                    if (!itemStack.isIn(TagInit.WARM_ARMOR)) {
-                        ItemStack itemStack2 = itemStack.copy();
-                        if (!itemStack2.hasNbt()) {
-                            NbtCompound nbt = new NbtCompound();
-                            nbt.putString("environmentz", "fur_insolated");
-                            itemStack2.setNbt(nbt);
-                        } else
-                            itemStack2.getNbt().putString("environmentz", "fur_insolated");
-
-                        registry.add(new SmithingRecipe(Registry.ITEM.getId(itemStack.getItem()), Ingredient.ofStacks(itemStack), Ingredient.fromTag(TagInit.INSOLATING_ITEM), itemStack2));
-                    }
-                } else
-                    continue;
+                addRecipe(registry, item);
             }
         } else {
             for (RegistryEntry<Item> registryEntry : Registry.ITEM.iterateEntries(TagInit.ARMOR_ITEMS)) {
-                ItemStack itemStack = new ItemStack(registryEntry);
+                addRecipe(registry, registryEntry.value());
+            }
+        }
+    }
 
+    private static void addRecipe(DisplayRegistry registry, Item item) {
+        if (item instanceof ArmorItem) {
+            ItemStack itemStack = new ItemStack(item);
+            Identifier recipeIdentifier = new Identifier(Registry.ITEM.getId(item).getPath() + "_fur_insolated");
+
+            if (registry.getRecipeManager().get(recipeIdentifier).isEmpty()) {
                 if (!itemStack.isIn(TagInit.WARM_ARMOR)) {
                     ItemStack itemStack2 = itemStack.copy();
                     if (!itemStack2.hasNbt()) {
@@ -56,7 +50,7 @@ public class LevelzReiPlugin implements REIClientPlugin {
                     } else
                         itemStack2.getNbt().putString("environmentz", "fur_insolated");
 
-                    registry.add(new SmithingRecipe(Registry.ITEM.getId(itemStack.getItem()), Ingredient.ofStacks(itemStack), Ingredient.fromTag(TagInit.INSOLATING_ITEM), itemStack2));
+                    registry.add(new SmithingRecipe(recipeIdentifier, Ingredient.ofStacks(itemStack), Ingredient.fromTag(TagInit.INSOLATING_ITEM), itemStack2));
                 }
             }
         }
