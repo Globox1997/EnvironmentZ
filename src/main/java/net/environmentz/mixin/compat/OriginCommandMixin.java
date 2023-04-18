@@ -22,7 +22,7 @@ import net.environmentz.network.EnvironmentServerPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings("unused")
 // @Mixin(OriginCommand.class)
 public class OriginCommandMixin {
 

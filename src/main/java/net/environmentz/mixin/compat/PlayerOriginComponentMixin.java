@@ -16,7 +16,8 @@ import net.environmentz.network.EnvironmentServerPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-//@Mixin(PlayerOriginComponent.class)
+@SuppressWarnings("unused")
+// @Mixin(PlayerOriginComponent.class)
 public class PlayerOriginComponentMixin {
 
     // @Shadow
