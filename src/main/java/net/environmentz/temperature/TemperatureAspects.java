@@ -233,11 +233,6 @@ public class TemperatureAspects {
 
         // Effect
         int effectTemperature = effectTemperature(playerEntity, temperatureManager);
-        if (calculatingTemperature < 0 && effectTemperature < 0) {
-            effectTemperature = 0;
-        } else if (calculatingTemperature > 0 && effectTemperature > 0) {
-            effectTemperature = 0;
-        }
         calculatingTemperature += effectTemperature;
         if (ConfigInit.CONFIG.printInConsole) {
             debugString += " Effect: " + effectTemperature;
@@ -326,16 +321,28 @@ public class TemperatureAspects {
         EnvironmentServerPacket.writeS2CThermometerPacket((ServerPlayerEntity) playerEntity, thermometerCalculatingTemperature);
 
         playerTemperature = temperatureManager.getPlayerTemperature() + calculatingTemperature;
+
         // Cutoff
+        // if (environmentCode < 2 && playerTemperature > Temperatures.getBodyTemperatures(4)) {
+        // playerTemperature = Temperatures.getBodyTemperatures(4);
+        // } else if (environmentCode > 2 && playerTemperature < Temperatures.getBodyTemperatures(2)) {
+        // playerTemperature = Temperatures.getBodyTemperatures(2);
+        // } else if (environmentCode < 2 && playerTemperature < Temperatures.getBodyTemperatures(0)) {
+        // playerTemperature = Temperatures.getBodyTemperatures(0);
+        // } else if (environmentCode > 2 && playerTemperature > Temperatures.getBodyTemperatures(6)) {
+        // playerTemperature = Temperatures.getBodyTemperatures(6);
+        // }
+        // New cutoff/strong acclimatization
         if (environmentCode < 2 && playerTemperature > Temperatures.getBodyTemperatures(4)) {
-            playerTemperature = Temperatures.getBodyTemperatures(4);
+            playerTemperature += Temperatures.getAcclimatization(5) * 2;
         } else if (environmentCode > 2 && playerTemperature < Temperatures.getBodyTemperatures(2)) {
-            playerTemperature = Temperatures.getBodyTemperatures(2);
-        } else if (environmentCode < 2 && playerTemperature < Temperatures.getBodyTemperatures(0)) {
+            playerTemperature += Temperatures.getAcclimatization(1) * 2;
+        } else if (playerTemperature < Temperatures.getBodyTemperatures(0)) {
             playerTemperature = Temperatures.getBodyTemperatures(0);
-        } else if (environmentCode > 2 && playerTemperature > Temperatures.getBodyTemperatures(6)) {
+        } else if (playerTemperature > Temperatures.getBodyTemperatures(6)) {
             playerTemperature = Temperatures.getBodyTemperatures(6);
         }
+
         if (!temperatureManager.isColdEnvAffected() && playerTemperature < 0) {
             if (playerTemperature < 0) {
                 EnvironmentServerPacket.writeS2CTemperaturePacket((ServerPlayerEntity) playerEntity, playerTemperature, playerWetness);
@@ -351,8 +358,7 @@ public class TemperatureAspects {
 
         // Debug Print
         if (ConfigInit.CONFIG.printInConsole) {
-            System.out
-                    .println("Total: " + calculatingTemperature + " New Player Tmp: " + (temperatureManager.getPlayerTemperature() + calculatingTemperature) + debugString + " : " + environmentCode);
+            System.out.println("Total: " + calculatingTemperature + " New Player Tmp: " + playerTemperature + debugString + " : " + environmentCode);
         }
 
         // Debuffs
@@ -422,208 +428,6 @@ public class TemperatureAspects {
         }
         temperatureManager.setPlayerTemperature(playerTemperature);
     }
-
-    // Called one time in a second
-    // 0.8 is normal temperature
-    // public static void tickPlayerEnvironment(TemperatureManager temperatureManager, PlayerEntity playerEntity, int environmentTickCount) {
-    // int playerTemperature = temperatureManager.getPlayerTemperature();
-    // float biomeTemperature = playerEntity.world.getBiome(playerEntity.getBlockPos()).value().getTemperature();
-    // int playerPositionHeight = playerEntity.getBlockY();
-
-    // // System.out.println("Temperature: " + playerTemperature + " :: " + biomeTemperature + " :: " + temperatureManager.getPlayerHeatProtectionAmount() + " :: "
-    // // + temperatureManager.getPlayerColdProtectionAmount() + " :: " + temperatureManager.getPlayerWetIntensityValue());
-
-    // // playerEntity.world.getDimensionKey().getValue().toString();
-
-    // // Cold environment
-    // if (biomeTemperature <= ConfigInit.CONFIG.biome_cold_temp) {
-    // // decrease protection cause of being in other biometemperature
-    // int heatProtectionAmount = temperatureManager.getPlayerHeatProtectionAmount();
-    // if (heatProtectionAmount > 0)
-    // temperatureManager.setPlayerHeatProtectionAmount(heatProtectionAmount - 1);
-
-    // if (temperatureManager.isColdEnvAffected()) {
-    // int protectiveArmorValue = wearingProtectiveArmorValue(playerEntity);
-    // if (protectiveArmorValue != 5) {
-    // int coldResistanceAmount = temperatureManager.getPlayerColdResistance();
-    // if (coldResistanceAmount == 0 || environmentTickCount % protectiveArmorValue == 0) { // needs an improvement here
-    // int coldProtectionAmount = temperatureManager.getPlayerColdProtectionAmount();
-    // if (coldProtectionAmount <= 0) {
-    // if (playerTemperature > -120)
-    // playerTemperature = playerTemperature - (temperatureManager.getPlayerWetIntensityValue() > 0 ? 2 : 1);
-
-    // if (biomeTemperature <= ConfigInit.CONFIG.biome_freeze_temp && playerPositionHeight >= 0)
-    // if (playerTemperature > -240)
-    // playerTemperature = playerTemperature - 1;
-    // } else
-    // temperatureManager.setPlayerColdProtectionAmount(coldProtectionAmount - (biomeTemperature <= ConfigInit.CONFIG.biome_freeze_temp ? 2 : 1));
-
-    // // Height check
-    // if (playerTemperature > -240 && playerPositionHeight > playerEntity.world.getDimension().height() / 0.9f)
-    // playerTemperature = playerTemperature - 1;
-
-    // } else if (coldResistanceAmount > 0)
-    // temperatureManager.setPlayerColdResistance(coldResistanceAmount - 1);
-    // }
-    // }
-    // // Hot environment
-    // } else if (biomeTemperature >= ConfigInit.CONFIG.biome_hot_temp) {
-    // // decrease protection cause of being in other biometemperature
-    // int coldProtectionAmount = temperatureManager.getPlayerColdProtectionAmount();
-    // if (coldProtectionAmount > 0)
-    // temperatureManager.setPlayerColdProtectionAmount(coldProtectionAmount - 1);
-
-    // if (temperatureManager.isHotEnvAffected()) {
-    // int armorPartsValue = wearsArmorPartsValue(playerEntity);
-    // if (armorPartsValue > 0 && ((playerEntity.world.isSkyVisible(playerEntity.getBlockPos()) && playerEntity.world.isDay())
-    // || (ConfigInit.CONFIG.ultrawarm_dimension_heat && playerEntity.world.getDimension().ultrawarm()))) {
-    // int heatResistanceAmount = temperatureManager.getPlayerHeatResistance();
-    // if (heatResistanceAmount == 0) {// || environmentTickCount % Math.abs(heatResistanceAmount - 12) != 0
-    // int hotProtectionAmount = temperatureManager.getPlayerHeatProtectionAmount();
-    // if (hotProtectionAmount <= 0) {
-    // if (playerTemperature < 120)
-    // playerTemperature = playerTemperature + (temperatureManager.getPlayerWetIntensityValue() > 0 ? 1 : 2) + armorPartsValue;
-    // if (biomeTemperature >= ConfigInit.CONFIG.biome_overheat_temp) {
-    // if (playerTemperature < 240)
-    // playerTemperature = playerTemperature + 1;
-    // if (isDehydrationLoaded && !ConfigInit.CONFIG.exhaustion_instead_dehydration)
-    // ((ThirstManagerAccess) playerEntity).getThirstManager().addDehydration(ConfigInit.CONFIG.overheating_exhaustion);
-    // }
-    // if (isDehydrationLoaded && !ConfigInit.CONFIG.exhaustion_instead_dehydration) {
-    // ThirstManager thirstManager = ((ThirstManagerAccess) playerEntity).getThirstManager();
-    // if (thirstManager.getThirstLevel() > 8)
-    // playerTemperature = playerTemperature - 1;
-    // }
-    // // Height check
-    // if (playerTemperature > 120 && !playerEntity.world.getDimension().ultrawarm()
-    // && (playerPositionHeight > playerEntity.world.getDimension().height() / 0.9f || playerPositionHeight < 0))
-    // playerTemperature = playerTemperature - 1;
-    // } else
-    // temperatureManager.setPlayerHeatProtectionAmount(hotProtectionAmount - (biomeTemperature >= ConfigInit.CONFIG.biome_overheat_temp ? 2 : 1));
-    // } else if (heatResistanceAmount > 0)
-    // temperatureManager.setPlayerHeatResistance(heatResistanceAmount - 1);
-    // }
-    // }
-    // // Neutral environment
-    // } else {
-    // if (playerTemperature < 0)
-    // playerTemperature = playerTemperature + (playerEntity.isSprinting() ? 2 : 1);
-    // else if (playerTemperature > 0)
-    // playerTemperature = playerTemperature - 1;
-    // }
-    // // Heat block check
-    // if (!playerEntity.world.getDimension().ultrawarm()) {
-    // for (int i = -ConfigInit.CONFIG.heat_block_radius; i <= ConfigInit.CONFIG.heat_block_radius; i++) {
-    // for (int u = -ConfigInit.CONFIG.heat_block_radius; u <= ConfigInit.CONFIG.heat_block_radius; u++) {
-    // for (int o = -ConfigInit.CONFIG.heat_block_radius; o <= ConfigInit.CONFIG.heat_block_radius; o++) {
-
-    // // Block{minecraft:campfire}[facing=east,lit=true,signal_fire=false,waterlogged=false] : Block{minecraft:campfire}
-
-    // System.out.println(playerEntity.world.getBlockState(playerEntity.getBlockPos().add(i, u, o)) + " : "
-    // + playerEntity.world.getBlockState(playerEntity.getBlockPos().add(i, u, o)).getBlock());
-    // // playerEntity.world.getBlockState(playerEntity.getBlockPos().add(i, u, o)).getBlock();
-
-    // // int coldProtectionAmount = temperatureManager.getPlayerColdProtectionAmount();
-    // // if (coldProtectionAmount < ConfigInit.CONFIG.max_cold_protection_amount)
-    // // temperatureManager.setPlayerColdProtectionAmount(coldProtectionAmount + strength + 1);
-    // // int playerTemperature = temperatureManager.getPlayerTemperature();
-    // // if (playerTemperature < 0)
-    // // temperatureManager.setPlayerTemperature(playerTemperature + strength);
-
-    // // // Send packet for thermometer update
-    // // EnvironmentServerPacket.writeS2CThermometerCalmPacket((ServerPlayerEntity) playerEntity, isFire ? 140 : 80);
-
-    // // blockList.add(playerEntity.world.getBlockState(playerEntity.getBlockPos().add(i, u, o)));
-    // }
-    // }
-    // }
-    // }
-    // // Wet calculation
-    // if (temperatureManager.getPlayerWetIntensityValue() > 0) {
-    // int wetRemovalValue = 1;
-    // // if (temperatureManager.getPlayerColdProtectionAmount() > 0)
-    // // wetRemovalValue += 2;
-    // temperatureManager.setPlayerWetIntensityValue(temperatureManager.getPlayerWetIntensityValue() - wetRemovalValue);
-    // }
-    // // Wetness set
-    // if (playerEntity.isTouchingWaterOrRain()) {
-    // if (playerEntity.isTouchingWater())
-    // temperatureManager.setPlayerWetIntensityValue(120);
-    // else if (((EntityAccessor) playerEntity).callIsBeingRainedOn()) {
-    // int waterIntensityValue = temperatureManager.getPlayerWetIntensityValue();
-    // if (waterIntensityValue < 120)
-    // temperatureManager.setPlayerWetIntensityValue(waterIntensityValue + 6);
-    // }
-    // }
-    // // Attributes on temperature
-    // if (playerTemperature != 0) {// && playerTemperature % 10 == 0
-    // EntityAttributeInstance entitySpeedAttributeInstance = playerEntity.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-    // EntityAttributeInstance entityStrengthAttributeInstance = playerEntity.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-    // EntityAttributeInstance entityAttackSpeedAttributeInstance = playerEntity.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_SPEED);
-    // if (playerTemperature > -30 && playerTemperature < 30) {
-    // if (entitySpeedAttributeInstance.hasModifier(COLD_DEBUFF))
-    // entitySpeedAttributeInstance.removeModifier(COLD_DEBUFF);
-
-    // if (entityStrengthAttributeInstance.hasModifier(HOT_DEBUFF))
-    // entityStrengthAttributeInstance.removeModifier(HOT_DEBUFF);
-
-    // } else if (playerTemperature <= -120) {
-    // int coldProtectionAmount = temperatureManager.getPlayerColdProtectionAmount();
-    // if (playerTemperature <= -220) {
-    // if (!entitySpeedAttributeInstance.hasModifier(FREEZING_DEBUFF) && coldProtectionAmount <= 0) {
-    // entitySpeedAttributeInstance.addTemporaryModifier(FREEZING_DEBUFF);
-    // if (!entityAttackSpeedAttributeInstance.hasModifier(GENERAL_DEBUFF))
-    // entityAttackSpeedAttributeInstance.addTemporaryModifier(GENERAL_DEBUFF);
-    // }
-    // if (entitySpeedAttributeInstance.hasModifier(COLD_DEBUFF))
-    // entitySpeedAttributeInstance.removeModifier(COLD_DEBUFF);
-    // } else {
-    // if (!entitySpeedAttributeInstance.hasModifier(COLD_DEBUFF) && coldProtectionAmount <= 0) {
-    // entitySpeedAttributeInstance.addTemporaryModifier(COLD_DEBUFF);
-    // }
-    // if (entitySpeedAttributeInstance.hasModifier(FREEZING_DEBUFF)) {
-    // entitySpeedAttributeInstance.removeModifier(FREEZING_DEBUFF);
-    // if (entityAttackSpeedAttributeInstance.hasModifier(GENERAL_DEBUFF))
-    // entityAttackSpeedAttributeInstance.removeModifier(GENERAL_DEBUFF);
-    // }
-    // }
-
-    // } else if (playerTemperature >= 120) {
-    // int hotProtectionAmount = temperatureManager.getPlayerHeatProtectionAmount();
-    // if (playerTemperature >= 220) {
-    // if (!entityStrengthAttributeInstance.hasModifier(OVERHEATING_DEBUFF) && hotProtectionAmount <= 0) {
-    // entityStrengthAttributeInstance.addTemporaryModifier(OVERHEATING_DEBUFF);
-    // if (!entityAttackSpeedAttributeInstance.hasModifier(GENERAL_DEBUFF))
-    // entityAttackSpeedAttributeInstance.addTemporaryModifier(GENERAL_DEBUFF);
-    // }
-    // if (entityStrengthAttributeInstance.hasModifier(HOT_DEBUFF))
-    // entityStrengthAttributeInstance.removeModifier(HOT_DEBUFF);
-    // } else {
-    // if (!entityStrengthAttributeInstance.hasModifier(HOT_DEBUFF) && hotProtectionAmount <= 0)
-    // entityStrengthAttributeInstance.addTemporaryModifier(HOT_DEBUFF);
-    // if (entityStrengthAttributeInstance.hasModifier(OVERHEATING_DEBUFF)) {
-    // entityStrengthAttributeInstance.removeModifier(OVERHEATING_DEBUFF);
-    // if (entityAttackSpeedAttributeInstance.hasModifier(GENERAL_DEBUFF))
-    // entityAttackSpeedAttributeInstance.removeModifier(GENERAL_DEBUFF);
-    // }
-    // }
-
-    // }
-    // }
-
-    // if (playerTemperature <= -240)
-    // playerEntity.damage(FREEZING_DAMAGE, 1.0F);
-    // else if (playerTemperature >= 240) {
-    // if (isDehydrationLoaded && !ConfigInit.CONFIG.exhaustion_instead_dehydration)
-    // ((ThirstManagerAccess) playerEntity).getThirstManager().addDehydration(ConfigInit.CONFIG.overheating_exhaustion);
-    // else
-    // playerEntity.addExhaustion(ConfigInit.CONFIG.overheating_exhaustion);
-    // }
-    // // Set temp and send packet
-    // temperatureManager.setPlayerTemperature(playerTemperature);
-    // if ((playerTemperature != 0 && playerTemperature % 2 == 0) || (temperatureManager.getPlayerWetIntensityValue() != 0 && temperatureManager.getPlayerWetIntensityValue() % 2 == 0))
-    // EnvironmentServerPacket.writeS2CTemperaturePacket((ServerPlayerEntity) playerEntity, playerTemperature, temperatureManager.getPlayerWetIntensityValue());
-    // }
 
     private static int playerArmorTemperature(PlayerEntity playerEntity, Identifier dimensionIdentifier, int environmentCode) {
         int returnValue = 0;
@@ -727,8 +531,11 @@ public class TemperatureAspects {
         if (iterator.hasNext()) {
             Identifier identifier = Registry.STATUS_EFFECT.getId(iterator.next().getEffectType());
             if (Temperatures.hasEffectTemperature(identifier)) {
-                returnValue += Temperatures.getEffectValue(identifier, 0);
-
+                int effectValue = Temperatures.getEffectValue(identifier, 0);
+                if ((temperatureManager.getPlayerTemperature() < Temperatures.getBodyTemperatures(3) && effectValue > 0)
+                        || (temperatureManager.getPlayerTemperature() > Temperatures.getBodyTemperatures(3) && effectValue < 0)) {
+                    returnValue += effectValue;
+                }
                 if (Temperatures.getEffectValue(identifier, 1) != 0 && Temperatures.getBodyProtection(0) > temperatureManager.getPlayerHeatProtectionAmount()) {
                     int heatProtectionAddition = Temperatures.getEffectValue(identifier, 1) + temperatureManager.getPlayerHeatProtectionAmount();
                     if (heatProtectionAddition > Temperatures.getBodyProtection(0)) {
@@ -747,94 +554,6 @@ public class TemperatureAspects {
         }
         return returnValue;
     }
-
-    // public static int wearsArmorPartsValue(PlayerEntity playerEntity) {
-    // ItemStack headStack = playerEntity.getEquippedStack(EquipmentSlot.HEAD);
-    // ItemStack chestStack = playerEntity.getEquippedStack(EquipmentSlot.CHEST);
-    // ItemStack legStack = playerEntity.getEquippedStack(EquipmentSlot.LEGS);
-    // ItemStack feetStack = playerEntity.getEquippedStack(EquipmentSlot.FEET);
-
-    // int returnValue = 0;
-    // if (!headStack.isEmpty() || !headStack.isIn(TagInit.ALLOWED_ARMOR)) {
-    // returnValue++;
-    // }
-    // if (!chestStack.isEmpty() || !chestStack.isIn(TagInit.ALLOWED_ARMOR)) {
-    // returnValue++;
-    // }
-    // if (!legStack.isEmpty() || !legStack.isIn(TagInit.ALLOWED_ARMOR)) {
-    // returnValue++;
-    // }
-    // if (!feetStack.isEmpty() || !feetStack.isIn(TagInit.ALLOWED_ARMOR)) {
-    // returnValue++;
-    // }
-    // return returnValue;
-
-    // }
-
-    // private static int wearingProtectiveArmorValue(PlayerEntity playerEntity) {
-    // boolean allowAllArmor = ConfigInit.CONFIG.allow_all_armor;
-
-    // ItemStack headStack = playerEntity.getEquippedStack(EquipmentSlot.HEAD);
-    // ItemStack chestStack = playerEntity.getEquippedStack(EquipmentSlot.CHEST);
-    // ItemStack legStack = playerEntity.getEquippedStack(EquipmentSlot.LEGS);
-    // ItemStack feetStack = playerEntity.getEquippedStack(EquipmentSlot.FEET);
-
-    // int returnValue = 1;
-    // if (headStack.isIn(TagInit.WARM_ARMOR) || (allowAllArmor && !headStack.isEmpty()) || (headStack.hasNbt() && headStack.getNbt().contains("environmentz"))) {
-    // returnValue++;
-    // }
-    // if (chestStack.isIn(TagInit.WARM_ARMOR) || (allowAllArmor && !chestStack.isEmpty()) || (chestStack.hasNbt() && chestStack.getNbt().contains("environmentz"))) {
-    // returnValue++;
-    // }
-    // if (legStack.isIn(TagInit.WARM_ARMOR) || (allowAllArmor && !legStack.isEmpty()) || (legStack.hasNbt() && legStack.getNbt().contains("environmentz"))) {
-    // returnValue++;
-    // }
-    // if (feetStack.isIn(TagInit.WARM_ARMOR) || (allowAllArmor && !feetStack.isEmpty()) || (feetStack.hasNbt() && feetStack.getNbt().contains("environmentz"))) {
-    // returnValue++;
-    // }
-    // return returnValue;
-    // }
-
-    // public static void heatPlayerWithItem(PlayerEntity playerEntity, int strength) {
-    // TemperatureManager temperatureManager = ((TemperatureManagerAccess) playerEntity).getTemperatureManager();
-
-    // int playerTemperature = temperatureManager.getPlayerTemperature();
-    // if (playerTemperature < 0)
-    // temperatureManager.setPlayerTemperature(playerTemperature + strength);
-    // }
-
-    // public static void heatPlayerWithBlock(@Nullable PlayerEntity playerEntity, World world, BlockPos pos, int range, int strength, boolean isFire) {
-    // if (playerEntity != null) {
-    // TemperatureManager temperatureManager = ((TemperatureManagerAccess) playerEntity).getTemperatureManager();
-
-    // int coldProtectionAmount = temperatureManager.getPlayerColdProtectionAmount();
-    // if (coldProtectionAmount < ConfigInit.CONFIG.max_cold_protection_amount)
-    // temperatureManager.setPlayerColdProtectionAmount(coldProtectionAmount + strength + 1);
-    // int playerTemperature = temperatureManager.getPlayerTemperature();
-    // if (playerTemperature < 0)
-    // temperatureManager.setPlayerTemperature(playerTemperature + strength);
-
-    // // Send packet for thermometer update
-    // EnvironmentServerPacket.writeS2CThermometerCalmPacket((ServerPlayerEntity) playerEntity, isFire ? 140 : 80);
-    // } else {
-    // List<PlayerEntity> list = world.getPlayers(TargetPredicate.createAttackable().setBaseMaxDistance(range), null, new Box(pos).expand(range, range - 1, range));
-    // if (!list.isEmpty())
-    // for (int i = 0; i < list.size(); i++) {
-    // TemperatureManager temperatureManager = ((TemperatureManagerAccess) list.get(i)).getTemperatureManager();
-
-    // int coldProtectionAmount = temperatureManager.getPlayerColdProtectionAmount();
-    // if (coldProtectionAmount < ConfigInit.CONFIG.max_cold_protection_amount)
-    // temperatureManager.setPlayerColdProtectionAmount(coldProtectionAmount + strength + 1);
-    // int playerTemperature = temperatureManager.getPlayerTemperature();
-    // if (playerTemperature < 0)
-    // temperatureManager.setPlayerTemperature(playerTemperature + strength);
-
-    // // Send packet for thermometer update
-    // EnvironmentServerPacket.writeS2CThermometerCalmPacket((ServerPlayerEntity) list.get(i), isFire ? 130 : 70);
-    // }
-    // }
-
-    // }
 
     private static final DamageSource FREEZING_DAMAGE = new DamageSource("freezing") {
 
