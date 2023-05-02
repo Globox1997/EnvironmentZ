@@ -11,11 +11,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class ItemInit {
+    public static final int COOLING_HEATING_VALUE = 120;
     // Item
-    public static final HeatingStones HEATING_STONES_ITEM = new HeatingStones(new Item.Settings().group(ItemGroup.MISC).maxDamage(120));
+    public static final HeatingStones HEATING_STONES_ITEM = new HeatingStones(new Item.Settings().group(ItemGroup.MISC).maxDamage(COOLING_HEATING_VALUE));
     public static final WolfPeltItem WOLF_PELT_ITEM = new WolfPeltItem(new Item.Settings().group(ItemGroup.MISC));
     public static final PolarBearFurItem POLAR_BEAR_FUR_ITEM = new PolarBearFurItem(new Item.Settings().group(ItemGroup.MISC));
-    public static final IcePack ICE_PACK_ITEM = new IcePack(new Item.Settings().group(ItemGroup.MISC).maxDamage(120));
+    public static final IcePack ICE_PACK_ITEM = new IcePack(new Item.Settings().group(ItemGroup.MISC).maxDamage(COOLING_HEATING_VALUE));
     // Armor
     public static final ArmorMaterial WOLF_ARMOR_MATERIAL = new WolfArmorMaterial();
     public static final Item WOLF_HELMET = new WolfArmor(WOLF_ARMOR_MATERIAL, EquipmentSlot.HEAD, new Item.Settings().group(ItemGroup.COMBAT));

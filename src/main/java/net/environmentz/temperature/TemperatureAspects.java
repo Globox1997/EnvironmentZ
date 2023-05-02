@@ -485,6 +485,9 @@ public class TemperatureAspects {
         List<ItemStack> stacks = new ArrayList<ItemStack>();
         stacks.add(playerEntity.getStackInHand(Hand.MAIN_HAND));
         stacks.add(playerEntity.getStackInHand(Hand.OFF_HAND));
+        playerEntity.getItemsEquipped().forEach((stack) -> {
+            stacks.add(stack);
+        });
 
         for (int i = 0; i < stacks.size(); i++) {
             if (stacks.get(i).isEmpty()) {
@@ -492,18 +495,31 @@ public class TemperatureAspects {
             }
             int itemId = Registry.ITEM.getRawId(stacks.get(i).getItem());
             if (Temperatures.hasItemTemperature(itemId)) {
-                if (Temperatures.getItemValue(itemId, -1) != 0 && stacks.get(i).isDamageable()) {
-                    if (stacks.get(i).getMaxDamage() - stacks.get(i).getDamage() > 1) {
-                        if (!playerEntity.isCreative()) {
-                            int damage = Temperatures.getItemValue(itemId, -1);
-                            if (stacks.get(i).getMaxDamage() - stacks.get(i).getDamage() - damage <= 0) {
-                                stacks.get(i).setDamage(0);
-                            } else {
-                                stacks.get(i).damage(damage, playerEntity, (p) -> p.sendToolBreakStatus(p.getActiveHand()));
+                if (Temperatures.getItemValue(itemId, -1) != 0) {
+                    if (stacks.get(i).isIn(TagInit.ARMOR_ITEMS)) {
+                        if (!stacks.get(i).isIn(TagInit.WARM_ARMOR) && stacks.get(i).hasNbt() && stacks.get(i).getNbt().contains("iced")) {
+                            if (!playerEntity.isCreative()) {
+                                int cooling = Temperatures.getItemValue(itemId, -1);
+                                int iced = stacks.get(i).getNbt().getInt("iced") - cooling;
+                                stacks.get(i).getNbt().putInt("iced", iced);
+                                if (iced <= 0) {
+                                    stacks.get(i).getNbt().remove("iced");
+                                }
                             }
                         }
-                    } else
-                        continue;
+                    } else if (stacks.get(i).isDamageable()) {
+                        if (stacks.get(i).getMaxDamage() - stacks.get(i).getDamage() > 1) {
+                            if (!playerEntity.isCreative()) {
+                                int damage = Temperatures.getItemValue(itemId, -1);
+                                if (stacks.get(i).getMaxDamage() - stacks.get(i).getDamage() - damage <= 0) {
+                                    stacks.get(i).setDamage(0);
+                                } else {
+                                    stacks.get(i).damage(damage, playerEntity, (p) -> p.sendToolBreakStatus(p.getActiveHand()));
+                                }
+                            }
+                        } else
+                            continue;
+                    }
                 }
                 returnValue += Temperatures.getItemValue(itemId, 0);
                 if (Temperatures.getItemValue(itemId, 1) != 0 && Temperatures.getBodyProtection(0) > temperatureManager.getPlayerHeatProtectionAmount()) {

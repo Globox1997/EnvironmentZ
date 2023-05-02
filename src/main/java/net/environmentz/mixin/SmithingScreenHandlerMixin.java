@@ -7,10 +7,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.At;
 
+import net.environmentz.init.ItemInit;
 import net.environmentz.init.TagInit;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ShearsItem;
 import net.minecraft.screen.ForgingScreenHandler;
@@ -32,29 +32,35 @@ public abstract class SmithingScreenHandlerMixin extends ForgingScreenHandler {
         ItemStack itemStack = this.input.getStack(0);
         ItemStack itemStack2 = this.input.getStack(1);
 
-        if (itemStack.getItem() instanceof ArmorItem) {
-            this.removedInsulation = false;
-            if (!itemStack.getNbt().contains("environmentz")) {
-                if (itemStack2.isIn(TagInit.INSOLATING_ITEM)) {
-                    ItemStack itemStack3 = itemStack.copy();
-                    NbtCompound tag = new NbtCompound();
-                    if (itemStack3.hasNbt()) {
-                        tag = itemStack3.getNbt();
-                    }
-                    tag.putString("environmentz", "fur_insolated");
-                    itemStack3.setNbt(tag);
-                    this.output.setStack(0, itemStack3);
-                    info.cancel();
-                }
+        if (itemStack.isIn(TagInit.ARMOR_ITEMS) && !itemStack.isIn(TagInit.WARM_ARMOR)) {
+            if (itemStack2.isIn(TagInit.ICE_ITEMS)) {
+                ItemStack itemStack3 = itemStack.copy();
+                NbtCompound tag = itemStack3.getOrCreateNbt();
+                tag.putInt("iced", ItemInit.COOLING_HEATING_VALUE);
+                itemStack3.setNbt(tag);
+                this.output.setStack(0, itemStack3);
+                info.cancel();
             } else {
-                if (itemStack2.getItem() instanceof ShearsItem) {
-                    ItemStack itemStack3 = itemStack.copy();
-                    NbtCompound tag = itemStack3.getNbt();
-                    tag.remove("environmentz");
-                    itemStack3.setNbt(tag);
-                    this.output.setStack(0, itemStack3);
-                    this.removedInsulation = true;
-                    info.cancel();
+                this.removedInsulation = false;
+                if (!itemStack.getNbt().contains("environmentz")) {
+                    if (itemStack2.isIn(TagInit.INSOLATING_ITEM)) {
+                        ItemStack itemStack3 = itemStack.copy();
+                        NbtCompound tag = itemStack3.getOrCreateNbt();
+                        tag.putString("environmentz", "fur_insolated");
+                        itemStack3.setNbt(tag);
+                        this.output.setStack(0, itemStack3);
+                        info.cancel();
+                    }
+                } else {
+                    if (itemStack2.getItem() instanceof ShearsItem) {
+                        ItemStack itemStack3 = itemStack.copy();
+                        NbtCompound tag = itemStack3.getNbt();
+                        tag.remove("environmentz");
+                        itemStack3.setNbt(tag);
+                        this.output.setStack(0, itemStack3);
+                        this.removedInsulation = true;
+                        info.cancel();
+                    }
                 }
             }
         }
@@ -64,8 +70,8 @@ public abstract class SmithingScreenHandlerMixin extends ForgingScreenHandler {
     public void canTakeOutputMixin(PlayerEntity player, boolean present, CallbackInfoReturnable<Boolean> info) {
         ItemStack itemStack = this.input.getStack(0);
         ItemStack itemStack2 = this.input.getStack(1);
-        if (itemStack.getItem() instanceof ArmorItem && ((itemStack2.isIn(TagInit.INSOLATING_ITEM) && !itemStack.getNbt().contains("environmentz"))
-                || (itemStack2.getItem() instanceof ShearsItem && itemStack.getNbt().contains("environmentz")))) {
+        if (itemStack.isIn(TagInit.ARMOR_ITEMS) && ((itemStack2.isIn(TagInit.INSOLATING_ITEM) && !itemStack.getNbt().contains("environmentz"))
+                || (itemStack2.getItem() instanceof ShearsItem && itemStack.getNbt().contains("environmentz")) || (itemStack2.isIn(TagInit.ICE_ITEMS)))) {
             info.setReturnValue(true);
         }
     }

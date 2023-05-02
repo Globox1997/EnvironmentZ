@@ -17,6 +17,7 @@ loom {
 repositories {
 	maven { url "https://maven.shedaniel.me/" }
 	maven { url "https://www.cursemaven.com" }
+	maven { url "https://maven.willbl.dev/releases" }
 	maven { url 'https://jitpack.io' }
 	maven { url "https://maven.terraformersmc.com/" }
 	maven { url "https://api.modrinth.com/maven" }
@@ -40,6 +41,12 @@ dependencies {
 	modCompileOnly modRuntimeOnly("com.terraformersmc:modmenu:${project.mod_menu_version}"),{
 		exclude(group: "net.fabricmc.fabric-api")
 	}
+	// Autotag
+	modImplementation ("com.github.apace100:autotag-api:${autotag_version}")
+	modImplementation ("com.github.apace100:autotag:${autotag_version}")
+	// Satin
+	modImplementation "io.github.ladysnake:satin:${satin_version}"
+	include "io.github.ladysnake:satin:${satin_version}"
 	// Dehydration
 	modCompileOnly ("curse.maven:dehydration-410830:4024337"),{
 	    exclude(group: "net.fabricmc.fabric-api")
@@ -47,29 +54,6 @@ dependencies {
 		exclude(group: "io.github.prospector")
 		exclude(group: "curse.maven:motschens-puddles-463169")
 	}
-	// Origins
-	// modCompileOnly ("curse.maven:origins-391943:4044263"),{
-	//     exclude(group: "net.fabricmc.fabric-api")
-	// 	exclude(group: "me.shedaniel.cloth")
-	// 	exclude(group: "io.github.prospector")
-	// 	exclude(group: "com.github.DaFuqs")
-	// }
-	// modCompileOnly "com.github.apace100:apoli:v2.6.0"
-    //modCompileOnly "com.github.DaFuqs:AdditionalEntityAttributes:8d8c41489b"
-	// modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.0.2")
-	// modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.0.2")
-	 
-	// modCompileOnly ("com.github.apace100:origins-fabric:v1.7.1"),{
-	// 	exclude(group: "net.fabricmc.fabric-api")
-	// 	exclude(group: "maven.modrinth")
-	// 	exclude(group: "me.shedaniel.cloth")
-	// 	exclude(group: "com.github.DaFuqs")
-	// }
-	// modCompileOnly "com.github.apace100:apoli:v2.6.0"
-
-	// Satin
-	modImplementation "io.github.ladysnake:satin:${satin_version}"
-	include "io.github.ladysnake:satin:${satin_version}"
 	// REI
     modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:9.1.587"
     // EMI
