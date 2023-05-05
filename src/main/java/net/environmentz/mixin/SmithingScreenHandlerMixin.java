@@ -67,7 +67,7 @@ public abstract class SmithingScreenHandlerMixin extends ForgingScreenHandler {
     }
 
     @Inject(method = "canTakeOutput", at = @At("HEAD"), cancellable = true)
-    public void canTakeOutputMixin(PlayerEntity player, boolean present, CallbackInfoReturnable<Boolean> info) {
+    protected void canTakeOutputMixin(PlayerEntity player, boolean present, CallbackInfoReturnable<Boolean> info) {
         ItemStack itemStack = this.input.getStack(0);
         ItemStack itemStack2 = this.input.getStack(1);
         if (itemStack.isIn(TagInit.ARMOR_ITEMS) && ((itemStack2.isIn(TagInit.INSOLATING_ITEM) && !itemStack.getNbt().contains("environmentz"))
