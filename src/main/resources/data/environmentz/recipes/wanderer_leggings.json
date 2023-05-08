@@ -1,13 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "aaa",
+    "aba",
     "a a",
     "a a"
   ],
   "key": {
     "a": {
-      "tag": "minecraft:wool"
+      "item": "minecraft:paper"
+    },
+    "b": {
+      "item": "minecraft:string"
     }
   },
   "result": {
