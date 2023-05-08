@@ -12,6 +12,7 @@
     "ServerPlayerEntityMixin",
     "PlayerManagerMixin",
     "PowderSnowBlockMixin",
+    "SpawnLocatingMixin",
     "access.EntityAccessor"
   ],
   "client": [
@@ -20,7 +21,8 @@
     "client.HeadFeatureRendererMixin",
     "client.PlayerEntityRendererMixin",
     "client.GameRendererMixin",
-    "client.ItemRendererMixin"
+    "client.ItemRendererMixin",
+    "client.ArmorFeatureRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

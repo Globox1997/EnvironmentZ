@@ -14,6 +14,9 @@ public class EnvironmentzConfig implements ConfigData {
     @Comment("Increase for less harsh environments")
     public int temperature_calculation_time = 20;
     @ConfigEntry.Category("general_settings")
+    @Comment("Try find an easy world spawn point")
+    public boolean easy_world_spawn = true;
+    @ConfigEntry.Category("general_settings")
     public int icon_x = 7;
     @ConfigEntry.Category("general_settings")
     public int icon_y = 52;
