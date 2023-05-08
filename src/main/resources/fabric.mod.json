@@ -45,5 +45,11 @@
   },
   "suggests": {
     "dehydration": "*"
+  },
+  "custom": {
+    "mc-publish": {
+      "modrinth": "TggYmc6t",
+      "curseforge": 410224
+    }
   }
 }
