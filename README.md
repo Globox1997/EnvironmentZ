@@ -142,6 +142,13 @@ An example to customize dimension temperatures:
             "hot": 2,
             "very_hot": 3
         },
+        "iced_armor": { // can have float values
+            "very_cold": -5,
+            "cold": -5,
+            "normal": -5,
+            "hot": -5,
+            "very_hot": -5
+        },
         "soaked": { // if player is soaked
             "very_cold": -8,
             "cold": -6,
