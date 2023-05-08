@@ -7,9 +7,11 @@ import ladysnake.satin.api.managed.uniform.Uniform1f;
 import net.environmentz.entity.model.WolfHelmetModel;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.item.DyeableItem;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -26,13 +28,17 @@ public class RenderInit {
     public static void init() {
         EntityModelLayerRegistry.registerModelLayer(WOLF_HELMET_LAYER, WolfHelmetModel::getTexturedModelData);
 
-        if (ConfigInit.CONFIG.blur_screen_effect)
+        if (ConfigInit.CONFIG.blur_screen_effect) {
             ShaderEffectRenderCallback.EVENT.register((deltaTick) -> {
                 if (blurProgressValue > 0.01F && client.player != null && !client.player.isCreative() && !client.player.isSpectator()) {
                     blurProgress.set(blurProgressValue);
                     blurringEffect.render(deltaTick);
                 }
             });
+        }
+
+        ColorProviderRegistry.ITEM.register((stack, tintIndex) -> tintIndex > 0 ? -1 : ((DyeableItem) stack.getItem()).getColor(stack), ItemInit.WANDERER_HELMET, ItemInit.WANDERER_CHESTPLATE,
+                ItemInit.WANDERER_LEGGINGS, ItemInit.WANDERER_BOOTS);
     }
 
     public static void setBlurProgress(float blurProgress) {

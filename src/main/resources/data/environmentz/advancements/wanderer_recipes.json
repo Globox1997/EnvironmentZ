@@ -1,0 +1,25 @@
+{
+    "parent": "minecraft:recipes/root",
+    "rewards": {
+        "recipes": [
+            "environmentz:wanderer_boots",
+            "environmentz:wanderer_chestplate",
+            "environmentz:wanderer_helmet",
+            "environmentz:wanderer_leggings"
+        ]
+    },
+    "criteria": {
+        "got_wanderer_things": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "minecraft:white_wool"
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

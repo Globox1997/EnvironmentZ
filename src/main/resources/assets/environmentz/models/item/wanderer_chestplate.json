@@ -1,0 +1,8 @@
+{
+    "credit": "Made by Pois1x",
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "environmentz:item/wanderer_chestplate",
+        "layer1": "environmentz:item/wanderer_chestplate_overlay"
+    }
+}

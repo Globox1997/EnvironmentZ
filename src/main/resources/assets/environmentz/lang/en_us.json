@@ -10,6 +10,7 @@
   "text.autoconfig.environmentz.category.general_settings": "General Settings",
 
   "text.autoconfig.environmentz.option.temperature_calculation_time": "Temperature Calculation Time",
+  "text.autoconfig.environmentz.option.easy_world_spawn": "Easy World Spawn",
   "text.autoconfig.environmentz.option.icon_x": "Icon X Position",
   "text.autoconfig.environmentz.option.icon_y": "Icon Y Position",
   "text.autoconfig.environmentz.option.thermometer_icon_x": "Thermometer Icon X Position",
@@ -44,6 +45,10 @@
   "item.environmentz.wolf_chestplate": "Wolf Pelt Chestplate",
   "item.environmentz.wolf_leggings": "Wolf Pelt Leggings",
   "item.environmentz.wolf_boots": "Wolf Pelt Boots",
+  "item.environmentz.wanderer_helmet": "Wanderer Keffiyeh",
+  "item.environmentz.wanderer_chestplate": "Wanderer Thawb",
+  "item.environmentz.wanderer_leggings": "Wanderer Leggings",
+  "item.environmentz.wanderer_boots": "Wanderer Boots",
   "item.environmentz.fur_insolated.tooltip": "Insulated",
   "item.environmentz.iced.tooltip": "Cooled",
 

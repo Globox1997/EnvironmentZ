@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "a a",
+    "aaa",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "tag": "minecraft:wool"
+    }
+  },
+  "result": {
+    "item": "environmentz:wanderer_chestplate"
+  }
+}
