@@ -200,6 +200,9 @@ public class TemperatureManagerLoader implements SimpleSynchronousResourceReload
                                         jsonObject.get("insulated_armor").getAsFloat(), jsonObject.get("insulated_armor").getAsFloat(), jsonObject.get("insulated_armor").getAsFloat(),
                                         jsonObject.get("insulated_armor").getAsFloat());
 
+                                Temperatures.setDimensionIcedArmorTemperatures(dimensionIdentifier, jsonObject.get("iced_armor").getAsFloat(), jsonObject.get("iced_armor").getAsFloat(),
+                                        jsonObject.get("iced_armor").getAsFloat(), jsonObject.get("iced_armor").getAsFloat(), jsonObject.get("iced_armor").getAsFloat());
+
                                 Temperatures.setDimensionSoakedTemperatures(dimensionIdentifier, jsonObject.get("soaked").getAsInt(), jsonObject.get("soaked").getAsInt(),
                                         jsonObject.get("soaked").getAsInt(), jsonObject.get("soaked").getAsInt(), jsonObject.get("soaked").getAsInt());
 
@@ -241,6 +244,10 @@ public class TemperatureManagerLoader implements SimpleSynchronousResourceReload
                                 Temperatures.setDimensionInsulatedArmorTemperatures(dimensionIdentifier, jsonObject.get("insulated_armor").getAsJsonObject().get("very_cold").getAsFloat(),
                                         jsonObject.get("insulated_armor").getAsJsonObject().get("cold").getAsFloat(), jsonObject.get("insulated_armor").getAsJsonObject().get("normal").getAsFloat(),
                                         jsonObject.get("insulated_armor").getAsJsonObject().get("hot").getAsFloat(), jsonObject.get("insulated_armor").getAsJsonObject().get("very_hot").getAsFloat());
+
+                                Temperatures.setDimensionIcedArmorTemperatures(dimensionIdentifier, jsonObject.get("iced_armor").getAsJsonObject().get("very_cold").getAsFloat(),
+                                        jsonObject.get("iced_armor").getAsJsonObject().get("cold").getAsFloat(), jsonObject.get("iced_armor").getAsJsonObject().get("normal").getAsFloat(),
+                                        jsonObject.get("iced_armor").getAsJsonObject().get("hot").getAsFloat(), jsonObject.get("iced_armor").getAsJsonObject().get("very_hot").getAsFloat());
 
                                 Temperatures.setDimensionSoakedTemperatures(dimensionIdentifier, jsonObject.get("soaked").getAsJsonObject().get("very_cold").getAsInt(),
                                         jsonObject.get("soaked").getAsJsonObject().get("cold").getAsInt(), jsonObject.get("soaked").getAsJsonObject().get("normal").getAsInt(),

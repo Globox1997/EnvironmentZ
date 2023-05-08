@@ -356,13 +356,8 @@ public class TemperatureAspects {
             playerTemperature = 0;
         }
 
-        // Debug Print
-        if (ConfigInit.CONFIG.printInConsole) {
-            System.out.println("Total: " + calculatingTemperature + " New Player Tmp: " + playerTemperature + debugString + " : " + environmentCode);
-        }
-
         // Debuffs
-        if (playerTemperature != 0 && playerTemperature % 10 == 0) {
+        if (playerTemperature != 0 && playerTemperature % 2 == 0) {
             EntityAttributeInstance entitySpeedAttributeInstance = playerEntity.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
             EntityAttributeInstance entityStrengthAttributeInstance = playerEntity.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE);
             EntityAttributeInstance entityAttackSpeedAttributeInstance = playerEntity.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_SPEED);
@@ -411,7 +406,18 @@ public class TemperatureAspects {
                     }
                 }
             }
+
+            if (ConfigInit.CONFIG.printInConsole) {
+                debugString += " Cold Debuff: " + entitySpeedAttributeInstance.hasModifier(COLD_DEBUFF);
+                debugString += " Hot Debuff: " + entitySpeedAttributeInstance.hasModifier(HOT_DEBUFF);
+            }
         }
+
+        // Debug Print
+        if (ConfigInit.CONFIG.printInConsole) {
+            System.out.println("Total: " + calculatingTemperature + " New Player Tmp: " + playerTemperature + debugString + " : " + environmentCode);
+        }
+
         // Damage or exhaustion
         if (playerTemperature <= Temperatures.getBodyTemperatures(0)) {
             playerEntity.damage(FREEZING_DAMAGE, 1.0F);
@@ -433,11 +439,21 @@ public class TemperatureAspects {
         int returnValue = 0;
         for (int i = 0; i < playerEntity.getInventory().armor.size(); i++) {
             ItemStack stack = playerEntity.getInventory().armor.get(i);
-            if (!stack.isEmpty() && !stack.isIn(TagInit.NON_AFFECTING_ARMOR)) {
-                if ((stack.hasNbt() && stack.getNbt().contains("environmentz")) || stack.isIn(TagInit.WARM_ARMOR)) {
-                    returnValue += Temperatures.getDimensionInsulatedArmorTemperatures(dimensionIdentifier, environmentCode);
-                } else {
-                    returnValue += Temperatures.getDimensionArmorTemperatures(dimensionIdentifier, environmentCode);
+            if (!stack.isEmpty()) {
+                if (!stack.isIn(TagInit.NON_AFFECTING_ARMOR)) {
+                    if ((stack.hasNbt() && stack.getNbt().contains("environmentz")) || stack.isIn(TagInit.WARM_ARMOR)) {
+                        returnValue += Temperatures.getDimensionInsulatedArmorTemperatures(dimensionIdentifier, environmentCode);
+                    } else {
+                        returnValue += Temperatures.getDimensionArmorTemperatures(dimensionIdentifier, environmentCode);
+                    }
+                }
+                if (!stack.isIn(TagInit.WARM_ARMOR) && stack.hasNbt() && stack.getNbt().contains("iced")) {
+                    returnValue += Temperatures.getDimensionIcedArmorTemperatures(dimensionIdentifier, environmentCode);
+                    int iced = stack.getNbt().getInt("iced") - 1;
+                    stack.getNbt().putInt("iced", iced);
+                    if (iced <= 0) {
+                        stack.getNbt().remove("iced");
+                    }
                 }
             }
         }
@@ -496,18 +512,7 @@ public class TemperatureAspects {
             int itemId = Registry.ITEM.getRawId(stacks.get(i).getItem());
             if (Temperatures.hasItemTemperature(itemId)) {
                 if (Temperatures.getItemValue(itemId, -1) != 0) {
-                    if (stacks.get(i).isIn(TagInit.ARMOR_ITEMS)) {
-                        if (!stacks.get(i).isIn(TagInit.WARM_ARMOR) && stacks.get(i).hasNbt() && stacks.get(i).getNbt().contains("iced")) {
-                            if (!playerEntity.isCreative()) {
-                                int cooling = Temperatures.getItemValue(itemId, -1);
-                                int iced = stacks.get(i).getNbt().getInt("iced") - cooling;
-                                stacks.get(i).getNbt().putInt("iced", iced);
-                                if (iced <= 0) {
-                                    stacks.get(i).getNbt().remove("iced");
-                                }
-                            }
-                        }
-                    } else if (stacks.get(i).isDamageable()) {
+                    if (stacks.get(i).isDamageable() && !stacks.get(i).isIn(TagInit.ARMOR_ITEMS)) {
                         if (stacks.get(i).getMaxDamage() - stacks.get(i).getDamage() > 1) {
                             if (!playerEntity.isCreative()) {
                                 int damage = Temperatures.getItemValue(itemId, -1);

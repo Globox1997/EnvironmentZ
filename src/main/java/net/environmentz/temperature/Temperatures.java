@@ -65,6 +65,8 @@ public class Temperatures {
     private static HashMap<Identifier, HashMap<Integer, Float>> dimensionArmorTemperatures = new HashMap<Identifier, HashMap<Integer, Float>>();
     // dimension insolated armor temperature
     private static HashMap<Identifier, HashMap<Integer, Float>> dimensionInsulatedArmorTemperatures = new HashMap<Identifier, HashMap<Integer, Float>>();
+    // dimension iced armor temperature
+    private static HashMap<Identifier, HashMap<Integer, Float>> dimensionIcedArmorTemperatures = new HashMap<Identifier, HashMap<Integer, Float>>();
     // dimension soaked temperature
     private static HashMap<Identifier, HashMap<Integer, Integer>> dimensionSoakedTemperatures = new HashMap<Identifier, HashMap<Integer, Integer>>();
     // dimension wett temperature
@@ -187,6 +189,16 @@ public class Temperatures {
         hashMap.put(3, hot);
         hashMap.put(4, very_hot);
         dimensionInsulatedArmorTemperatures.put(dimensionIdentifier, hashMap);
+    }
+
+    public static void setDimensionIcedArmorTemperatures(Identifier dimensionIdentifier, float very_cold, float cold, float normal, float hot, float very_hot) {
+        HashMap<Integer, Float> hashMap = new HashMap<Integer, Float>();
+        hashMap.put(0, very_cold);
+        hashMap.put(1, cold);
+        hashMap.put(2, normal);
+        hashMap.put(3, hot);
+        hashMap.put(4, very_hot);
+        dimensionIcedArmorTemperatures.put(dimensionIdentifier, hashMap);
     }
 
     public static void setDimensionSoakedTemperatures(Identifier dimensionIdentifier, int very_cold, int cold, int normal, int hot, int very_hot) {
@@ -404,6 +416,14 @@ public class Temperatures {
     public static float getDimensionInsulatedArmorTemperatures(Identifier dimensionIdentifier, int environmentCode) {
         if (dimensionInsulatedArmorTemperatures.containsKey(dimensionIdentifier)) {
             return dimensionInsulatedArmorTemperatures.get(dimensionIdentifier).get(environmentCode);
+        } else
+            return 0;
+    }
+
+    // environmentCode 0: very_cold, 1: cold, 2: normal, 3: hot, 4: very_hot
+    public static float getDimensionIcedArmorTemperatures(Identifier dimensionIdentifier, int environmentCode) {
+        if (dimensionIcedArmorTemperatures.containsKey(dimensionIdentifier)) {
+            return dimensionIcedArmorTemperatures.get(dimensionIdentifier).get(environmentCode);
         } else
             return 0;
     }
