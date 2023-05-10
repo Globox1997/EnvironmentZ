@@ -1,6 +1,5 @@
 {
     "body_temperature": {
-        "replace": true,
         "max_very_cold": -2400,
         "max_cold": -1800,
         "min_cold": -240,
@@ -10,7 +9,6 @@
         "max_very_hot": 2400
     },
     "body_wetness": {
-        "replace": true,
         "max_wetness": 200,
         "soaked": 180,
         "water": 100,
@@ -18,28 +16,24 @@
         "dry": -1
     },
     "body_protection": {
-        "replace": true,
         "max_heat": 600,
         "max_cold": 600,
         "max_heat_resistance": 600,
         "max_cold_resistance": 600
     },
     "biome_temperature": {
-        "replace": true,
         "very_cold": 0.2,
         "cold": 0.4,
         "hot": 1.2,
         "very_hot": 1.6
     },
     "thermometer_temperature": {
-        "replace": true,
         "very_cold": -6,
         "cold": -3,
         "hot": 3,
         "very_hot": 6
     },
     "acclimatization": {
-        "replace": true,
         "hot_body_temperature": 240,
         "hot_body": -15,
         "very_hot_body_temperature": 1760,
@@ -51,18 +45,15 @@
     },
     "effect": {
         "environmentz:cooling": {
-            "replace": true,
             "temperature": -8,
             "cold_protection": 2
         },
         "environmentz:warming": {
-            "replace": true,
             "temperature": 8,
             "heat_protection": 2
         }
     },
     "minecraft:overworld": {
-        "replace": true,
         "standard": {
             "very_cold": 0,
             "cold": 0,
@@ -142,7 +133,6 @@
         }
     },
     "minecraft:the_nether": {
-        "replace": true,
         "basic": true,
         "standard": 5,
         "armor": 1,
@@ -155,7 +145,6 @@
         "height": 0
     },
     "minecraft:the_end": {
-        "replace": true,
         "basic": true,
         "standard": -5,
         "armor": 1,
