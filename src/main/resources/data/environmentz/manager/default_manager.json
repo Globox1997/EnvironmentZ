@@ -142,7 +142,8 @@
         "wett": -3,
         "sweat": -3,
         "shadow": 0,
-        "height": 0
+        "height": 0,
+        "acclimatization": 0
     },
     "minecraft:the_end": {
         "basic": true,
@@ -154,6 +155,7 @@
         "wett": -3,
         "sweat": -1,
         "shadow": 0,
-        "height": 0
+        "height": 0,
+        "acclimatization": 0
     }
 }

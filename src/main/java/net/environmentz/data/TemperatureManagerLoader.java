@@ -218,6 +218,9 @@ public class TemperatureManagerLoader implements SimpleSynchronousResourceReload
                                         jsonObject.get("height").getAsInt(), jsonObject.get("height").getAsInt(), jsonObject.get("height").getAsInt(), jsonObject.get("height").getAsInt(),
                                         jsonObject.get("height").getAsInt(), jsonObject.get("height").getAsInt());
 
+                                if (jsonObject.has("acclimatization")) {
+                                    Temperatures.setDimensionAcclimatization(dimensionIdentifier, jsonObject.get("acclimatization").getAsInt());
+                                }
                             } else {
                                 if (jsonObject.has("standard")) {
                                     Temperatures.setDimensionStandardTemperatures(dimensionIdentifier, jsonObject.get("standard").getAsJsonObject().get("very_cold").getAsInt(),

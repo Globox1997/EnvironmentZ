@@ -241,20 +241,25 @@ public class TemperatureAspects {
         // Acclimatization
         int playerTemperature = temperatureManager.getPlayerTemperature();
         int acclimatization = 0;
-        if (environmentCode == 1) {
-            if (playerTemperature < Temperatures.getAcclimatization(6)) {
-                acclimatization += Temperatures.getAcclimatization(7);
+        if (Temperatures.getDimensionAcclimatization(dimensionIdentifier) != 1997) {
+            acclimatization = Temperatures.getDimensionAcclimatization(dimensionIdentifier);
+        } else {
+            if (environmentCode == 1) {
+                if (playerTemperature < Temperatures.getAcclimatization(6)) {
+                    acclimatization += Temperatures.getAcclimatization(7);
+                }
+            } else if (environmentCode == 2) {
+                if (playerTemperature < Temperatures.getAcclimatization(4)) {
+                    acclimatization += Temperatures.getAcclimatization(5);
+                } else if (playerTemperature > Temperatures.getAcclimatization(0)) {
+                    acclimatization += Temperatures.getAcclimatization(1);
+                }
+            } else if (environmentCode == 3) {
+                if (playerTemperature > Temperatures.getAcclimatization(2)) {
+                    acclimatization += Temperatures.getAcclimatization(3);
+                }
             }
-        } else if (environmentCode == 2) {
-            if (playerTemperature < Temperatures.getAcclimatization(4)) {
-                acclimatization += Temperatures.getAcclimatization(5);
-            } else if (playerTemperature > Temperatures.getAcclimatization(0)) {
-                acclimatization += Temperatures.getAcclimatization(1);
-            }
-        } else if (environmentCode == 3) {
-            if (playerTemperature > Temperatures.getAcclimatization(2)) {
-                acclimatization += Temperatures.getAcclimatization(3);
-            }
+
         }
         calculatingTemperature += acclimatization;
         if (ConfigInit.CONFIG.printInConsole) {

@@ -77,6 +77,8 @@ public class Temperatures {
     private static HashMap<Identifier, HashMap<Integer, Integer>> dimensionShadowTemperatures = new HashMap<Identifier, HashMap<Integer, Integer>>();
     // dimension height temperature
     private static HashMap<Identifier, HashMap<Integer, Integer>> dimensionHeightTemperatures = new HashMap<Identifier, HashMap<Integer, Integer>>();
+    // dimension acclimatization
+    private static HashMap<Identifier, Integer> dimensionAcclimatization = new HashMap<Identifier, Integer>();
 
     // block
     private static HashMap<Integer, HashMap<Integer, Integer>> blockTemperatures = new HashMap<Integer, HashMap<Integer, Integer>>();
@@ -250,6 +252,10 @@ public class Temperatures {
         hashMap.put(6, high_height);
         hashMap.put(7, very_high_height);
         dimensionHeightTemperatures.put(dimensionIdentifier, hashMap);
+    }
+
+    public static void setDimensionAcclimatization(Identifier dimensionIdentifier, int acclimatization) {
+        dimensionAcclimatization.put(dimensionIdentifier, acclimatization);
     }
 
     public static void setBlockTemperatures(int blockId, HashMap<Integer, Integer> map) {
@@ -466,6 +472,13 @@ public class Temperatures {
             return dimensionHeightTemperatures.get(dimensionIdentifier).get(environmentCode);
         } else
             return 0;
+    }
+
+    public static int getDimensionAcclimatization(Identifier dimensionIdentifier) {
+        if (dimensionAcclimatization.containsKey(dimensionIdentifier)) {
+            return dimensionAcclimatization.get(dimensionIdentifier);
+        } else
+            return 1997;
     }
 
     // distance -1 = max_count

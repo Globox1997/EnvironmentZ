@@ -189,6 +189,7 @@ An example to customize dimension temperatures:
 ```
 
 For a more simplified way to customize a dimension you have to set the "basic" value to true like in the following example.
+Basic allows you to add the "acclimatization" field to replace the default acclimatization.
 ```json
 {
     "minecraft:nether": {
@@ -201,7 +202,8 @@ For a more simplified way to customize a dimension you have to set the "basic" v
         "wett": -2,
         "sweat": -4,
         "shadow": 0,
-        "height": 0
+        "height": 0,
+        "acclimatization": 0
     }
 }
 ```

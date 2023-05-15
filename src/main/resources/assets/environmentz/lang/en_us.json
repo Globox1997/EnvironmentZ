@@ -80,7 +80,5 @@
   "tag.environmentz.ice_items": "Ice Items",
   "tag.environmentz.insolating_item": "Insolating",
   "tag.environmentz.non_affecting_armor": "Non Affecting Armor",
-  "tag.environmentz.warm_armor": "Warm Armor",
-  "tag.tooltiprareness.common_item": "Common Item",
-  "tag.tooltiprareness.uncommon_item": "Uncommon Item"
+  "tag.environmentz.warm_armor": "Warm Armor"
 }
