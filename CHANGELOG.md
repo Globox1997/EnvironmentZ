@@ -1,6 +1,6 @@
 ### Added:
-- 
+- Added dimension acclimatization
 ### Fixed:
-- Fixed default datapack
+- 
 ### Changed:
 - 
