@@ -21,7 +21,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -504,8 +503,6 @@ public class TemperatureAspects {
     private static int itemTemperature(PlayerEntity playerEntity, TemperatureManager temperatureManager) {
         int returnValue = 0;
         List<ItemStack> stacks = new ArrayList<ItemStack>();
-        stacks.add(playerEntity.getStackInHand(Hand.MAIN_HAND));
-        stacks.add(playerEntity.getStackInHand(Hand.OFF_HAND));
         playerEntity.getItemsEquipped().forEach((stack) -> {
             stacks.add(stack);
         });
