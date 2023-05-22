@@ -17,6 +17,7 @@
   "text.autoconfig.environmentz.option.thermometer_icon_y": "Thermometer Icon Y Position",
   "text.autoconfig.environmentz.option.show_thermometer": "Show Thermometer",
   "text.autoconfig.environmentz.option.hand_only_comforting_items": "Hand Only Comforting Items",
+  "text.autoconfig.environmentz.option.heat_block_radius": "Heat Block Radius",
   "text.autoconfig.environmentz.option.printInConsole": "Print In Console",
 
   "text.autoconfig.environmentz.option.biome_cold_temp": "Biome Cold Temperature",
