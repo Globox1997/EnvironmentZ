@@ -34,13 +34,13 @@
         "very_hot": 6
     },
     "acclimatization": {
-        "hot_body_temperature": 240,
-        "hot_body": -15,
-        "very_hot_body_temperature": 1760,
+        "hot_body_temperature": 180,
+        "hot_body": -10,
+        "very_hot_body_temperature": 1600,
         "very_hot_body": -15,
-        "cold_body_temperature": -240,
-        "cold_body": 15,
-        "very_cold_body_temperature": -1760,
+        "cold_body_temperature": -180,
+        "cold_body": 10,
+        "very_cold_body_temperature": -1600,
         "very_cold_body": 15
     },
     "effect": {
