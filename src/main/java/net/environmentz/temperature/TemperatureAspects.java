@@ -30,15 +30,15 @@ public class TemperatureAspects {
 
     private static final boolean isDehydrationLoaded = FabricLoader.getInstance().isModLoaded("dehydration");
 
-    private static final EntityAttributeModifier FREEZING_DEBUFF = new EntityAttributeModifier(UUID.fromString("92a0771a-744c-4bb9-b813-4c1048c80bb2"), "Freezing debuff", -0.3,
+    private static final EntityAttributeModifier FREEZING_DEBUFF = new EntityAttributeModifier(UUID.fromString("92a0771a-744c-4bb9-b813-4c1048c80bb2"), "Freezing debuff", -0.25,
             EntityAttributeModifier.Operation.MULTIPLY_BASE);
-    private static final EntityAttributeModifier OVERHEATING_DEBUFF = new EntityAttributeModifier(UUID.fromString("852ecc8c-8f4b-4c98-912b-a79a1e4e0abe"), "Overheating debuff", -0.4,
+    private static final EntityAttributeModifier OVERHEATING_DEBUFF = new EntityAttributeModifier(UUID.fromString("852ecc8c-8f4b-4c98-912b-a79a1e4e0abe"), "Overheating debuff", -0.3,
             EntityAttributeModifier.Operation.MULTIPLY_BASE);
-    private static final EntityAttributeModifier COLD_DEBUFF = new EntityAttributeModifier(UUID.fromString("08898afc-5de5-4152-947f-98a5fc1cedb8"), "Cold debuff", -0.15,
+    private static final EntityAttributeModifier COLD_DEBUFF = new EntityAttributeModifier(UUID.fromString("08898afc-5de5-4152-947f-98a5fc1cedb8"), "Cold debuff", -0.08,
             EntityAttributeModifier.Operation.MULTIPLY_BASE);
-    private static final EntityAttributeModifier HOT_DEBUFF = new EntityAttributeModifier(UUID.fromString("a5491cad-174c-4e41-a481-87ce0df45998"), "Hot debuff", -0.2,
+    private static final EntityAttributeModifier HOT_DEBUFF = new EntityAttributeModifier(UUID.fromString("a5491cad-174c-4e41-a481-87ce0df45998"), "Hot debuff", -0.12,
             EntityAttributeModifier.Operation.MULTIPLY_BASE);
-    private static final EntityAttributeModifier GENERAL_DEBUFF = new EntityAttributeModifier(UUID.fromString("13552c59-835e-4cc8-b09b-306bbe4ee786"), "General debuff", -0.15,
+    private static final EntityAttributeModifier GENERAL_DEBUFF = new EntityAttributeModifier(UUID.fromString("13552c59-835e-4cc8-b09b-306bbe4ee786"), "General debuff", -0.2,
             EntityAttributeModifier.Operation.MULTIPLY_BASE);
 
     /*
@@ -54,7 +54,7 @@ public class TemperatureAspects {
         playerWetness(playerEntity, temperatureManager);
         int playerWetness = temperatureManager.getPlayerWetIntensityValue();
         boolean isSoaked = playerWetness >= Temperatures.getBodyWetness(1);
-        boolean isInShadow = !playerEntity.world.isSkyVisible(playerEntity.getBlockPos());
+        boolean isInShadow = !playerEntity.world.isSkyVisible(playerEntity.getBlockPos().up());
 
         Identifier dimensionIdentifier = playerEntity.world.getRegistryKey().getValue();
         if (Temperatures.shouldUseOverworldTemperatures(dimensionIdentifier)) {

@@ -42,7 +42,7 @@ public class EnvironmentzConfig implements ConfigData {
     // Overheating Settings
     @ConfigEntry.Category("overheating_settings")
     @Comment("Handles thirst when Dehydration mod is loaded")
-    public float overheating_exhaustion = 0.5F;
+    public float overheating_exhaustion = 0.075F;
     @ConfigEntry.Category("overheating_settings")
     @Comment("Undo dehydration mod compat")
     public boolean exhaustion_instead_dehydration = false;
