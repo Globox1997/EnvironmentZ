@@ -179,47 +179,66 @@ public class TemperatureAspects {
             if (i > ConfigInit.CONFIG.heat_block_radius) {
                 height = -(i - ConfigInit.CONFIG.heat_block_radius);
             }
-            for (int u = -ConfigInit.CONFIG.heat_block_radius; u <= ConfigInit.CONFIG.heat_block_radius; u++) { // x
-                for (int o = -ConfigInit.CONFIG.heat_block_radius; o <= ConfigInit.CONFIG.heat_block_radius; o++) {// z
 
-                    // BlockPos pos = playerEntity.getBlockPos().add(i, u, o);
-                    BlockPos pos = playerEntity.getBlockPos().add(u, height, o);
+            int radius = ConfigInit.CONFIG.heat_block_radius + 2;
+            int x, z, dx, dz;
+            x = z = dx = 0;
+            dz = -1;
+            int t = radius;
+            int maxI = t * t;
+            for (int k = 0; k < maxI; k++) {
+                if ((-radius / 2 <= x) && (x <= radius / 2) && (-radius / 2 <= z) && (z <= radius / 2)) {
+                    BlockPos pos = playerEntity.getBlockPos().add(x, height, z);
                     BlockState state = playerEntity.world.getBlockState(pos);
-                    if (state.isAir()) {
-                        continue;
-                    }
-                    int rawId = Registry.BLOCK.getRawId(state.getBlock());
-                    if (Temperatures.hasBlockTemperature(rawId)) {
-                        maxCountBlockMap.put(rawId, maxCountBlockMap.get(rawId) == null ? 1 : maxCountBlockMap.get(rawId) + 1);
-                        if (maxCountBlockMap.get(rawId) != null && maxCountBlockMap.get(rawId) > Temperatures.getBlockTemperature(rawId, -1)) {
-                            continue;
-                        }
-                        if (Temperatures.hasBlockProperty(rawId) && state.contains(Temperatures.getBlockProperty(rawId)) && !state.get(Temperatures.getBlockProperty(rawId))) {
-                            continue;
-                        }
-                        int distance = (int) Math.sqrt(playerEntity.getBlockPos().getSquaredDistance(pos));
-                        int blockTemperature = Temperatures.getBlockTemperature(rawId, distance);
-                        calculatingTemperature += blockTemperature;
-                        thermometerCalculatingTemperature += blockTemperature;
-                        if (ConfigInit.CONFIG.printInConsole) {
-                            debugString += " Block: " + blockTemperature + " : " + state.getBlock().getName().getString();
-                        }
-                    } else if (!state.getFluidState().isEmpty()) {
-                        rawId = Registry.FLUID.getRawId(state.getFluidState().getFluid());
-                        if (Temperatures.hasFluidTemperature(rawId)) {
-                            maxCountFluidMap.put(rawId, maxCountFluidMap.get(rawId) == null ? 1 : maxCountFluidMap.get(rawId) + 1);
-                            if (maxCountFluidMap.get(rawId) != null && maxCountFluidMap.get(rawId) > Temperatures.getFluidTemperature(rawId, -1))
-                                continue;
-                            int distance = (int) Math.sqrt(playerEntity.getBlockPos().getSquaredDistance(pos));
-                            int fluidTemperature = Temperatures.getFluidTemperature(rawId, distance);
-                            calculatingTemperature += fluidTemperature;
-                            thermometerCalculatingTemperature += fluidTemperature;
-                            if (ConfigInit.CONFIG.printInConsole) {
-                                debugString += " Fluid: " + fluidTemperature + " : " + state.getBlock().getName().getString();
+                    if (!state.isAir()) {
+                        int rawId = Registry.BLOCK.getRawId(state.getBlock());
+                        if (Temperatures.hasBlockTemperature(rawId)) {
+                            maxCountBlockMap.put(rawId, maxCountBlockMap.get(rawId) == null ? 1 : maxCountBlockMap.get(rawId) + 1);
+                            boolean shouldContinue = false;
+                            if (maxCountBlockMap.get(rawId) != null && maxCountBlockMap.get(rawId) > Temperatures.getBlockTemperature(rawId, -1)) {
+                                shouldContinue = true;
+                            }
+                            if (Temperatures.hasBlockProperty(rawId) && state.contains(Temperatures.getBlockProperty(rawId)) && !state.get(Temperatures.getBlockProperty(rawId))) {
+                                shouldContinue = true;
+                            }
+                            if (!shouldContinue) {
+                                int distance = (int) Math.sqrt(playerEntity.getBlockPos().getSquaredDistance(pos));
+                                int blockTemperature = Temperatures.getBlockTemperature(rawId, distance);
+                                calculatingTemperature += blockTemperature;
+                                thermometerCalculatingTemperature += blockTemperature;
+                                if (ConfigInit.CONFIG.printInConsole) {
+                                    debugString += " Block: " + blockTemperature + " : " + state.getBlock().getName().getString();
+                                }
+                            }
+                        } else if (!state.getFluidState().isEmpty()) {
+                            rawId = Registry.FLUID.getRawId(state.getFluidState().getFluid());
+                            if (Temperatures.hasFluidTemperature(rawId)) {
+                                maxCountFluidMap.put(rawId, maxCountFluidMap.get(rawId) == null ? 1 : maxCountFluidMap.get(rawId) + 1);
+                                boolean shouldContinue = false;
+                                if (maxCountFluidMap.get(rawId) != null && maxCountFluidMap.get(rawId) > Temperatures.getFluidTemperature(rawId, -1)) {
+                                    shouldContinue = true;
+                                }
+                                if (!shouldContinue) {
+                                    int distance = (int) Math.sqrt(playerEntity.getBlockPos().getSquaredDistance(pos));
+                                    int fluidTemperature = Temperatures.getFluidTemperature(rawId, distance);
+                                    calculatingTemperature += fluidTemperature;
+                                    thermometerCalculatingTemperature += fluidTemperature;
+                                    if (ConfigInit.CONFIG.printInConsole) {
+                                        debugString += " Fluid: " + fluidTemperature + " : " + state.getBlock().getName().getString();
+                                    }
+                                }
                             }
                         }
                     }
+
                 }
+                if ((x == z) || ((x < 0) && (x == -z)) || ((x > 0) && (x == 1 - z))) {
+                    t = dx;
+                    dx = -dz;
+                    dz = t;
+                }
+                x += dx;
+                z += dz;
             }
         }
 
@@ -336,11 +355,12 @@ public class TemperatureAspects {
         // } else if (environmentCode > 2 && playerTemperature > Temperatures.getBodyTemperatures(6)) {
         // playerTemperature = Temperatures.getBodyTemperatures(6);
         // }
+
         // New cutoff/strong acclimatization
         if (environmentCode < 2 && playerTemperature > Temperatures.getBodyTemperatures(4)) {
-            playerTemperature += Temperatures.getAcclimatization(5) * 2;
-        } else if (environmentCode > 2 && playerTemperature < Temperatures.getBodyTemperatures(2)) {
             playerTemperature += Temperatures.getAcclimatization(1) * 2;
+        } else if (environmentCode > 2 && playerTemperature < Temperatures.getBodyTemperatures(2)) {
+            playerTemperature += Temperatures.getAcclimatization(5) * 2;
         } else if (playerTemperature < Temperatures.getBodyTemperatures(0)) {
             playerTemperature = Temperatures.getBodyTemperatures(0);
         } else if (playerTemperature > Temperatures.getBodyTemperatures(6)) {
