@@ -1,6 +1,6 @@
 ### Added:
 - 
 ### Fixed:
-- Fixed item temperature
+- Fixed temperature cutoff
 ### Changed:
-- Tweaked default settings
+- Tweaked block check, now spiral
