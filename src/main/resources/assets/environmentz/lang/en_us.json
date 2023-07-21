@@ -38,6 +38,8 @@
   "text.autoconfig.environmentz.option.exhaustion_instead_dehydration": "Exhaustion Instead Dehydration",
   "text.autoconfig.environmentz.option.ultrawarm_dimension_heat": "Ultrawarm Dimension Heat",
 
+  "item.environmentz.item_group": "EnvironmentZ",
+
   "item.environmentz.heating_stones": "Heating Stones",
   "item.environmentz.ice_pack": "Ice Pack",
   "item.environmentz.wolf_pelt": "Wolf Pelt",

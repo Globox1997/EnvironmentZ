@@ -1,5 +1,6 @@
 package net.environmentz.mixin.client;
 
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -18,7 +19,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 @Mixin(GameRenderer.class)
@@ -40,7 +40,8 @@ public class GameRendererMixin {
             if (playerTemperature == Temperatures.getBodyTemperatures(0) || this.ticks
                     % (Math.abs(Temperatures.getBodyTemperatures(0) * 2) + playerTemperature * 2) < (((Math.abs(Temperatures.getBodyTemperatures(0) * 2) + playerTemperature * 2)) / 2)) {
                 Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
-                matrix4f.multiplyByTranslation((float) (Math.cos((double) this.ticks * Math.PI)) * 0.01f * this.client.options.getDistortionEffectScale().getValue().floatValue(), 0.0f, 0.0f);
+                matrix4f.translate((float) (Math.cos((double) this.ticks * Math.PI)) * 0.01f * this.client.options.getDistortionEffectScale().getValue().floatValue(), 0.0f, 0.0f);
+                // matrix4f.multiplyByTranslation((float) (Math.cos((double) this.ticks * Math.PI)) * 0.01f * this.client.options.getDistortionEffectScale().getValue().floatValue(), 0.0f, 0.0f);
             }
         }
     }

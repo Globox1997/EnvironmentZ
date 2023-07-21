@@ -1,7 +1,5 @@
 package net.environmentz.mixin.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -14,35 +12,30 @@ import net.environmentz.init.TagInit;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-@Mixin(ItemRenderer.class)
-public class ItemRendererMixin {
+@Mixin(DrawContext.class)
+public class DrawContextMixin {
 
-    @Inject(method = "Lnet/minecraft/client/render/item/ItemRenderer;renderGuiItemOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isItemBarVisible()Z"))
-    private void renderGuiItemOverlayMixin(TextRenderer renderer, ItemStack stack, int x, int y, @Nullable String countLabel, CallbackInfo info) {
+    @Inject(method = "Lnet/minecraft/client/gui/DrawContext;drawItemInSlot(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isItemBarVisible()Z"))
+    private void drawItemInSlotMixin(TextRenderer textRenderer, ItemStack stack, int x, int y, @Nullable String countOverride, CallbackInfo info) {
         if (stack.isIn(TagInit.ARMOR_ITEMS) && stack.hasNbt() && stack.getNbt().contains("iced")) {
-            RenderSystem.disableDepthTest();
-            RenderSystem.disableTexture();
-            RenderSystem.disableBlend();
-            Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferBuilder = tessellator.getBuffer();
             int i = getIcedItemBarStep(stack);
             int j = getIcedItemBarColor(stack);
-            int extraY = 13;
+            int extraY = 0;
             if (stack.isItemBarVisible()) {
-                extraY = 11;
+                extraY = -2;
             }
-            this.renderGuiQuad(bufferBuilder, x + 2, y + extraY, 13, 2, 0, 0, 0, 255);
-            this.renderGuiQuad(bufferBuilder, x + 2, y + extraY, i, 1, j >> 16 & 0xFF, j >> 8 & 0xFF, j & 0xFF, 255);
-            RenderSystem.enableBlend();
-            RenderSystem.enableTexture();
-            RenderSystem.enableDepthTest();
+
+            int k = x + 2;
+            int l = y + 13;
+
+            this.fill(RenderLayer.getGuiOverlay(), k, l + extraY, k + 13, l + 2 + extraY, -16777216);
+            this.fill(RenderLayer.getGuiOverlay(), k, l + extraY, k + i, l + 1 + extraY, j | 0xFF000000);
         }
 
     }
@@ -50,7 +43,6 @@ public class ItemRendererMixin {
     // 0.7 is dark blue as hsv value
     // 0.5 is light blue as hsv value
     private static int getIcedItemBarColor(ItemStack stack) {
-
         float f = Math.max(0.0f, 0.55f - ((float) ItemInit.COOLING_HEATING_VALUE - (float) stack.getNbt().getInt("iced")) / (float) ItemInit.COOLING_HEATING_VALUE * 0.05f);
         return MathHelper.hsvToRgb(f, 1.0f, 1.0f);
     }
@@ -60,7 +52,7 @@ public class ItemRendererMixin {
     }
 
     @Shadow
-    private void renderGuiQuad(BufferBuilder buffer, int x, int y, int width, int height, int red, int green, int blue, int alpha) {
+    public void fill(RenderLayer layer, int x1, int y1, int x2, int y2, int color) {
     }
 
 }

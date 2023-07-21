@@ -1,6 +1,6 @@
 ### Added:
 - 
 ### Fixed:
-- Fixed temperature cutoff
+- 
 ### Changed:
-- Tweaked block check, now spiral
+- Updated to mc 1.20.1

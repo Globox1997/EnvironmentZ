@@ -1,6 +1,5 @@
 package net.environmentz.item;
 
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.DyeableArmorItem;
 import net.minecraft.item.ItemStack;
@@ -9,8 +8,8 @@ import net.minecraft.nbt.NbtElement;
 
 public class WandererArmor extends DyeableArmorItem {
 
-    public WandererArmor(ArmorMaterial armorMaterial, EquipmentSlot equipmentSlot, Settings settings) {
-        super(armorMaterial, equipmentSlot, settings);
+    public WandererArmor(ArmorMaterial armorMaterial, Type type, Settings settings) {
+        super(armorMaterial, type, settings);
     }
 
     @Override

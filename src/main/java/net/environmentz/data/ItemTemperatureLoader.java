@@ -13,10 +13,10 @@ import com.google.gson.JsonParser;
 import net.environmentz.EnvironmentzMain;
 import net.environmentz.temperature.Temperatures;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 public class ItemTemperatureLoader implements SimpleSynchronousResourceReloadListener {
 
@@ -45,7 +45,7 @@ public class ItemTemperatureLoader implements SimpleSynchronousResourceReloadLis
                         continue;
                     }
                     Identifier identifier = new Identifier(keyString);
-                    if (Registry.ITEM.get(identifier).toString().equals("air")) {
+                    if (Registries.ITEM.get(identifier).toString().equals("air")) {
                         EnvironmentzMain.LOGGER.info("{} is not a valid item identifier", identifier);
                         continue;
                     }
@@ -77,7 +77,7 @@ public class ItemTemperatureLoader implements SimpleSynchronousResourceReloadLis
                         } else {
                             hashMap.put(2, 0);
                         }
-                        int rawId = Registry.ITEM.getRawId(Registry.ITEM.get(identifier));
+                        int rawId = Registries.ITEM.getRawId(Registries.ITEM.get(identifier));
                         Temperatures.setItemTemperatures(rawId, hashMap);
                     }
                 }

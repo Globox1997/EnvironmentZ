@@ -13,10 +13,10 @@ import com.google.gson.JsonParser;
 import net.environmentz.EnvironmentzMain;
 import net.environmentz.temperature.Temperatures;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 public class TemperatureManagerLoader implements SimpleSynchronousResourceReloadListener {
 
@@ -133,7 +133,7 @@ public class TemperatureManagerLoader implements SimpleSynchronousResourceReload
                                             replaceList.add(keyString);
                                         }
                                         Identifier effectIdentifier = new Identifier(keyString);
-                                        if (Registry.STATUS_EFFECT.get(effectIdentifier) == null) {
+                                        if (Registries.STATUS_EFFECT.get(effectIdentifier) == null) {
                                             EnvironmentzMain.LOGGER.info("{} is not a valid effect identifier", effectIdentifier);
                                             continue;
                                         }

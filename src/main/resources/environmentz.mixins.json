@@ -6,7 +6,7 @@
   "plugin": "net.environmentz.mixin.compat.EnvironmentzMixinPlugin",
   "mixins": [
     "PlayerEntityMixin",
-    "SmithingScreenHandlerMixin",
+    "AnvilScreenHandlerMixin",
     "ArmorItemMixin",
     "BrewingRecipeRegistryMixin",
     "ServerPlayerEntityMixin",
@@ -21,7 +21,7 @@
     "client.HeadFeatureRendererMixin",
     "client.PlayerEntityRendererMixin",
     "client.GameRendererMixin",
-    "client.ItemRendererMixin",
+    "client.DrawContextMixin",
     "client.ArmorFeatureRendererMixin"
   ],
   "injectors": {

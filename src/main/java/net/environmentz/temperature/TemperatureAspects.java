@@ -13,17 +13,21 @@ import net.environmentz.mixin.access.EntityAccessor;
 import net.environmentz.network.EnvironmentServerPacket;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 
 public class TemperatureAspects {
 
@@ -40,6 +44,8 @@ public class TemperatureAspects {
     private static final EntityAttributeModifier GENERAL_DEBUFF = new EntityAttributeModifier(UUID.fromString("13552c59-835e-4cc8-b09b-306bbe4ee786"), "General debuff", -0.2,
             EntityAttributeModifier.Operation.MULTIPLY_BASE);
 
+    public static final RegistryKey<DamageType> FREEZING = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("environmentz", "freezing"));
+
     /*
      * b16b275c-4bd4-400c-9c91-e1e6e8f86edb b154bd6d-8b9a-4f43-92d8-64d837a05f87 3b1997c0-8902-40e7-a96c-be40777e4a52 a8dad3e1-7d16-4e37-9e7b-213dee8c53f6 2e930d17-7080-4859-bda3-e8671cd2a023
      * 115b965d-8210-4965-8966-d7860e04d056 347bca75-d9a3-4ce1-88d8-4f28fc9b02dc 1627d656-7b8d-46bb-80d5-0cb28a759024 7c8137f1-c385-4ce7-90be-12ba5ef72caa
@@ -48,14 +54,14 @@ public class TemperatureAspects {
     public static void tickPlayerEnvironment(TemperatureManager temperatureManager, PlayerEntity playerEntity, int environmentTickCount) {
         int calculatingTemperature = 0;
         int thermometerCalculatingTemperature = 0;
-        float biomeTemperature = playerEntity.world.getBiome(playerEntity.getBlockPos()).value().getTemperature();
-        boolean isDay = playerEntity.world.isDay();
+        float biomeTemperature = playerEntity.getWorld().getBiome(playerEntity.getBlockPos()).value().getTemperature();
+        boolean isDay = playerEntity.getWorld().isDay();
         playerWetness(playerEntity, temperatureManager);
         int playerWetness = temperatureManager.getPlayerWetIntensityValue();
         boolean isSoaked = playerWetness >= Temperatures.getBodyWetness(1);
-        boolean isInShadow = !playerEntity.world.isSkyVisible(playerEntity.getBlockPos().up());
+        boolean isInShadow = !playerEntity.getWorld().isSkyVisible(playerEntity.getBlockPos().up());
 
-        Identifier dimensionIdentifier = playerEntity.world.getRegistryKey().getValue();
+        Identifier dimensionIdentifier = playerEntity.getWorld().getRegistryKey().getValue();
         if (Temperatures.shouldUseOverworldTemperatures(dimensionIdentifier)) {
             dimensionIdentifier = Temperatures.OVERWORLD;
         }
@@ -189,9 +195,9 @@ public class TemperatureAspects {
             for (int k = 0; k < maxI; k++) {
                 if ((-radius / 2 <= x) && (x <= radius / 2) && (-radius / 2 <= z) && (z <= radius / 2)) {
                     BlockPos pos = playerEntity.getBlockPos().add(x, height, z);
-                    BlockState state = playerEntity.world.getBlockState(pos);
+                    BlockState state = playerEntity.getWorld().getBlockState(pos);
                     if (!state.isAir()) {
-                        int rawId = Registry.BLOCK.getRawId(state.getBlock());
+                        int rawId = Registries.BLOCK.getRawId(state.getBlock());
                         if (Temperatures.hasBlockTemperature(rawId)) {
                             maxCountBlockMap.put(rawId, maxCountBlockMap.get(rawId) == null ? 1 : maxCountBlockMap.get(rawId) + 1);
                             boolean shouldContinue = false;
@@ -211,7 +217,7 @@ public class TemperatureAspects {
                                 }
                             }
                         } else if (!state.getFluidState().isEmpty()) {
-                            rawId = Registry.FLUID.getRawId(state.getFluidState().getFluid());
+                            rawId = Registries.FLUID.getRawId(state.getFluidState().getFluid());
                             if (Temperatures.hasFluidTemperature(rawId)) {
                                 maxCountFluidMap.put(rawId, maxCountFluidMap.get(rawId) == null ? 1 : maxCountFluidMap.get(rawId) + 1);
                                 boolean shouldContinue = false;
@@ -444,7 +450,7 @@ public class TemperatureAspects {
 
         // Damage or exhaustion
         if (playerTemperature <= Temperatures.getBodyTemperatures(0)) {
-            playerEntity.damage(FREEZING_DAMAGE, 1.0F);
+            playerEntity.damage(createDamageSource(playerEntity), 1.0F);
         } else if (playerTemperature >= Temperatures.getBodyTemperatures(6)) {
             if (isDehydrationLoaded && !ConfigInit.CONFIG.exhaustion_instead_dehydration) {
                 ((ThirstManagerAccess) playerEntity).getThirstManager().addDehydration(ConfigInit.CONFIG.overheating_exhaustion);
@@ -531,7 +537,7 @@ public class TemperatureAspects {
             if (stacks.get(i).isEmpty()) {
                 continue;
             }
-            int itemId = Registry.ITEM.getRawId(stacks.get(i).getItem());
+            int itemId = Registries.ITEM.getRawId(stacks.get(i).getItem());
             if (Temperatures.hasItemTemperature(itemId)) {
                 if (Temperatures.getItemValue(itemId, -1) != 0) {
                     if (stacks.get(i).isDamageable() && !stacks.get(i).isIn(TagInit.ARMOR_ITEMS)) {
@@ -572,7 +578,7 @@ public class TemperatureAspects {
         int returnValue = 0;
         Iterator<StatusEffectInstance> iterator = playerEntity.getStatusEffects().iterator();
         if (iterator.hasNext()) {
-            Identifier identifier = Registry.STATUS_EFFECT.getId(iterator.next().getEffectType());
+            Identifier identifier = Registries.STATUS_EFFECT.getId(iterator.next().getEffectType());
             if (Temperatures.hasEffectTemperature(identifier)) {
                 int effectValue = Temperatures.getEffectValue(identifier, 0);
                 if ((temperatureManager.getPlayerTemperature() < Temperatures.getBodyTemperatures(3) && effectValue > 0)
@@ -598,22 +604,8 @@ public class TemperatureAspects {
         return returnValue;
     }
 
-    private static final DamageSource FREEZING_DAMAGE = new DamageSource("freezing") {
-
-        @Override
-        public boolean bypassesArmor() {
-            return true;
-        }
-
-        @Override
-        public boolean isUnblockable() {
-            return true;
-        }
-
-        @Override
-        public float getExhaustion() {
-            return 0.1F;
-        }
-    };
+    private static DamageSource createDamageSource(Entity entity) {
+        return entity.getDamageSources().create(FREEZING);
+    }
 
 }

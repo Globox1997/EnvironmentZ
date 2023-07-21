@@ -1,24 +1,24 @@
 package net.environmentz.item;
 
 import net.environmentz.init.ItemInit;
-import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.item.ArmorItem.Type;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 
 public class WolfArmorMaterial implements ArmorMaterial {
-    private static final int[] BASE_DURABILITY = new int[] { 13, 15, 16, 11 };
-    private static final int[] PROTECTION_AMOUNTS = new int[] { 1, 2, 3, 2 };
+    private static final int[] BASE_DURABILITY = new int[] { 11, 16, 15, 13 };
+    private static final int[] PROTECTION_AMOUNTS = new int[] { 2, 3, 2, 1 };
 
     @Override
-    public int getDurability(EquipmentSlot equipmentSlot) {
-        return BASE_DURABILITY[equipmentSlot.getEntitySlotId()] * 7;
+    public int getDurability(Type type) {
+        return BASE_DURABILITY[type.ordinal()] * 7;
     }
 
     @Override
-    public int getProtectionAmount(EquipmentSlot equipmentSlot) {
-        return PROTECTION_AMOUNTS[equipmentSlot.getEntitySlotId()];
+    public int getProtection(Type type) {
+        return PROTECTION_AMOUNTS[type.ordinal()];
     }
 
     @Override

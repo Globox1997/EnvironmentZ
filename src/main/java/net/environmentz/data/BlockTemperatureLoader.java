@@ -14,10 +14,10 @@ import net.environmentz.EnvironmentzMain;
 import net.environmentz.init.ConfigInit;
 import net.environmentz.temperature.Temperatures;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 public class BlockTemperatureLoader implements SimpleSynchronousResourceReloadListener {
 
@@ -46,7 +46,7 @@ public class BlockTemperatureLoader implements SimpleSynchronousResourceReloadLi
                         continue;
                     }
                     Identifier identifier = new Identifier(keyString);
-                    if (Registry.BLOCK.get(identifier).toString().equals("Block{minecraft:air}") && Registry.FLUID.get(identifier).toString().contains("net.minecraft.fluid.EmptyFluid")) {
+                    if (Registries.BLOCK.get(identifier).toString().equals("Block{minecraft:air}") && Registries.FLUID.get(identifier).toString().contains("net.minecraft.fluid.EmptyFluid")) {
                         EnvironmentzMain.LOGGER.info("{} is not a valid block or fluid identifier", identifier);
                         continue;
                     }
@@ -67,10 +67,10 @@ public class BlockTemperatureLoader implements SimpleSynchronousResourceReloadLi
                                 hashMap.put(i, jsonObject.get(String.valueOf(i)).getAsInt());
                             }
                         }
-                        if (Registry.BLOCK.get(identifier).toString().equals("Block{minecraft:air}")) {
-                            Temperatures.setFluidTemperatures(Registry.FLUID.getRawId(Registry.FLUID.get(identifier)), hashMap);
+                        if (Registries.BLOCK.get(identifier).toString().equals("Block{minecraft:air}")) {
+                            Temperatures.setFluidTemperatures(Registries.FLUID.getRawId(Registries.FLUID.get(identifier)), hashMap);
                         } else {
-                            int rawId = Registry.BLOCK.getRawId(Registry.BLOCK.get(identifier));
+                            int rawId = Registries.BLOCK.getRawId(Registries.BLOCK.get(identifier));
                             Temperatures.setBlockTemperatures(rawId, hashMap);
                             if (jsonObject.has("property")) {
                                 Temperatures.setBlockProperty(rawId, jsonObject.get("property").getAsString());

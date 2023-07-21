@@ -1,10 +1,7 @@
 plugins {
-	id 'fabric-loom' version '1.1-SNAPSHOT'
+	id 'fabric-loom' version '1.3-SNAPSHOT'
 	id 'maven-publish'
 }
-
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version
@@ -44,16 +41,13 @@ dependencies {
 	modImplementation "io.github.ladysnake:satin:${satin_version}"
 	include "io.github.ladysnake:satin:${satin_version}"
 	// Dehydration
-	modCompileOnly ("curse.maven:dehydration-410830:4024337"),{
-	    exclude(group: "net.fabricmc.fabric-api")
-		exclude(group: "me.shedaniel.cloth")
-		exclude(group: "io.github.prospector")
-		exclude(group: "curse.maven:motschens-puddles-463169")
+	modCompileOnly ('maven.modrinth:dehydration:1.3.4+1.20.1') {
+		exclude(group: "net.fabricmc.fabric-api")
 	}
 	// REI
     modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:9.1.587"
     // EMI
-    modCompileOnly "dev.emi:emi:0.6.3+1.19.2"
+    modCompileOnly "dev.emi:emi-fabric:1.0.9+1.20.1"
 }
 
 processResources {
@@ -70,6 +64,9 @@ tasks.withType(JavaCompile).configureEach {
 
 java {
 	withSourcesJar()
+
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
 }
 
 jar {
