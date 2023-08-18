@@ -16,7 +16,14 @@ repositories {
 	maven { url "https://api.modrinth.com/maven" }
 	maven { url "https://maven.jamieswhiteshirt.com/libs-release" }
 	maven { url 'https://maven.cafeteria.dev' }
-	maven { url 'https://ladysnake.jfrog.io/artifactory/mods' }
+	maven {
+		url 'https://maven.ladysnake.org/releases'
+		content {
+			includeGroup 'io.github.ladysnake'
+			includeGroup 'org.ladysnake'
+			includeGroupByRegex 'dev\\.onyxstudios.*'
+		}
+	}
 	maven { url 'https://maven.blamejared.com' }
 }
 
