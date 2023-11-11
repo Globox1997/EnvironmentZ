@@ -51,6 +51,11 @@
         "environmentz:warming": {
             "temperature": 8,
             "heat_protection": 2
+        },
+        "environmentz:comfort": {
+            "temperature": 0,
+            "heat_protection": 10,
+            "cold_protection": 10
         }
     },
     "minecraft:overworld": {
