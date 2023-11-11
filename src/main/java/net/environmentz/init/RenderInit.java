@@ -28,7 +28,7 @@ public class RenderInit {
     public static void init() {
         EntityModelLayerRegistry.registerModelLayer(WOLF_HELMET_LAYER, WolfHelmetModel::getTexturedModelData);
 
-        if (ConfigInit.CONFIG.blur_screen_effect) {
+        if (ConfigInit.CONFIG.blurScreenEffect) {
             ShaderEffectRenderCallback.EVENT.register((deltaTick) -> {
                 if (blurProgressValue > 0.01F && client.player != null && !client.player.isCreative() && !client.player.isSpectator()) {
                     blurProgress.set(blurProgressValue);

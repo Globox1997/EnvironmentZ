@@ -36,7 +36,7 @@ public class GameRendererMixin {
     private void renderWorldMixin(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info, boolean bl, Camera camera, MatrixStack matrixStack, double d, float f) {
         int playerTemperature = ((TemperatureManagerAccess) client.player).getTemperatureManager().getPlayerTemperature();
         // Needs further tweak
-        if (ConfigInit.CONFIG.shaking_screen_effect && playerTemperature <= Temperatures.getBodyTemperatures(1) && !this.client.player.isCreative() && !this.client.player.isSpectator()) {
+        if (ConfigInit.CONFIG.shakingScreenEffect && playerTemperature <= Temperatures.getBodyTemperatures(1) && !this.client.player.isCreative() && !this.client.player.isSpectator()) {
             if (playerTemperature == Temperatures.getBodyTemperatures(0) || this.ticks
                     % (Math.abs(Temperatures.getBodyTemperatures(0) * 2) + playerTemperature * 2) < (((Math.abs(Temperatures.getBodyTemperatures(0) * 2) + playerTemperature * 2)) / 2)) {
                 Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();

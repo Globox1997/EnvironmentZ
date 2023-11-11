@@ -51,7 +51,7 @@ public class TemperatureManager {
 
     public void tick(PlayerEntity playerEntity) {
         if (!playerEntity.getWorld().isClient() && !playerEntity.isCreative() && !playerEntity.isSpectator() && playerEntity.isAlive()) {
-            if (environmentTicker++ >= ConfigInit.CONFIG.temperature_calculation_time) {
+            if (environmentTicker++ >= ConfigInit.CONFIG.temperatureCalculationTime) {
                 TemperatureAspects.tickPlayerEnvironment(this, playerEntity, environmentTickerCount);
                 environmentTicker = 0;
                 environmentTickerCount++;

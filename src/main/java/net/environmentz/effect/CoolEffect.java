@@ -15,27 +15,4 @@ public class CoolEffect extends StatusEffect {
         super(type, color);
     }
 
-    // @Override
-    // public void applyUpdateEffect(LivingEntity entity, int amplifier) {
-    //     if (entity instanceof PlayerEntity) {
-    //         TemperatureManager temperatureManager = ((TemperatureManagerAccess) (PlayerEntity) entity).getTemperatureManager();
-
-    //         int hotProtectionAmount = temperatureManager.getPlayerHeatProtectionAmount();
-    //         if (hotProtectionAmount < ConfigInit.CONFIG.max_heat_protection_amount)
-    //             temperatureManager.setPlayerHeatProtectionAmount(hotProtectionAmount + ConfigInit.CONFIG.heat_protection_amount_addition);
-    //         int playerTemperature = temperatureManager.getPlayerTemperature();
-    //         if (playerTemperature > 100)
-    //             temperatureManager.setPlayerTemperature(playerTemperature - ConfigInit.CONFIG.heat_protection_amount_addition);
-    //     }
-    // }
-
-    // @Override
-    // public boolean canApplyUpdateEffect(int duration, int amplifier) {
-    //     int i = 50 >> amplifier;
-    //     if (i > 0) {
-    //         return duration % i == 0;
-    //     }
-    //     return true;
-    // }
-
 }

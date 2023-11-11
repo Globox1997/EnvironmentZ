@@ -18,7 +18,7 @@ public class SpawnLocatingMixin {
 
     @ModifyVariable(method = "findOverworldSpawn", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/server/world/ServerWorld;getChunk(II)Lnet/minecraft/world/chunk/WorldChunk;", ordinal = 0))
     private static WorldChunk findOverworldSpawnMixin(WorldChunk original, ServerWorld world, int x, int z) {
-        if (ConfigInit.CONFIG.easy_world_spawn) {
+        if (ConfigInit.CONFIG.easyWorldSpawn) {
             for (int i = 0; i < 10; i++) {
                 for (int u = 0; u < 10; u++) {
                     BlockPos newSpawnPos = new BlockPos(x + 160 * i, 100, z + 160 * u);

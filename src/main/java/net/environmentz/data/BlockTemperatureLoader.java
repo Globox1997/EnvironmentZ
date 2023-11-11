@@ -62,7 +62,7 @@ public class BlockTemperatureLoader implements SimpleSynchronousResourceReloadLi
 
                         HashMap<Integer, Integer> hashMap = new HashMap<Integer, Integer>();
                         hashMap.put(-1, jsonObject.get("max_count").getAsInt());
-                        for (int i = 0; i <= ConfigInit.CONFIG.heat_block_radius; i++) {
+                        for (int i = 0; i <= ConfigInit.CONFIG.heatBlockRadius; i++) {
                             if (jsonObject.has(String.valueOf(i))) {
                                 hashMap.put(i, jsonObject.get(String.valueOf(i)).getAsInt());
                             }

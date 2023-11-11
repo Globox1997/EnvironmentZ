@@ -106,7 +106,7 @@ public abstract class InGameHudMixin {
             }
             TemperatureHudRendering.renderPlayerTemperatureIcon(context, client, playerEntity, heat, xEnvPosition, yEnvPosition, extraEnvPosition, envIntensity, scaledWidth, scaledHeight);
 
-            if (ConfigInit.CONFIG.show_thermometer) {
+            if (ConfigInit.CONFIG.showThermometer) {
                 if (playerEntity.age % 60 == 0) {
                     int thermometerTemperature = temperatureManager.getThermometerTemperature();
                     if (thermometerTemperature <= Temperatures.getThermometerTemperatures(0)) {

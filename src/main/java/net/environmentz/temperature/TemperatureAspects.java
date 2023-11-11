@@ -139,9 +139,9 @@ public class TemperatureAspects {
         }
         // Sweat
         if (isDehydrationLoaded && environmentCode > 2) {
-            if (ConfigInit.CONFIG.exhaustion_instead_dehydration) {
+            if (ConfigInit.CONFIG.exhaustionInsteadDehydration) {
                 if (playerEntity.getHungerManager().getFoodLevel() > 6) {
-                    playerEntity.addExhaustion(ConfigInit.CONFIG.overheating_exhaustion);
+                    playerEntity.addExhaustion(ConfigInit.CONFIG.overheatingExhaustion);
                     int sweatTemperature = Temperatures.getDimensionSweatTemperatures(dimensionIdentifier, environmentCode - 3);
                     calculatingTemperature += sweatTemperature;
 
@@ -151,7 +151,7 @@ public class TemperatureAspects {
                 }
             } else {
                 if (((ThirstManagerAccess) playerEntity).getThirstManager().getThirstLevel() > 6) {
-                    ((ThirstManagerAccess) playerEntity).getThirstManager().addDehydration(ConfigInit.CONFIG.overheating_exhaustion);
+                    ((ThirstManagerAccess) playerEntity).getThirstManager().addDehydration(ConfigInit.CONFIG.overheatingExhaustion);
                     int sweatTemperature = Temperatures.getDimensionSweatTemperatures(dimensionIdentifier, environmentCode - 3);
                     calculatingTemperature += sweatTemperature;
 
@@ -180,13 +180,13 @@ public class TemperatureAspects {
         HashMap<Integer, Integer> maxCountBlockMap = new HashMap<Integer, Integer>();
         HashMap<Integer, Integer> maxCountFluidMap = new HashMap<Integer, Integer>();
 
-        for (int i = 0; i <= (ConfigInit.CONFIG.heat_block_radius * 2); i++) { // height
+        for (int i = 0; i <= (ConfigInit.CONFIG.heatBlockRadius * 2); i++) { // height
             int height = i;
-            if (i > ConfigInit.CONFIG.heat_block_radius) {
-                height = -(i - ConfigInit.CONFIG.heat_block_radius);
+            if (i > ConfigInit.CONFIG.heatBlockRadius) {
+                height = -(i - ConfigInit.CONFIG.heatBlockRadius);
             }
 
-            int radius = ConfigInit.CONFIG.heat_block_radius + 2;
+            int radius = ConfigInit.CONFIG.heatBlockRadius + 2;
             int x, z, dx, dz;
             x = z = dx = 0;
             dz = -1;
@@ -452,10 +452,10 @@ public class TemperatureAspects {
         if (playerTemperature <= Temperatures.getBodyTemperatures(0)) {
             playerEntity.damage(createDamageSource(playerEntity), 1.0F);
         } else if (playerTemperature >= Temperatures.getBodyTemperatures(6)) {
-            if (isDehydrationLoaded && !ConfigInit.CONFIG.exhaustion_instead_dehydration) {
-                ((ThirstManagerAccess) playerEntity).getThirstManager().addDehydration(ConfigInit.CONFIG.overheating_exhaustion);
+            if (isDehydrationLoaded && !ConfigInit.CONFIG.exhaustionInsteadDehydration) {
+                ((ThirstManagerAccess) playerEntity).getThirstManager().addDehydration(ConfigInit.CONFIG.overheatingExhaustion);
             } else {
-                playerEntity.addExhaustion(ConfigInit.CONFIG.overheating_exhaustion);
+                playerEntity.addExhaustion(ConfigInit.CONFIG.overheatingExhaustion);
             }
         }
         // Set temp and send packet
