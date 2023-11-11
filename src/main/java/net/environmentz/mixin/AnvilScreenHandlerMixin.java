@@ -71,7 +71,7 @@ public abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
                 info.cancel();
             } else {
                 this.removedInsulation = false;
-                if (!itemStack.getNbt().contains("environmentz")) {
+                if (itemStack.hasNbt() && !itemStack.getNbt().contains("environmentz")) {
                     if (itemStack2.isIn(TagInit.INSOLATING_ITEM)) {
                         ItemStack itemStack3 = itemStack.copy();
                         NbtCompound tag = itemStack3.getOrCreateNbt();
