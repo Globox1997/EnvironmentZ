@@ -1,6 +1,6 @@
 ### Added:
-- 
+- Added comfort effect
 ### Fixed:
-- 
+- Fixed compat crash
 ### Changed:
-- Updated to mc 1.20.1
+- Readded emi compat
