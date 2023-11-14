@@ -27,7 +27,11 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.RaycastContext;
 
 public class TemperatureAspects {
 
@@ -199,21 +203,33 @@ public class TemperatureAspects {
                     if (!state.isAir()) {
                         int rawId = Registries.BLOCK.getRawId(state.getBlock());
                         if (Temperatures.hasBlockTemperature(rawId)) {
-                            maxCountBlockMap.put(rawId, maxCountBlockMap.get(rawId) == null ? 1 : maxCountBlockMap.get(rawId) + 1);
                             boolean shouldContinue = false;
-                            if (maxCountBlockMap.get(rawId) != null && maxCountBlockMap.get(rawId) > Temperatures.getBlockTemperature(rawId, -1)) {
-                                shouldContinue = true;
-                            }
                             if (Temperatures.hasBlockProperty(rawId) && state.contains(Temperatures.getBlockProperty(rawId)) && !state.get(Temperatures.getBlockProperty(rawId))) {
                                 shouldContinue = true;
                             }
                             if (!shouldContinue) {
-                                int distance = (int) Math.sqrt(playerEntity.getBlockPos().getSquaredDistance(pos));
-                                int blockTemperature = Temperatures.getBlockTemperature(rawId, distance);
-                                calculatingTemperature += blockTemperature;
-                                thermometerCalculatingTemperature += blockTemperature;
-                                if (ConfigInit.CONFIG.printInConsole) {
-                                    debugString += " Block: " + blockTemperature + " : " + state.getBlock().getName().getString();
+                                BlockHitResult hitResult = playerEntity.getWorld()
+                                        .raycast(new RaycastContext(new Vec3d(playerEntity.getX(), playerEntity.getY() + playerEntity.getHeight() / 2f, playerEntity.getZ()),
+                                                new Vec3d(pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE,
+                                                playerEntity));
+                                if (hitResult.getType() != HitResult.Type.MISS && !hitResult.getBlockPos().equals(pos)) {
+                                    shouldContinue = true;
+                                }
+                                if (!shouldContinue) {
+                                    maxCountBlockMap.put(rawId, maxCountBlockMap.get(rawId) == null ? 1 : maxCountBlockMap.get(rawId) + 1);
+
+                                    if (maxCountBlockMap.get(rawId) != null && maxCountBlockMap.get(rawId) > Temperatures.getBlockTemperature(rawId, -1)) {
+                                        shouldContinue = true;
+                                    }
+                                    if (!shouldContinue) {
+                                        int distance = (int) Math.sqrt(playerEntity.getBlockPos().getSquaredDistance(pos));
+                                        int blockTemperature = Temperatures.getBlockTemperature(rawId, distance);
+                                        calculatingTemperature += blockTemperature;
+                                        thermometerCalculatingTemperature += blockTemperature;
+                                        if (ConfigInit.CONFIG.printInConsole) {
+                                            debugString += " Block: " + blockTemperature + " : " + state.getBlock().getName().getString();
+                                        }
+                                    }
                                 }
                             }
                         } else if (!state.getFluidState().isEmpty()) {
