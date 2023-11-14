@@ -22,7 +22,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
-@Mixin(CampfireBlockEntity.class)
+@Mixin(value = CampfireBlockEntity.class, priority = 1001)
 public class CampfireBlockEntityMixin {
 
     private HashMap<UUID, Integer> playerComfortMap = new HashMap<UUID, Integer>();
