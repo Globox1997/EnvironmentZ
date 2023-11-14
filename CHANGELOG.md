@@ -1,6 +1,7 @@
 ### Added:
-- Added comfort effect
+- 
 ### Fixed:
-- Fixed compat crash
+- Fixed lithium crash
+- Fixed wanderer armor rendering
 ### Changed:
-- Readded emi compat
+- Tweaked block heat check
