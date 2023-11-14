@@ -47,7 +47,7 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
 
     @Inject(method = "usesInnerModel", at = @At("HEAD"), cancellable = true)
     private void usesInnerModelMixin(EquipmentSlot slot, CallbackInfoReturnable<Boolean> info) {
-        if (this.livingEntity != null && livingEntity.getEquippedStack(slot).isIn(TagInit.SLIM_ARMOR)) {
+        if (this.livingEntity != null && this.livingEntity.getEquippedStack(slot).isIn(TagInit.SLIM_ARMOR)) {
             info.setReturnValue(true);
         }
     }
