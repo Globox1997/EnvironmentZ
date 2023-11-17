@@ -1,7 +1,6 @@
 ### Added:
 - 
 ### Fixed:
-- Fixed lithium crash
-- Fixed wanderer armor rendering
+- Fixed satin crash
 ### Changed:
-- Tweaked block heat check
+- 
