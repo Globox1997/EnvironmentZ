@@ -1,7 +1,10 @@
 {
   "effect.environmentz.warming": "Warming",
   "effect.environmentz.cooling": "Cooling",
-  
+
+  "effect.environmentz.cooling.description": "Reduces body temperature, helping the user stay cool in hot environments.",
+  "effect.environmentz.warming.description": "Increases body temperature, keeping the user warm in cold environments.",
+
   "death.attack.freezing": "%1$s froze to death",
 
   "text.autoconfig.environmentz.title": "EnvironmentZ Config",
