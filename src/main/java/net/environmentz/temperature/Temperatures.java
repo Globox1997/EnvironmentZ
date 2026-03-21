@@ -56,40 +56,40 @@ public class Temperatures {
     private static int very_cold_body_acclimatization;
 
     // dimension standard temperature
-    private static HashMap<Identifier, HashMap<Integer, Integer>> dimensionStandardTemperatures = new HashMap<Identifier, HashMap<Integer, Integer>>();
+    private static final HashMap<Identifier, HashMap<Integer, Integer>> dimensionStandardTemperatures = new HashMap<Identifier, HashMap<Integer, Integer>>();
     // dimension day temperature
-    private static HashMap<Identifier, HashMap<Integer, Integer>> dimensionDayTemperatures = new HashMap<Identifier, HashMap<Integer, Integer>>();
+    private static final HashMap<Identifier, HashMap<Integer, Integer>> dimensionDayTemperatures = new HashMap<Identifier, HashMap<Integer, Integer>>();
     // dimension night temperature
-    private static HashMap<Identifier, HashMap<Integer, Integer>> dimensionNightTemperatures = new HashMap<Identifier, HashMap<Integer, Integer>>();
+    private static final HashMap<Identifier, HashMap<Integer, Integer>> dimensionNightTemperatures = new HashMap<Identifier, HashMap<Integer, Integer>>();
     // dimension armor temperature
-    private static HashMap<Identifier, HashMap<Integer, Float>> dimensionArmorTemperatures = new HashMap<Identifier, HashMap<Integer, Float>>();
+    private static final HashMap<Identifier, HashMap<Integer, Float>> dimensionArmorTemperatures = new HashMap<Identifier, HashMap<Integer, Float>>();
     // dimension insolated armor temperature
-    private static HashMap<Identifier, HashMap<Integer, Float>> dimensionInsulatedArmorTemperatures = new HashMap<Identifier, HashMap<Integer, Float>>();
+    private static final HashMap<Identifier, HashMap<Integer, Float>> dimensionInsulatedArmorTemperatures = new HashMap<Identifier, HashMap<Integer, Float>>();
     // dimension iced armor temperature
-    private static HashMap<Identifier, HashMap<Integer, Float>> dimensionIcedArmorTemperatures = new HashMap<Identifier, HashMap<Integer, Float>>();
+    private static final HashMap<Identifier, HashMap<Integer, Float>> dimensionIcedArmorTemperatures = new HashMap<Identifier, HashMap<Integer, Float>>();
     // dimension soaked temperature
-    private static HashMap<Identifier, HashMap<Integer, Integer>> dimensionSoakedTemperatures = new HashMap<Identifier, HashMap<Integer, Integer>>();
+    private static final HashMap<Identifier, HashMap<Integer, Integer>> dimensionSoakedTemperatures = new HashMap<Identifier, HashMap<Integer, Integer>>();
     // dimension wett temperature
-    private static HashMap<Identifier, HashMap<Integer, Integer>> dimensionWettTemperatures = new HashMap<Identifier, HashMap<Integer, Integer>>();
+    private static final HashMap<Identifier, HashMap<Integer, Integer>> dimensionWettTemperatures = new HashMap<Identifier, HashMap<Integer, Integer>>();
     // dimension sweat temperature
-    private static HashMap<Identifier, HashMap<Integer, Integer>> dimensionSweatTemperatures = new HashMap<Identifier, HashMap<Integer, Integer>>();
+    private static final HashMap<Identifier, HashMap<Integer, Integer>> dimensionSweatTemperatures = new HashMap<Identifier, HashMap<Integer, Integer>>();
     // dimension shadow temperature
-    private static HashMap<Identifier, HashMap<Integer, Integer>> dimensionShadowTemperatures = new HashMap<Identifier, HashMap<Integer, Integer>>();
+    private static final HashMap<Identifier, HashMap<Integer, Integer>> dimensionShadowTemperatures = new HashMap<Identifier, HashMap<Integer, Integer>>();
     // dimension height temperature
-    private static HashMap<Identifier, HashMap<Integer, Integer>> dimensionHeightTemperatures = new HashMap<Identifier, HashMap<Integer, Integer>>();
+    private static final HashMap<Identifier, HashMap<Integer, Integer>> dimensionHeightTemperatures = new HashMap<Identifier, HashMap<Integer, Integer>>();
     // dimension acclimatization
-    private static HashMap<Identifier, Integer> dimensionAcclimatization = new HashMap<Identifier, Integer>();
+    private static final HashMap<Identifier, Integer> dimensionAcclimatization = new HashMap<Identifier, Integer>();
 
     // block
-    private static HashMap<Integer, HashMap<Integer, Integer>> blockTemperatures = new HashMap<Integer, HashMap<Integer, Integer>>();
-    private static HashMap<Integer, BooleanProperty> blockProperties = new HashMap<Integer, BooleanProperty>();
+    private static final HashMap<Integer, HashMap<Integer, Integer>> blockTemperatures = new HashMap<Integer, HashMap<Integer, Integer>>();
+    private static final HashMap<Integer, BooleanProperty> blockProperties = new HashMap<Integer, BooleanProperty>();
     // fluid
-    private static HashMap<Integer, HashMap<Integer, Integer>> fluidTemperatures = new HashMap<Integer, HashMap<Integer, Integer>>();
+    private static final HashMap<Integer, HashMap<Integer, Integer>> fluidTemperatures = new HashMap<Integer, HashMap<Integer, Integer>>();
     // item
-    private static HashMap<Integer, HashMap<Integer, Integer>> itemTemperatures = new HashMap<Integer, HashMap<Integer, Integer>>();
+    private static final HashMap<Integer, HashMap<Integer, Integer>> itemTemperatures = new HashMap<Integer, HashMap<Integer, Integer>>();
 
     // effect
-    private static HashMap<Identifier, HashMap<Integer, Integer>> effectTemperatures = new HashMap<Identifier, HashMap<Integer, Integer>>();
+    private static final HashMap<Identifier, HashMap<Integer, Integer>> effectTemperatures = new HashMap<Identifier, HashMap<Integer, Integer>>();
 
     // Setters
     public static void setBodyTemperatures(int max_very_cold, int max_cold, int min_cold, int normal, int min_hot, int max_hot, int max_very_hot) {
@@ -280,110 +280,71 @@ public class Temperatures {
 
     // Getters
     public static int getBodyTemperatures(int environmentCode) { // environmentCode 0: max_very_cold, 1: max_cold, 2: min_cold, 3: normal, 4: min_hot, 5: max_hot, 6: max_very_hot
-        switch (environmentCode) {
-            case 0:
-                return body_temperature_max_very_cold;
-            case 1:
-                return body_temperature_max_cold;
-            case 2:
-                return body_temperature_min_cold;
-            case 3:
-                return body_temperature_normal;
-            case 4:
-                return body_temperature_min_hot;
-            case 5:
-                return body_temperature_max_hot;
-            case 6:
-                return body_temperature_max_very_hot;
-
-            default:
-                return 0;
-        }
+        return switch (environmentCode) {
+            case 0 -> body_temperature_max_very_cold;
+            case 1 -> body_temperature_max_cold;
+            case 2 -> body_temperature_min_cold;
+            case 3 -> body_temperature_normal;
+            case 4 -> body_temperature_min_hot;
+            case 5 -> body_temperature_max_hot;
+            case 6 -> body_temperature_max_very_hot;
+            default -> 0;
+        };
     }
 
     public static int getBodyWetness(int code) { // code 0: wetness_max, 1: wetness_soaked 2: wetness_water, 3: wetness_rain 4: wetness_dry
-        switch (code) {
-            case 0:
-                return body_wetness_max;
-            case 1:
-                return body_wetness_soaked;
-            case 2:
-                return body_wetness_water;
-            case 3:
-                return body_wetness_rain;
-            case 4:
-                return body_wetness_dry;
-            default:
-                return 0;
-        }
+        return switch (code) {
+            case 0 -> body_wetness_max;
+            case 1 -> body_wetness_soaked;
+            case 2 -> body_wetness_water;
+            case 3 -> body_wetness_rain;
+            case 4 -> body_wetness_dry;
+            default -> 0;
+        };
     }
 
     public static int getBodyProtection(int code) { // code 0: max_heat, 1: max_cold 2: max_heat_resistance, 3: max_cold_resistance
-        switch (code) {
-            case 0:
-                return body_heat_protection;
-            case 1:
-                return body_cold_protection;
-            case 2:
-                return body_heat_resistance;
-            case 3:
-                return body_cold_resistance;
-            default:
-                return 0;
-        }
+        return switch (code) {
+            case 0 -> body_heat_protection;
+            case 1 -> body_cold_protection;
+            case 2 -> body_heat_resistance;
+            case 3 -> body_cold_resistance;
+            default -> 0;
+        };
     }
 
     public static float getBiomeTemperatures(int environmentCode) { // environmentCode 0:very_cold 1: cold, 2: hot, 3: very_hot
-        switch (environmentCode) {
-            case 0:
-                return biome_temperature_very_cold;
-            case 1:
-                return biome_temperature_cold;
-            case 2:
-                return biome_temperature_hot;
-            case 3:
-                return biome_temperature_very_hot;
-            default:
-                return 0;
-        }
+        return switch (environmentCode) {
+            case 0 -> biome_temperature_very_cold;
+            case 1 -> biome_temperature_cold;
+            case 2 -> biome_temperature_hot;
+            case 3 -> biome_temperature_very_hot;
+            default -> 0;
+        };
     }
 
     public static int getThermometerTemperatures(int environmentCode) { // environmentCode 0:very_cold 1: cold, 2: hot, 3: very_hot
-        switch (environmentCode) {
-            case 0:
-                return thermometer_very_cold;
-            case 1:
-                return thermometer_cold;
-            case 2:
-                return thermometer_hot;
-            case 3:
-                return thermometer_very_hot;
-            default:
-                return 0;
-        }
+        return switch (environmentCode) {
+            case 0 -> thermometer_very_cold;
+            case 1 -> thermometer_cold;
+            case 2 -> thermometer_hot;
+            case 3 -> thermometer_very_hot;
+            default -> 0;
+        };
     }
 
     public static int getAcclimatization(int code) { // code 0: hot temperature 1: hot acclimatization, 2: very_hot, 3: very_hot, 4: cold, 5: cold, 6: very_cold, 7: very_cold
-        switch (code) {
-            case 0:
-                return hot_body_acclimatization_temperature;
-            case 1:
-                return hot_body_acclimatization;
-            case 2:
-                return very_hot_body_acclimatization_temperature;
-            case 3:
-                return very_hot_body_acclimatization;
-            case 4:
-                return cold_body_acclimatization_temperature;
-            case 5:
-                return cold_body_acclimatization;
-            case 6:
-                return very_cold_body_acclimatization_temperature;
-            case 7:
-                return very_cold_body_acclimatization;
-            default:
-                return 0;
-        }
+        return switch (code) {
+            case 0 -> hot_body_acclimatization_temperature;
+            case 1 -> hot_body_acclimatization;
+            case 2 -> very_hot_body_acclimatization_temperature;
+            case 3 -> very_hot_body_acclimatization;
+            case 4 -> cold_body_acclimatization_temperature;
+            case 5 -> cold_body_acclimatization;
+            case 6 -> very_cold_body_acclimatization_temperature;
+            case 7 -> very_cold_body_acclimatization;
+            default -> 0;
+        };
     }
 
     // environmentCode 0: very_cold, 1: cold, 2: normal, 3: hot, 4: very_hot
@@ -475,18 +436,12 @@ public class Temperatures {
     }
 
     public static int getDimensionAcclimatization(Identifier dimensionIdentifier) {
-        if (dimensionAcclimatization.containsKey(dimensionIdentifier)) {
-            return dimensionAcclimatization.get(dimensionIdentifier);
-        } else
-            return 1997;
+        return dimensionAcclimatization.getOrDefault(dimensionIdentifier, 1997);
     }
 
     // distance -1 = max_count
     public static int getBlockTemperature(int blockId, int distance) {
-        if (blockTemperatures.get(blockId).containsKey(distance))
-            return blockTemperatures.get(blockId).get(distance);
-        else
-            return 0;
+        return blockTemperatures.get(blockId).getOrDefault(distance, 0);
     }
 
     @Nullable
@@ -496,18 +451,12 @@ public class Temperatures {
 
     // distance -1 = max_count
     public static int getFluidTemperature(int fluidId, int distance) {
-        if (fluidTemperatures.get(fluidId).containsKey(distance))
-            return fluidTemperatures.get(fluidId).get(distance);
-        else
-            return 0;
+        return fluidTemperatures.get(fluidId).getOrDefault(distance, 0);
     }
 
     // code -1 = damage, 0 = temperature, 1 = heat_protection, 2 = cold_protection
     public static int getItemValue(int itemId, int code) {
-        if (itemTemperatures.get(itemId).containsKey(code))
-            return itemTemperatures.get(itemId).get(code);
-        else
-            return 0;
+        return itemTemperatures.get(itemId).getOrDefault(code, 0);
     }
 
     // 0 = temperature, 1 = heat_protection, 2 = cold_protection
@@ -534,38 +483,23 @@ public class Temperatures {
     }
 
     public static boolean hasBlockTemperature(int blockId) {
-        if (blockTemperatures.containsKey(blockId)) {
-            return true;
-        }
-        return false;
+        return blockTemperatures.containsKey(blockId);
     }
 
     public static boolean hasBlockProperty(int blockId) {
-        if (blockProperties.containsKey(blockId)) {
-            return true;
-        }
-        return false;
+        return blockProperties.containsKey(blockId);
     }
 
     public static boolean hasFluidTemperature(int fluidId) {
-        if (fluidTemperatures.containsKey(fluidId)) {
-            return true;
-        }
-        return false;
+        return fluidTemperatures.containsKey(fluidId);
     }
 
     public static boolean hasItemTemperature(int itemId) {
-        if (itemTemperatures.containsKey(itemId)) {
-            return true;
-        }
-        return false;
+        return itemTemperatures.containsKey(itemId);
     }
 
     public static boolean hasEffectTemperature(Identifier effectIdentifier) {
-        if (effectTemperatures.containsKey(effectIdentifier)) {
-            return true;
-        }
-        return false;
+        return effectTemperatures.containsKey(effectIdentifier);
     }
 
 }

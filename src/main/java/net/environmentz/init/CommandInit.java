@@ -1,5 +1,7 @@
 package net.environmentz.init;
 
+import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.environmentz.access.TemperatureManagerAccess;
 import net.environmentz.network.EnvironmentServerPacket;
 import net.environmentz.temperature.TemperatureManager;
@@ -12,9 +14,6 @@ import net.minecraft.text.Text;
 
 import java.util.Collection;
 import java.util.Iterator;
-
-import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 
 public class CommandInit {
 
@@ -36,13 +35,13 @@ public class CommandInit {
             dispatcher.register((CommandManager.literal("environment").requires((serverCommandSource) -> {
                 return serverCommandSource.hasPermissionLevel(2);
             })).then(CommandManager.literal("affection").then(CommandManager.argument("targets", EntityArgumentType.players())
-                    .then(CommandManager.literal("hot").then(CommandManager.argument("affection", BoolArgumentType.bool()).executes((commandContext) -> {
-                        return executeEnvCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "hot", BoolArgumentType.getBool(commandContext, "affection"),
-                                0);
-                    }))).then(CommandManager.literal("cold").then(CommandManager.argument("affection", BoolArgumentType.bool()).executes((commandContext) -> {
-                        return executeEnvCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "cold", BoolArgumentType.getBool(commandContext, "affection"),
-                                0);
-                    }))))).then(CommandManager.literal("resistance").then(CommandManager.argument("targets", EntityArgumentType.players())
+                            .then(CommandManager.literal("hot").then(CommandManager.argument("affection", BoolArgumentType.bool()).executes((commandContext) -> {
+                                return executeEnvCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "hot", BoolArgumentType.getBool(commandContext, "affection"),
+                                        0);
+                            }))).then(CommandManager.literal("cold").then(CommandManager.argument("affection", BoolArgumentType.bool()).executes((commandContext) -> {
+                                return executeEnvCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "cold", BoolArgumentType.getBool(commandContext, "affection"),
+                                        0);
+                            }))))).then(CommandManager.literal("resistance").then(CommandManager.argument("targets", EntityArgumentType.players())
                             .then(CommandManager.literal("hot").then(CommandManager.argument("resistance", IntegerArgumentType.integer()).executes((commandContext) -> {
                                 return executeEnvCommand(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), "hot",
                                         IntegerArgumentType.getInteger(commandContext, "resistance"), 1);
@@ -68,10 +67,8 @@ public class CommandInit {
 
     // 0: affection; 1: resistance; 2: protection; 3: temperature
     private static int executeEnvCommand(ServerCommandSource source, Collection<ServerPlayerEntity> targets, String environment, Object object, int mode) {
-        Iterator<ServerPlayerEntity> var3 = targets.iterator();
 
-        while (var3.hasNext()) {
-            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity) var3.next();
+        for (ServerPlayerEntity serverPlayerEntity : targets) {
             TemperatureManager temperatureManager = ((TemperatureManagerAccess) serverPlayerEntity).getTemperatureManager();
 
             if (mode == 0) {
@@ -106,10 +103,8 @@ public class CommandInit {
 
     // 0: affection; 1: resistance; 2: protection; 3: temperature
     private static int executeInfo(ServerCommandSource source, Collection<ServerPlayerEntity> targets, int info) {
-        Iterator<ServerPlayerEntity> var3 = targets.iterator();
         // loop over players
-        while (var3.hasNext()) {
-            ServerPlayerEntity serverPlayerEntity = var3.next();
+        for (ServerPlayerEntity serverPlayerEntity : targets) {
             TemperatureManager temperatureManager = ((TemperatureManagerAccess) serverPlayerEntity).getTemperatureManager();
 
             if (info == 0)

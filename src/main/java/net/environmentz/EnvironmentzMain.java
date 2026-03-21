@@ -1,5 +1,6 @@
 package net.environmentz;
 
+import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,6 +24,10 @@ public class EnvironmentzMain implements ModInitializer {
         LootInit.init();
         TagInit.init();
         EnvironmentServerPacket.init();
+    }
+
+    public static Identifier identifierOf(String name) {
+        return Identifier.of("environmentz", name);
     }
 }
 

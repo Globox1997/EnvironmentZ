@@ -1,7 +1,7 @@
 package net.environmentz.temperature;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-
+import net.environmentz.EnvironmentzMain;
 import net.environmentz.init.ConfigInit;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -13,10 +13,10 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class TemperatureHudRendering {
 
-    private static final Identifier INDICATOR_ICON = Identifier.of("environmentz:textures/gui/indicator_icon.png");
+    private static final Identifier INDICATOR_ICON = EnvironmentzMain.identifierOf("textures/gui/indicator_icon.png");
 
     public static void renderPlayerTemperatureIcon(DrawContext context, MinecraftClient client, PlayerEntity playerEntity, boolean heat, int xValue, int yValue, int extra, int intensity,
-            int scaledWidth, int scaledHeight) {
+                                                   int scaledWidth, int scaledHeight) {
 
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 

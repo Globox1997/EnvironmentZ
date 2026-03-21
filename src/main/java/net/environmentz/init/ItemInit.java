@@ -1,6 +1,7 @@
 package net.environmentz.init;
 
 import com.mojang.serialization.Codec;
+import net.environmentz.EnvironmentzMain;
 import net.environmentz.item.*;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
@@ -9,7 +10,10 @@ import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.item.*;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.potion.Potion;
 import net.minecraft.registry.Registries;
@@ -48,22 +52,22 @@ public class ItemInit {
             new ArmorItem(EnvironmentzArmorMaterials.WOLF, ArmorItem.Type.BOOTS, new Item.Settings().maxDamage(ArmorItem.Type.BOOTS.getMaxDamage(7))));
 
     public static final Item WANDERER_HELMET = register("wanderer_helmet",
-            new ArmorItem(EnvironmentzArmorMaterials.WANDERER, ArmorItem.Type.HELMET, new Item.Settings().maxDamage(ArmorItem.Type.HELMET.getMaxDamage(4)).component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(0xffe3c88e,false))));
+            new ArmorItem(EnvironmentzArmorMaterials.WANDERER, ArmorItem.Type.HELMET, new Item.Settings().maxDamage(ArmorItem.Type.HELMET.getMaxDamage(4)).component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(0xffe3c88e, false))));
     public static final Item WANDERER_CHESTPLATE = register("wanderer_chestplate",
-            new ArmorItem(EnvironmentzArmorMaterials.WANDERER, ArmorItem.Type.CHESTPLATE, new Item.Settings().maxDamage(ArmorItem.Type.CHESTPLATE.getMaxDamage(4)).component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(0xffe3c88e,false))));
+            new ArmorItem(EnvironmentzArmorMaterials.WANDERER, ArmorItem.Type.CHESTPLATE, new Item.Settings().maxDamage(ArmorItem.Type.CHESTPLATE.getMaxDamage(4)).component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(0xffe3c88e, false))));
     public static final Item WANDERER_LEGGINGS = register("wanderer_leggings",
-            new ArmorItem(EnvironmentzArmorMaterials.WANDERER, ArmorItem.Type.LEGGINGS, new Item.Settings().maxDamage(ArmorItem.Type.LEGGINGS.getMaxDamage(4)).component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(0xffe3c88e,false))));
+            new ArmorItem(EnvironmentzArmorMaterials.WANDERER, ArmorItem.Type.LEGGINGS, new Item.Settings().maxDamage(ArmorItem.Type.LEGGINGS.getMaxDamage(4)).component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(0xffe3c88e, false))));
     public static final Item WANDERER_BOOTS = register("wanderer_boots",
-            new ArmorItem(EnvironmentzArmorMaterials.WANDERER, ArmorItem.Type.BOOTS, new Item.Settings().maxDamage(ArmorItem.Type.BOOTS.getMaxDamage(4)).component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(0xffe3c88e,false))));
+            new ArmorItem(EnvironmentzArmorMaterials.WANDERER, ArmorItem.Type.BOOTS, new Item.Settings().maxDamage(ArmorItem.Type.BOOTS.getMaxDamage(4)).component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(0xffe3c88e, false))));
 
     // Potion
-    public static final RegistryEntry<Potion> COLD_RESISTANCE = registerPotion("environmentz:cold_resistance",new Potion(new StatusEffectInstance(EffectInit.WARMING, 3600)));
-    public static final RegistryEntry<Potion> LONG_COLD_RESISTANCE = registerPotion("environmentz:long_cold_resistance",new Potion(new StatusEffectInstance(EffectInit.WARMING, 9600)));
-    public static final RegistryEntry<Potion> OVERHEATING_RESISTANCE = registerPotion("environmentz:overheating_resistance",new Potion(new StatusEffectInstance(EffectInit.COOLING, 3600)));
-    public static final RegistryEntry<Potion> LONG_OVERHEATING_RESISTANCE = registerPotion("environmentz:long_overheating_resistance",new Potion(new StatusEffectInstance(EffectInit.COOLING, 9600)));
+    public static final RegistryEntry<Potion> COLD_RESISTANCE = registerPotion("cold_resistance", new Potion(new StatusEffectInstance(EffectInit.WARMING, 3600)));
+    public static final RegistryEntry<Potion> LONG_COLD_RESISTANCE = registerPotion("long_cold_resistance", new Potion(new StatusEffectInstance(EffectInit.WARMING, 9600)));
+    public static final RegistryEntry<Potion> OVERHEATING_RESISTANCE = registerPotion("overheating_resistance", new Potion(new StatusEffectInstance(EffectInit.COOLING, 3600)));
+    public static final RegistryEntry<Potion> LONG_OVERHEATING_RESISTANCE = registerPotion("long_overheating_resistance", new Potion(new StatusEffectInstance(EffectInit.COOLING, 9600)));
 
     private static Item register(String id, Item item) {
-        return register(Identifier.of("environmentz", id), item);
+        return register(EnvironmentzMain.identifierOf(id), item);
     }
 
     private static Item register(Identifier id, Item item) {
@@ -72,7 +76,7 @@ public class ItemInit {
     }
 
     private static RegistryEntry<Potion> registerPotion(String name, Potion potion) {
-        return Registry.registerReference(Registries.POTION, Identifier.of(name), potion);
+        return Registry.registerReference(Registries.POTION, EnvironmentzMain.identifierOf(name), potion);
     }
 
     private static <T> ComponentType<T> registerComponent(String id, UnaryOperator<ComponentType.Builder<T>> builderOperator) {

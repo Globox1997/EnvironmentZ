@@ -71,8 +71,10 @@
   "commands.environment.protection": "%s Hot Env Protection: %s Cold Env Protection: %s",
   "commands.environment.temperature": "%s Temperature: %s",
 
-  "tag.environmentz.ice_items": "Ice Items",
-  "tag.environmentz.insolating_item": "Insolating",
-  "tag.environmentz.non_affecting_armor": "Non Affecting Armor",
-  "tag.environmentz.warm_armor": "Warm Armor"
+  "tag.item.environmentz.ice_items": "Ice Items",
+  "tag.item.environmentz.insolating_item": "Insolating",
+  "tag.item.environmentz.non_affecting_armor": "Non Affecting Armor",
+  "tag.item.environmentz.warm_armor": "Warm Armor",
+  "tag.item.environmentz.slim_armor": "Slim Armor",
+  "tag.biome.environmentz.easy_spawn_biomes": "Easy Spawn Biomes"
 }

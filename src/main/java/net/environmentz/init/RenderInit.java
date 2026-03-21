@@ -1,6 +1,7 @@
 package net.environmentz.init;
 
 
+import net.environmentz.EnvironmentzMain;
 import net.environmentz.entity.model.WolfHelmetModel;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -9,9 +10,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.component.type.DyedColorComponent;
-import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
 import org.ladysnake.satin.api.event.ShaderEffectRenderCallback;
 import org.ladysnake.satin.api.managed.ManagedShaderEffect;
 import org.ladysnake.satin.api.managed.ShaderEffectManager;
@@ -22,8 +21,8 @@ public class RenderInit {
 
     public static final EntityModelLayer WOLF_HELMET_LAYER = new EntityModelLayer(Identifier.of("environmentz:wolf_helmet_render_layer"), "wolf_helmet_render_layer");
 
-    private static final ManagedShaderEffect blurringEffect = ShaderEffectManager.getInstance().manage(Identifier.of("environmentz", "shaders/post/blurring.json"),
-            shader -> shader.setUniformValue("Radius", (float) 8f));
+    private static final ManagedShaderEffect blurringEffect = ShaderEffectManager.getInstance().manage(EnvironmentzMain.identifierOf("shaders/post/blurring.json"),
+            shader -> shader.setUniformValue("Radius", 8f));
     private static final Uniform1f blurProgress = blurringEffect.findUniform1f("Progress");
     private static float blurProgressValue = 0.0F;
     private static final MinecraftClient client = MinecraftClient.getInstance();

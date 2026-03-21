@@ -1,14 +1,14 @@
 package net.environmentz.network.packet;
 
+import net.environmentz.EnvironmentzMain;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.util.Identifier;
 
 public record SyncValuesPacket(int max_very_cold, int max_cold, int min_cold, int normal, int min_hot, int max_hot, int max_very_hot, int wetness_max, int wetness_soaked, int wetness_water,
                                int wetness_rain, int wetness_dry, int very_cold, int cold, int hot, int very_hot) implements CustomPayload {
 
-    public static final CustomPayload.Id<SyncValuesPacket> PACKET_ID = new CustomPayload.Id<>(Identifier.of("environmentz", "sync_values_packet"));
+    public static final CustomPayload.Id<SyncValuesPacket> PACKET_ID = new CustomPayload.Id<>(EnvironmentzMain.identifierOf("sync_values_packet"));
 
     public static final PacketCodec<RegistryByteBuf, SyncValuesPacket> PACKET_CODEC = PacketCodec.of((value, buf) -> {
         buf.writeInt(value.max_very_cold());

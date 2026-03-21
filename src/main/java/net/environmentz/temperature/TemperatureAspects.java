@@ -1,12 +1,7 @@
 package net.environmentz.temperature;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
-
 import net.dehydration.access.ThirstManagerAccess;
+import net.environmentz.EnvironmentzMain;
 import net.environmentz.init.ConfigInit;
 import net.environmentz.init.ItemInit;
 import net.environmentz.init.TagInit;
@@ -15,7 +10,6 @@ import net.environmentz.network.EnvironmentServerPacket;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -24,7 +18,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
@@ -37,16 +30,20 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 public class TemperatureAspects {
 
     private static final boolean isDehydrationLoaded = FabricLoader.getInstance().isModLoaded("dehydration");
 
-
-    private static final Identifier FREEZING = Identifier.of("environmentz:freezing_debuff");
-    private static final Identifier OVERHEATING = Identifier.of("environmentz:overheating_debuff");
-    private static final Identifier COLD = Identifier.of("environmentz:cold_debuff");
-    private static final Identifier HOT = Identifier.of("environmentz:hot_debuff");
-    private static final Identifier GENERAL = Identifier.of("environmentz:general_debuff");
+    private static final Identifier FREEZING = EnvironmentzMain.identifierOf("freezing_debuff");
+    private static final Identifier OVERHEATING = EnvironmentzMain.identifierOf("overheating_debuff");
+    private static final Identifier COLD = EnvironmentzMain.identifierOf("cold_debuff");
+    private static final Identifier HOT = EnvironmentzMain.identifierOf("hot_debuff");
+    private static final Identifier GENERAL = EnvironmentzMain.identifierOf("general_debuff");
 
     private static final EntityAttributeModifier FREEZING_DEBUFF = new EntityAttributeModifier(FREEZING, -0.25,
             EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE);
@@ -502,7 +499,7 @@ public class TemperatureAspects {
                 if (!stack.isIn(TagInit.WARM_ARMOR) && stack.get(ItemInit.ICED) != null) {
                     returnValue += Temperatures.getDimensionIcedArmorTemperatures(dimensionIdentifier, environmentCode);
                     int iced = stack.get(ItemInit.ICED) - 1;
-                    stack.set(ItemInit.ICED,iced);
+                    stack.set(ItemInit.ICED, iced);
                     if (iced <= 0) {
                         stack.remove(ItemInit.ICED);
                     }
@@ -567,7 +564,7 @@ public class TemperatureAspects {
                                 if (stack.getMaxDamage() - stack.getDamage() - damage <= 0) {
                                     stack.setDamage(0);
                                 } else {
-                                    stack.damage(damage,playerEntity, LivingEntity.getSlotForHand(playerEntity.getActiveHand()));
+                                    stack.damage(damage, playerEntity, LivingEntity.getSlotForHand(playerEntity.getActiveHand()));
                                 }
                             }
                         } else
