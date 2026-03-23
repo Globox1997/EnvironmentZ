@@ -6,7 +6,7 @@ import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class ModelProviderInit {
+public class ModelInit {
 
     public static void init() {
         ModelPredicateProviderRegistry.register(ItemInit.HEATING_STONES_ITEM, Identifier.of("heated"), (stack, world, entity, seed) -> {
