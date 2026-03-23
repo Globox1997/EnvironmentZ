@@ -62,6 +62,12 @@ public class TemperatureHudRendering {
         }
     }
 
+    // 0: no change, 1: increase, 2: decrease
+    public static void renderTemperatureArrowIcon(DrawContext context, MinecraftClient client, PlayerEntity playerEntity, int isChangingPlayerTemperature, int scaledWidth, int scaledHeight) {
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        context.drawTexture(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.temperatureArrowIconX, scaledHeight - ConfigInit.CONFIG.temperatureArrowIconY, (isChangingPlayerTemperature == 1 ? 0 : 7), 39, 7, 9, 256, 256);
+    }
+
     private static int iconTextureSplitValue(float smooth) {
         if (smooth >= 0.99F) {
             return 13;

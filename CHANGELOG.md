@@ -1,6 +1,6 @@
 ### Added:
-- 
+- Added temperature arrow indication
 ### Fixed:
-- Fixed armor item tags
+- 
 ### Changed:
 - 

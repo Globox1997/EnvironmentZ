@@ -27,6 +27,12 @@ public class EnvironmentzConfig implements ConfigData {
     @ConfigEntry.Category("general_settings")
     public boolean showThermometer = true;
     @ConfigEntry.Category("general_settings")
+    public int temperatureArrowIconX = 150;
+    @ConfigEntry.Category("general_settings")
+    public int temperatureArrowIconY = 32;
+    @ConfigEntry.Category("general_settings")
+    public boolean showTemperatureArrow = true;
+    @ConfigEntry.Category("general_settings")
     public int startUpComfortEffectDuration = 9600;
     @ConfigEntry.Category("general_settings")
     @Comment("Handle with care!")
