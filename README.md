@@ -87,6 +87,10 @@ The first folder is called manager where you can replace the default base values
         "very_cold_body_temperature": -580,
         "very_cold_body": 5
     },
+    "room_heat": {
+        "factor": 0.3,
+        "enclosed_radius": 3
+    },
     "effect": { // set temperature and protection values for any status effects
         "environmentz:cooling": {
             "replace": false,

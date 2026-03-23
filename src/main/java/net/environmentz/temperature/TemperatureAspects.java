@@ -66,7 +66,7 @@ public class TemperatureAspects {
         playerWetness(playerEntity, temperatureManager);
         int playerWetness = temperatureManager.getPlayerWetIntensityValue();
         boolean isSoaked = playerWetness >= Temperatures.getBodyWetness(1);
-        boolean isInShadow = !playerEntity.getWorld().isSkyVisible(playerEntity.getBlockPos().up());
+        boolean isSkyNotVisible = !playerEntity.getWorld().isSkyVisible(playerEntity.getBlockPos().up());
 
         Identifier dimensionIdentifier = playerEntity.getWorld().getRegistryKey().getValue();
         if (Temperatures.shouldUseOverworldTemperatures(dimensionIdentifier)) {
@@ -135,7 +135,7 @@ public class TemperatureAspects {
             }
         }
         // Shadow
-        if (isInShadow) {
+        if (isSkyNotVisible) {
             int shadowTemperature = Temperatures.getDimensionShadowTemperatures(dimensionIdentifier, environmentCode);
             calculatingTemperature += shadowTemperature;
             thermometerCalculatingTemperature += shadowTemperature;
@@ -184,8 +184,27 @@ public class TemperatureAspects {
         }
 
         // Block Temperature
-        HashMap<Integer, Integer> maxCountBlockMap = new HashMap<Integer, Integer>();
-        HashMap<Integer, Integer> maxCountFluidMap = new HashMap<Integer, Integer>();
+        HashMap<Integer, Integer> maxCountBlockMap = new HashMap<>();
+        HashMap<Integer, Integer> maxCountFluidMap = new HashMap<>();
+
+        boolean isEnclosed = false;
+        int blockHeatSum = 0;
+        if (isSkyNotVisible) {
+            int skyAccessCount = 0;
+            int enclosedRadius = Temperatures.getEnclosedRadius();
+            BlockPos playerPos = playerEntity.getBlockPos();
+
+            BlockPos[] checkPositions = {playerPos.add(enclosedRadius, 1, 0), playerPos.add(-enclosedRadius, 1, 0),
+                    playerPos.add(0, 1, enclosedRadius), playerPos.add(0, 1, -enclosedRadius)};
+
+            for (BlockPos pos : checkPositions) {
+                if (playerEntity.getWorld().isSkyVisible(pos)) {
+                    skyAccessCount++;
+                }
+            }
+
+            isEnclosed = skyAccessCount == 0;
+        }
 
         for (int i = 0; i <= (ConfigInit.CONFIG.heatBlockRadius * 2); i++) { // height
             int height = i;
@@ -229,6 +248,7 @@ public class TemperatureAspects {
                                         int blockTemperature = Temperatures.getBlockTemperature(rawId, distance);
                                         calculatingTemperature += blockTemperature;
                                         thermometerCalculatingTemperature += blockTemperature;
+                                        blockHeatSum += blockTemperature;
                                         if (ConfigInit.CONFIG.printInConsole) {
                                             debugString += " Block: " + blockTemperature + " : " + state.getBlock().getName().getString();
                                         }
@@ -264,6 +284,15 @@ public class TemperatureAspects {
                 }
                 x += dx;
                 z += dz;
+            }
+        }
+        if (isEnclosed && blockHeatSum > 0) {
+            int roomBonus = (int) (blockHeatSum * Temperatures.getRoomHeatFactor());
+            calculatingTemperature += roomBonus;
+            thermometerCalculatingTemperature += roomBonus;
+
+            if (ConfigInit.CONFIG.printInConsole) {
+                debugString += " RoomHeat: " + roomBonus;
             }
         }
 

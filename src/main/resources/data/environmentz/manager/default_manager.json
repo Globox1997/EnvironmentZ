@@ -43,6 +43,10 @@
         "very_cold_body_temperature": -1600,
         "very_cold_body": 15
     },
+    "room_heat": {
+        "factor": 0.3,
+        "enclosed_radius": 3
+    },
     "effect": {
         "environmentz:cooling": {
             "temperature": -8,

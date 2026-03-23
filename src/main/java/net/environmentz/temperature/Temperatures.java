@@ -1,11 +1,10 @@
 package net.environmentz.temperature;
 
-import java.util.HashMap;
-
-import org.jetbrains.annotations.Nullable;
-
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.HashMap;
 
 public class Temperatures {
 
@@ -54,6 +53,10 @@ public class Temperatures {
     private static int cold_body_acclimatization;
     private static int very_cold_body_acclimatization_temperature;
     private static int very_cold_body_acclimatization;
+
+    // room
+    private static float roomHeatFactor = 0.5f;
+    private static int enclosedRadius = 3;
 
     // dimension standard temperature
     private static final HashMap<Identifier, HashMap<Integer, Integer>> dimensionStandardTemperatures = new HashMap<Identifier, HashMap<Integer, Integer>>();
@@ -278,6 +281,11 @@ public class Temperatures {
         effectTemperatures.put(effectIdentifier, map);
     }
 
+    public static void setRoomHeat(float factor, int radius) {
+        roomHeatFactor = factor;
+        enclosedRadius = radius;
+    }
+
     // Getters
     public static int getBodyTemperatures(int environmentCode) { // environmentCode 0: max_very_cold, 1: max_cold, 2: min_cold, 3: normal, 4: min_hot, 5: max_hot, 6: max_very_hot
         return switch (environmentCode) {
@@ -345,6 +353,14 @@ public class Temperatures {
             case 7 -> very_cold_body_acclimatization;
             default -> 0;
         };
+    }
+
+    public static float getRoomHeatFactor() {
+        return roomHeatFactor;
+    }
+
+    public static int getEnclosedRadius() {
+        return enclosedRadius;
     }
 
     // environmentCode 0: very_cold, 1: cold, 2: normal, 3: hot, 4: very_hot

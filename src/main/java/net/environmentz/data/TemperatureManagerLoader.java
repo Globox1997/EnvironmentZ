@@ -1,15 +1,8 @@
 package net.environmentz.data;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import net.environmentz.EnvironmentzMain;
 import net.environmentz.temperature.Temperatures;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
@@ -18,14 +11,19 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class TemperatureManagerLoader implements SimpleSynchronousResourceReloadListener {
 
     // List to store replacing bools
-    private ArrayList<String> replaceList = new ArrayList<String>();
+    private final ArrayList<String> replaceList = new ArrayList<>();
 
     @Override
     public Identifier getFabricId() {
-        return Identifier.of("environmentz", "temperature_manager_loader");
+        return EnvironmentzMain.identifierOf("temperature_manager_loader");
     }
 
     @Override
@@ -38,8 +36,7 @@ public class TemperatureManagerLoader implements SimpleSynchronousResourceReload
 
                 if (data.has("body_temperature")) {
                     JsonElement bodyTemperatureElement = data.get("body_temperature");
-                    if (bodyTemperatureElement != null && bodyTemperatureElement instanceof JsonObject) {
-                        JsonObject bodyTemperatureObject = (JsonObject) bodyTemperatureElement;
+                    if (bodyTemperatureElement instanceof JsonObject bodyTemperatureObject) {
                         if (!replaceList.contains("body_temperature")) {
                             Temperatures.setBodyTemperatures(bodyTemperatureObject.get("max_very_cold").getAsInt(), bodyTemperatureObject.get("max_cold").getAsInt(),
                                     bodyTemperatureObject.get("min_cold").getAsInt(), bodyTemperatureObject.get("normal").getAsInt(), bodyTemperatureObject.get("min_hot").getAsInt(),
@@ -52,8 +49,7 @@ public class TemperatureManagerLoader implements SimpleSynchronousResourceReload
                 }
                 if (data.has("body_wetness")) {
                     JsonElement bodyWetnessElement = data.get("body_wetness");
-                    if (bodyWetnessElement != null && bodyWetnessElement instanceof JsonObject) {
-                        JsonObject bodyWetnessObject = (JsonObject) bodyWetnessElement;
+                    if (bodyWetnessElement instanceof JsonObject bodyWetnessObject) {
                         if (!replaceList.contains("body_wetness")) {
                             Temperatures.setBodyWetness(bodyWetnessObject.get("max_wetness").getAsInt(), bodyWetnessObject.get("soaked").getAsInt(), bodyWetnessObject.get("water").getAsInt(),
                                     bodyWetnessObject.get("rain").getAsInt(), bodyWetnessObject.get("dry").getAsInt());
@@ -65,8 +61,7 @@ public class TemperatureManagerLoader implements SimpleSynchronousResourceReload
                 }
                 if (data.has("body_protection")) {
                     JsonElement bodyProtectionElement = data.get("body_protection");
-                    if (bodyProtectionElement != null && bodyProtectionElement instanceof JsonObject) {
-                        JsonObject bodyProtectionObject = (JsonObject) bodyProtectionElement;
+                    if (bodyProtectionElement instanceof JsonObject bodyProtectionObject) {
                         if (!replaceList.contains("body_protection")) {
                             Temperatures.setBodyProtection(bodyProtectionObject.get("max_heat").getAsInt(), bodyProtectionObject.get("max_cold").getAsInt(),
                                     bodyProtectionObject.get("max_heat_resistance").getAsInt(), bodyProtectionObject.get("max_cold_resistance").getAsInt());
@@ -78,8 +73,7 @@ public class TemperatureManagerLoader implements SimpleSynchronousResourceReload
                 }
                 if (data.has("biome_temperature")) {
                     JsonElement biomeTemperatureElement = data.get("biome_temperature");
-                    if (biomeTemperatureElement != null && biomeTemperatureElement instanceof JsonObject) {
-                        JsonObject biomeTemperatureObject = (JsonObject) biomeTemperatureElement;
+                    if (biomeTemperatureElement instanceof JsonObject biomeTemperatureObject) {
                         if (!replaceList.contains("biome_temperature")) {
                             Temperatures.setBiomeTemperatures(biomeTemperatureObject.get("very_cold").getAsFloat(), biomeTemperatureObject.get("cold").getAsFloat(),
                                     biomeTemperatureObject.get("hot").getAsFloat(), biomeTemperatureObject.get("very_hot").getAsFloat());
@@ -91,8 +85,7 @@ public class TemperatureManagerLoader implements SimpleSynchronousResourceReload
                 }
                 if (data.has("thermometer_temperature")) {
                     JsonElement thermometerTemperatureElement = data.get("thermometer_temperature");
-                    if (thermometerTemperatureElement != null && thermometerTemperatureElement instanceof JsonObject) {
-                        JsonObject thermometerTemperatureObject = (JsonObject) thermometerTemperatureElement;
+                    if (thermometerTemperatureElement instanceof JsonObject thermometerTemperatureObject) {
                         if (!replaceList.contains("thermometer_temperature")) {
                             Temperatures.setThermometerTemperatures(thermometerTemperatureObject.get("very_cold").getAsInt(), thermometerTemperatureObject.get("cold").getAsInt(),
                                     thermometerTemperatureObject.get("hot").getAsInt(), thermometerTemperatureObject.get("very_hot").getAsInt());
@@ -104,8 +97,7 @@ public class TemperatureManagerLoader implements SimpleSynchronousResourceReload
                 }
                 if (data.has("acclimatization")) {
                     JsonElement acclimatizationElement = data.get("acclimatization");
-                    if (acclimatizationElement != null && acclimatizationElement instanceof JsonObject) {
-                        JsonObject acclimatizationObject = (JsonObject) acclimatizationElement;
+                    if (acclimatizationElement instanceof JsonObject acclimatizationObject) {
                         if (!replaceList.contains("acclimatization")) {
                             Temperatures.setAcclimatizationTemperatures(acclimatizationObject.get("hot_body_temperature").getAsInt(), acclimatizationObject.get("hot_body").getAsInt(),
                                     acclimatizationObject.get("very_hot_body_temperature").getAsInt(), acclimatizationObject.get("very_hot_body").getAsInt(),
@@ -117,17 +109,27 @@ public class TemperatureManagerLoader implements SimpleSynchronousResourceReload
                         }
                     }
                 }
+                if (data.has("room_heat")) {
+                    JsonElement roomHeatElement = data.get("room_heat");
+                    if (roomHeatElement instanceof JsonObject roomHeatObject) {
+                        if (!replaceList.contains("room_heat")) {
+                            Temperatures.setRoomHeat(
+                                    roomHeatObject.get("factor").getAsFloat(),
+                                    roomHeatObject.get("enclosed_radius").getAsInt()
+                            );
+                            if (JsonHelper.getBoolean(roomHeatObject, "replace", false)) {
+                                replaceList.add("room_heat");
+                            }
+                        }
+                    }
+                }
                 if (data.has("effect")) {
                     JsonElement effectElement = data.get("effect");
-                    if (effectElement != null && effectElement instanceof JsonObject) {
-                        JsonObject effectObject = (JsonObject) effectElement;
+                    if (effectElement instanceof JsonObject effectObject) {
                         if (!replaceList.contains("effect")) {
-                            Iterator<String> iterator = effectObject.keySet().iterator();
-                            while (iterator.hasNext()) {
-                                String keyString = iterator.next();
+                            for (String keyString : effectObject.keySet()) {
                                 JsonElement jsonElement = effectObject.get(keyString);
-                                if (jsonElement != null && jsonElement instanceof JsonObject) {
-                                    JsonObject jsonObject = (JsonObject) jsonElement;
+                                if (jsonElement instanceof JsonObject jsonObject) {
                                     if (!replaceList.contains(keyString)) {
                                         if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
                                             replaceList.add(keyString);
@@ -160,17 +162,14 @@ public class TemperatureManagerLoader implements SimpleSynchronousResourceReload
                         }
                     }
                 }
-                Iterator<String> iterator = data.keySet().iterator();
-                while (iterator.hasNext()) {
-                    String keyString = iterator.next();
+                for (String keyString : data.keySet()) {
                     if (keyString.equals("body_temperature") || keyString.equals("body_wetness") || keyString.equals("body_protection") || keyString.equals("biome_temperature")
-                            || keyString.equals("thermometer_temperature") || keyString.equals("acclimatization") || keyString.equals("effect")) {
+                            || keyString.equals("thermometer_temperature") || keyString.equals("acclimatization") || keyString.equals("room_heat") || keyString.equals("effect")) {
                         continue;
                     }
 
                     JsonElement jsonElement = data.get(keyString);
-                    if (jsonElement != null && jsonElement instanceof JsonObject) {
-                        JsonObject jsonObject = (JsonObject) jsonElement;
+                    if (jsonElement instanceof JsonObject jsonObject) {
                         if (!replaceList.contains(keyString)) {
                             if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
                                 replaceList.add(keyString);
@@ -240,9 +239,12 @@ public class TemperatureManagerLoader implements SimpleSynchronousResourceReload
                                     Temperatures.setDimensionDayTemperatures(dimensionIdentifier, 0, 0, 0, 0, 0);
                                     Temperatures.setDimensionNightTemperatures(dimensionIdentifier, 0, 0, 0, 0, 0);
                                 }
-                                Temperatures.setDimensionArmorTemperatures(dimensionIdentifier, jsonObject.get("armor").getAsJsonObject().get("very_cold").getAsFloat(),
-                                        jsonObject.get("armor").getAsJsonObject().get("cold").getAsFloat(), jsonObject.get("armor").getAsJsonObject().get("normal").getAsFloat(),
-                                        jsonObject.get("armor").getAsJsonObject().get("hot").getAsFloat(), jsonObject.get("armor").getAsJsonObject().get("very_hot").getAsFloat());
+                                Temperatures.setDimensionArmorTemperatures(dimensionIdentifier,
+                                        jsonObject.get("armor").getAsJsonObject().get("very_cold").getAsFloat(),
+                                        jsonObject.get("armor").getAsJsonObject().get("cold").getAsFloat(),
+                                        jsonObject.get("armor").getAsJsonObject().get("normal").getAsFloat(),
+                                        jsonObject.get("armor").getAsJsonObject().get("hot").getAsFloat(),
+                                        jsonObject.get("armor").getAsJsonObject().get("very_hot").getAsFloat());
 
                                 Temperatures.setDimensionInsulatedArmorTemperatures(dimensionIdentifier, jsonObject.get("insulated_armor").getAsJsonObject().get("very_cold").getAsFloat(),
                                         jsonObject.get("insulated_armor").getAsJsonObject().get("cold").getAsFloat(), jsonObject.get("insulated_armor").getAsJsonObject().get("normal").getAsFloat(),
