@@ -3,6 +3,7 @@ package net.environmentz.mixin.client;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -27,6 +28,7 @@ import net.minecraft.client.render.item.ItemRenderer;
 @Mixin(HeadFeatureRenderer.class)
 public class HeadFeatureRendererMixin {
 
+    @Unique
     private static final Identifier WOLF_HELMET = Identifier.of("environmentz", "textures/entity/wolf_helmet.png");
 
     @Shadow
@@ -39,6 +41,7 @@ public class HeadFeatureRendererMixin {
     @Final
     private float scaleZ;
 
+    @Unique
     private final WolfHelmetModel wolfHelmetModel = new WolfHelmetModel(WolfHelmetModel.getTexturedModelData().createModel());
 
     @SuppressWarnings("rawtypes")

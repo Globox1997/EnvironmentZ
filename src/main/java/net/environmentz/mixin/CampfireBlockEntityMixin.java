@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -25,22 +26,23 @@ import net.minecraft.world.World;
 @Mixin(value = CampfireBlockEntity.class, priority = 1001)
 public class CampfireBlockEntityMixin {
 
-    private HashMap<UUID, Integer> playerComfortMap = new HashMap<UUID, Integer>();
+    @Unique
+    private HashMap<UUID, Integer> playerComfortMap = new HashMap<>();
 
     @Inject(method = "litServerTick", at = @At("TAIL"))
     private static void litServerTickMixin(World world, BlockPos pos, BlockState state, CampfireBlockEntity campfire, CallbackInfo info) {
         if (world.getTime() % 200 == 0) {
             List<PlayerEntity> playerEntities = world.getEntitiesByClass(PlayerEntity.class, new Box(pos.up()).expand(4.0D, 2.0D, 4.0D), EntityPredicates.EXCEPT_SPECTATOR);
             if (!playerEntities.isEmpty()) {
-                List<UUID> playerUuids = new ArrayList<UUID>();
+                List<UUID> playerUuids = new ArrayList<>();
                 HashMap<UUID, Integer> currentPlayerComfortMap = ((CampfireBlockEntityMixin) (Object) campfire).playerComfortMap;
 
-                for (int i = 0; i < playerEntities.size(); i++) {
-                    UUID uuid = playerEntities.get(i).getUuid();
+                for (PlayerEntity playerEntity : playerEntities) {
+                    UUID uuid = playerEntity.getUuid();
                     if (currentPlayerComfortMap.containsKey(uuid)) {
                         currentPlayerComfortMap.put(uuid, currentPlayerComfortMap.get(uuid) + 1);
                         if (currentPlayerComfortMap.get(uuid) > 6) {
-                            playerEntities.get(i).addStatusEffect(new StatusEffectInstance(EffectInit.COMFORT, 2400, 0, false, false, true));
+                            playerEntity.addStatusEffect(new StatusEffectInstance(EffectInit.COMFORT, 2400, 0, false, false, true));
                             currentPlayerComfortMap.put(uuid, 0);
                         }
                     } else {
@@ -50,14 +52,8 @@ public class CampfireBlockEntityMixin {
                 }
                 playerUuids.add(UUID.randomUUID());
                 playerUuids.add(UUID.randomUUID());
-                Iterator<Map.Entry<UUID, Integer>> iterator = currentPlayerComfortMap.entrySet().iterator();
 
-                while (iterator.hasNext()) {
-                    Map.Entry<UUID, Integer> entry = iterator.next();
-                    if (!playerUuids.contains(entry.getKey())) {
-                        iterator.remove();
-                    }
-                }
+                currentPlayerComfortMap.entrySet().removeIf(entry -> !playerUuids.contains(entry.getKey()));
             } else {
                 ((CampfireBlockEntityMixin) (Object) campfire).playerComfortMap.clear();
             }

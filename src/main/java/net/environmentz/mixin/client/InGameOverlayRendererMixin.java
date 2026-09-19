@@ -6,6 +6,7 @@ import net.minecraft.client.render.*;
 
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,8 +26,11 @@ import net.minecraft.util.math.BlockPos;
 @Environment(EnvType.CLIENT)
 @Mixin(InGameOverlayRenderer.class)
 public abstract class InGameOverlayRendererMixin {
+    @Unique
     private static final Identifier COLDNESS_OVERLAY = Identifier.of("environmentz:textures/gui/coldness_overlay.png");
+    @Unique
     private static float smoothFreezingRendering;
+    @Unique
     private static int ticker;
 
     @Inject(method = "renderOverlays", at = @At(value = "TAIL"))

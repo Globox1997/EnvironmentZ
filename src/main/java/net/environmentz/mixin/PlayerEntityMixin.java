@@ -1,6 +1,7 @@
 package net.environmentz.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,6 +17,7 @@ import net.minecraft.world.World;
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity implements TemperatureManagerAccess {
 
+    @Unique
     private final TemperatureManager temperatureManager = new TemperatureManager();
 
     public PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {

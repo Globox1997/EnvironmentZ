@@ -1,6 +1,15 @@
 package net.environmentz.mixin.client;
 
+import net.environmentz.access.TemperatureManagerAccess;
+import net.environmentz.init.ConfigInit;
+import net.environmentz.temperature.Temperatures;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
@@ -12,16 +21,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import net.environmentz.access.TemperatureManagerAccess;
-import net.environmentz.init.ConfigInit;
-import net.environmentz.temperature.Temperatures;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-
 @Environment(EnvType.CLIENT)
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
@@ -29,7 +28,7 @@ public class GameRendererMixin {
     @Mutable
     @Final
     @Shadow
-    private MinecraftClient client;
+    MinecraftClient client;
 
     @Shadow
     private int ticks;
@@ -42,7 +41,7 @@ public class GameRendererMixin {
             if (playerTemperature == Temperatures.getBodyTemperatures(0) || this.ticks
                     % (Math.abs(Temperatures.getBodyTemperatures(0) * 2) + playerTemperature * 2) < (((Math.abs(Temperatures.getBodyTemperatures(0) * 2) + playerTemperature * 2)) / 2)) {
                 matrix4f.translate((float) (Math.cos((double) this.ticks * Math.PI)) * 0.01f * this.client.options.getDistortionEffectScale().getValue().floatValue(), 0.0f, 0.0f);
-          }
+            }
         }
     }
 }
