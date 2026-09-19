@@ -7,10 +7,7 @@ import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.ColorHelper;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -37,6 +34,7 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
     @Final
     private static Map<String, Identifier> ARMOR_TEXTURE_CACHE;
 
+    @Unique
     private LivingEntity livingEntity = null;
 
     public ArmorFeatureRendererMixin(FeatureRendererContext<T, M> context) {

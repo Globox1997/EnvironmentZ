@@ -65,6 +65,8 @@
   "item.minecraft.splash_potion.effect.long_overheating_resistance": "Splash Potion of Overheating Resistance",
   "item.minecraft.tipped_arrow.effect.overheating_resistance": "Arrow of Overheating Resistance",
   "item.minecraft.tipped_arrow.effect.long_overheating_resistance": "Arrow of Overheating Resistance",
+
+  "block.environmentz.copper_heater": "Copper Heater",
   
   "commands.environment.affection_changed": "%s environment affection got changed",
   "commands.environment.resistance_changed": "%s environment resistance got changed",

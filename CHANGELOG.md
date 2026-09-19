@@ -1,6 +1,5 @@
 ### Added:
-- Added temperature arrow indication
-- Added room heating mechanic + data
+- Copper heater
 ### Fixed:
 - 
 ### Changed:

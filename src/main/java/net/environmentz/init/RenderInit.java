@@ -2,12 +2,14 @@ package net.environmentz.init;
 
 
 import net.environmentz.EnvironmentzMain;
+import net.environmentz.block.screen.CopperHeaterScreen;
 import net.environmentz.entity.model.WolfHelmetModel;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.util.Identifier;
@@ -41,6 +43,9 @@ public class RenderInit {
 
         ColorProviderRegistry.ITEM.register((stack, tintIndex) -> tintIndex > 0 ? -1 : DyedColorComponent.getColor(stack, 0xffe3c88e), ItemInit.WANDERER_HELMET, ItemInit.WANDERER_CHESTPLATE,
                 ItemInit.WANDERER_LEGGINGS, ItemInit.WANDERER_BOOTS);
+
+        HandledScreens.register(BlockInit.COPPER_HEATER_SCREEN_HANDLER_TYPE, CopperHeaterScreen::new);
+
     }
 
     public static void setBlurProgress(float blurProgress) {

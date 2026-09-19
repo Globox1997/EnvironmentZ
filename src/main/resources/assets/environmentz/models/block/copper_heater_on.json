@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "environmentz:block/copper_heater_front_on",
+    "side": "environmentz:block/copper_heater_side",
+    "top": "environmentz:block/copper_heater_top"
+  }
+}
