@@ -1,15 +1,8 @@
 package net.environmentz.data;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import net.environmentz.EnvironmentzMain;
 import net.environmentz.temperature.Temperatures;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
@@ -18,14 +11,19 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class ItemTemperatureLoader implements SimpleSynchronousResourceReloadListener {
 
     // List to store replacing bools
-    private ArrayList<String> replaceList = new ArrayList<String>();
+    private final ArrayList<String> replaceList = new ArrayList<String>();
 
     @Override
     public Identifier getFabricId() {
-        return Identifier.of("environmentz", "item_temperature_loader");
+        return EnvironmentzMain.identifierOf("item_temperature_loader");
     }
 
     @Override
@@ -36,24 +34,20 @@ public class ItemTemperatureLoader implements SimpleSynchronousResourceReloadLis
                 InputStream stream = resourceRef.getInputStream();
                 JsonObject data = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
 
-                Iterator<String> iterator = data.keySet().iterator();
-                while (iterator.hasNext()) {
-
-                    String keyString = iterator.next();
+                for (String keyString : data.keySet()) {
 
                     if (replaceList.contains(keyString)) {
                         continue;
                     }
                     Identifier identifier = Identifier.of(keyString);
-                    if (Registries.ITEM.get(identifier).toString().equals("air")) {
+                    if (!Registries.ITEM.containsId(identifier)) {
                         EnvironmentzMain.LOGGER.info("{} is not a valid item identifier", identifier);
                         continue;
                     }
 
                     JsonElement jsonElement = data.get(keyString);
 
-                    if (jsonElement != null && jsonElement instanceof JsonObject) {
-                        JsonObject jsonObject = (JsonObject) jsonElement;
+                    if (jsonElement instanceof JsonObject jsonObject) {
 
                         if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
                             replaceList.add(keyString);

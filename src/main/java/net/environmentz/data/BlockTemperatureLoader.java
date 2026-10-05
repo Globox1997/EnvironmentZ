@@ -1,15 +1,8 @@
 package net.environmentz.data;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import net.environmentz.EnvironmentzMain;
 import net.environmentz.init.ConfigInit;
 import net.environmentz.temperature.Temperatures;
@@ -19,14 +12,19 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class BlockTemperatureLoader implements SimpleSynchronousResourceReloadListener {
 
     // List to store replacing bools
-    private ArrayList<String> replaceList = new ArrayList<String>();
+    private final ArrayList<String> replaceList = new ArrayList<String>();
 
     @Override
     public Identifier getFabricId() {
-        return Identifier.of("environmentz", "block_temperature_loader");
+        return EnvironmentzMain.identifierOf("block_temperature_loader");
     }
 
     @Override
@@ -37,24 +35,20 @@ public class BlockTemperatureLoader implements SimpleSynchronousResourceReloadLi
                 InputStream stream = resourceRef.getInputStream();
                 JsonObject data = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
 
-                Iterator<String> iterator = data.keySet().iterator();
-                while (iterator.hasNext()) {
-
-                    String keyString = iterator.next();
+                for (String keyString : data.keySet()) {
 
                     if (replaceList.contains(keyString)) {
                         continue;
                     }
                     Identifier identifier = Identifier.of(keyString);
-                    if (Registries.BLOCK.get(identifier).toString().equals("Block{minecraft:air}") && Registries.FLUID.get(identifier).toString().contains("net.minecraft.fluid.EmptyFluid")) {
+                    if (!Registries.BLOCK.containsId(identifier) && !Registries.FLUID.containsId(identifier)) {
                         EnvironmentzMain.LOGGER.info("{} is not a valid block or fluid identifier", identifier);
                         continue;
                     }
 
                     JsonElement jsonElement = data.get(keyString);
 
-                    if (jsonElement != null && jsonElement instanceof JsonObject) {
-                        JsonObject jsonObject = (JsonObject) jsonElement;
+                    if (jsonElement instanceof JsonObject jsonObject) {
 
                         if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
                             replaceList.add(keyString);
@@ -67,7 +61,7 @@ public class BlockTemperatureLoader implements SimpleSynchronousResourceReloadLi
                                 hashMap.put(i, jsonObject.get(String.valueOf(i)).getAsInt());
                             }
                         }
-                        if (Registries.BLOCK.get(identifier).toString().equals("Block{minecraft:air}")) {
+                        if (!Registries.BLOCK.containsId(identifier)) {
                             Temperatures.setFluidTemperatures(Registries.FLUID.getRawId(Registries.FLUID.get(identifier)), hashMap);
                         } else {
                             int rawId = Registries.BLOCK.getRawId(Registries.BLOCK.get(identifier));
