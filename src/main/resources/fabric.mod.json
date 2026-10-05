@@ -12,7 +12,10 @@
     "sources": "https://github.com/Globox1997/EnvironmentZ",
     "issues": "https://github.com/Globox1997/EnvironmentZ/issues"
   },
-  "license": "GLPv3",
+  "license": [
+    "GPLv3",
+    "ARR (Assets)"
+  ],
   "icon": "assets/environmentz/icon.png",
   "environment": "*",
   "entrypoints": {
