@@ -41,28 +41,11 @@ public class EnvironmentClientPacket {
             });
         });
         ClientPlayNetworking.registerGlobalReceiver(SyncValuesPacket.PACKET_ID, (payload, context) -> {
-            int max_very_cold = payload.max_very_cold();
-            int max_cold = payload.max_cold();
-            int min_cold = payload.min_cold();
-            int normal = payload.normal();
-            int min_hot = payload.min_hot();
-            int max_hot = payload.max_hot();
-            int max_very_hot = payload.max_very_hot();
-
-            int wetness_max = payload.wetness_max();
-            int wetness_soaked = payload.wetness_soaked();
-            int wetness_water = payload.wetness_water();
-            int wetness_rain = payload.wetness_rain();
-            int wetness_dry = payload.wetness_dry();
-
-            int very_cold = payload.very_cold();
-            int cold = payload.cold();
-            int hot = payload.hot();
-            int very_hot = payload.very_hot();
             context.client().execute(() -> {
-                Temperatures.setBodyTemperatures(max_very_cold, max_cold, min_cold, normal, min_hot, max_hot, max_very_hot);
-                Temperatures.setBodyWetness(wetness_max, wetness_soaked, wetness_water, wetness_rain, wetness_dry);
-                Temperatures.setThermometerTemperatures(very_cold, cold, hot, very_hot);
+                Temperatures.setBodyTemperature(payload.bodyTemperature());
+                Temperatures.setBodyWetness(payload.bodyWetness());
+                Temperatures.setThermometerTemperature(payload.thermometerTemperature());
+                Temperatures.setBiomeTemperature(payload.biomeTemperature());
             });
         });
     }

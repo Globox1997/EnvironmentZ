@@ -70,6 +70,7 @@
   
   "commands.environment.affection_changed": "%s environment affection got changed",
   "commands.environment.resistance_changed": "%s environment resistance got changed",
+  "commands.environment.protection_changed": "%s environment protection got changed",
   "commands.environment.temperature_changed": "%s temperature got changed",
   "commands.environment.affection": "%s Hot Env: %s Cold Env: %s",
   "commands.environment.resistance": "%s Hot Env Resistance: %s Cold Env Resistance: %s",

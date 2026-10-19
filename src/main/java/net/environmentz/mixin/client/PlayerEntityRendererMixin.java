@@ -23,7 +23,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
     @Override
     protected boolean isShaking(AbstractClientPlayerEntity entity) {
         if (!entity.isCreative() && !entity.isSpectator() && !entity.isInvulnerable())
-            if (((TemperatureManagerAccess) entity).getTemperatureManager().getPlayerTemperature() <= Temperatures.getBodyTemperatures(0)) {
+            if (((TemperatureManagerAccess) entity).getTemperatureManager().getPlayerTemperature() <= Temperatures.getBodyTemperature().maxVeryCold()) {
                 return true;
             }
         return super.isShaking(entity);

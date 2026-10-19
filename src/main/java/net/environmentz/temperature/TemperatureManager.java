@@ -5,16 +5,16 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 public class TemperatureManager {
 
+    private static final int NOT_SYNCED = Integer.MIN_VALUE;
+
     private int environmentTicker;
-    private int environmentTickerCount;
     private boolean isHotEnvAffected = true;
     private boolean isColdEnvAffected = true;
 
-    private boolean playerHasHeatProtection = false;
-    private boolean playerHasColdProtection = false;
     private int playerTemperature = 0;
     private int playerColdProtectionAmount = 0;
     private int playerHotProtectionAmount = 0;
@@ -25,15 +25,19 @@ public class TemperatureManager {
     private int thermometerCalming = 0;
     private int thermometerTemperature = 0;
 
+    private int syncedTemperature = NOT_SYNCED;
+    private int syncedWetness = NOT_SYNCED;
+    private int syncedThermometerTemperature = NOT_SYNCED;
+
     public void readNbt(NbtCompound nbt) {
-        this.isHotEnvAffected = nbt.getBoolean("IsHotEnvAffected");
-        this.isColdEnvAffected = nbt.getBoolean("IsColdEnvAffected");
+        this.isHotEnvAffected = !nbt.contains("IsHotEnvAffected") || nbt.getBoolean("IsHotEnvAffected");
+        this.isColdEnvAffected = !nbt.contains("IsColdEnvAffected") || nbt.getBoolean("IsColdEnvAffected");
         this.playerTemperature = nbt.getInt("PlayerTemperature");
         this.playerColdProtectionAmount = nbt.getInt("PlayerColdProtectionAmount");
         this.playerHotProtectionAmount = nbt.getInt("PlayerHotProtectionAmount");
         this.playerWetIntensityValue = nbt.getInt("PlayerWetIntensityValue");
-        this.playerHasHeatProtection = nbt.getBoolean("PlayerHasHeatProtection");
-        this.playerHasColdProtection = nbt.getBoolean("PlayerHasColdProtection");
+        this.playerHeatResistance = nbt.getInt("PlayerHeatResistance");
+        this.playerColdResistance = nbt.getInt("PlayerColdResistance");
         this.thermometerTemperature = nbt.getInt("ThermometerTemperature");
     }
 
@@ -44,17 +48,30 @@ public class TemperatureManager {
         nbt.putInt("PlayerColdProtectionAmount", this.playerColdProtectionAmount);
         nbt.putInt("PlayerHotProtectionAmount", this.playerHotProtectionAmount);
         nbt.putInt("PlayerWetIntensityValue", this.playerWetIntensityValue);
-        nbt.putBoolean("PlayerHasHeatProtection", this.playerHasHeatProtection);
-        nbt.putBoolean("PlayerHasColdProtection", this.playerHasColdProtection);
+        nbt.putInt("PlayerHeatResistance", this.playerHeatResistance);
+        nbt.putInt("PlayerColdResistance", this.playerColdResistance);
         nbt.putInt("ThermometerTemperature", this.thermometerTemperature);
     }
 
+    public void copyFrom(TemperatureManager oldManager, boolean alive) {
+        this.isHotEnvAffected = oldManager.isHotEnvAffected;
+        this.isColdEnvAffected = oldManager.isColdEnvAffected;
+        this.playerHeatResistance = oldManager.playerHeatResistance;
+        this.playerColdResistance = oldManager.playerColdResistance;
+        if (alive) {
+            this.playerTemperature = oldManager.playerTemperature;
+            this.playerColdProtectionAmount = oldManager.playerColdProtectionAmount;
+            this.playerHotProtectionAmount = oldManager.playerHotProtectionAmount;
+            this.playerWetIntensityValue = oldManager.playerWetIntensityValue;
+            this.thermometerTemperature = oldManager.thermometerTemperature;
+        }
+    }
+
     public void tick(PlayerEntity playerEntity) {
-        if (!playerEntity.getWorld().isClient() && !playerEntity.isCreative() && !playerEntity.isSpectator() && playerEntity.isAlive()) {
-            if (environmentTicker++ >= ConfigInit.CONFIG.temperatureCalculationTime) {
-                TemperatureAspects.tickPlayerEnvironment(this, playerEntity, environmentTickerCount);
-                environmentTicker = 0;
-                environmentTickerCount++;
+        if (playerEntity instanceof ServerPlayerEntity serverPlayerEntity && !playerEntity.isCreative() && !playerEntity.isSpectator() && playerEntity.isAlive()) {
+            if (this.environmentTicker++ >= ConfigInit.CONFIG.temperatureCalculationTime) {
+                TemperatureAspects.tickPlayerEnvironment(this, serverPlayerEntity);
+                this.environmentTicker = 0;
             }
         }
     }
@@ -72,7 +89,6 @@ public class TemperatureManager {
         return this.isColdEnvAffected;
     }
 
-    // Setter
     public void setPlayerTemperature(int temperature) {
         this.playerTemperature = temperature;
     }
@@ -101,7 +117,6 @@ public class TemperatureManager {
         this.thermometerTemperature = temperature;
     }
 
-    // Getter
     public int getPlayerTemperature() {
         return this.playerTemperature;
     }
@@ -128,6 +143,23 @@ public class TemperatureManager {
 
     public int getThermometerTemperature() {
         return this.thermometerTemperature;
+    }
+
+    public boolean isTemperatureSynced() {
+        return this.syncedTemperature == this.playerTemperature && this.syncedWetness == this.playerWetIntensityValue;
+    }
+
+    public void markTemperatureSynced() {
+        this.syncedTemperature = this.playerTemperature;
+        this.syncedWetness = this.playerWetIntensityValue;
+    }
+
+    public boolean isThermometerSynced() {
+        return this.syncedThermometerTemperature == this.thermometerTemperature;
+    }
+
+    public void markThermometerSynced() {
+        this.syncedThermometerTemperature = this.thermometerTemperature;
     }
 
     @Environment(EnvType.CLIENT)

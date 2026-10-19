@@ -13,7 +13,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import net.environmentz.access.PlayerEnvAccess;
 import net.environmentz.access.TemperatureManagerAccess;
 import net.environmentz.network.EnvironmentServerPacket;
-import net.environmentz.temperature.TemperatureManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -35,14 +34,14 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Pl
         if (compatSync > 0) {
             compatSync--;
             if (compatSync == 1) {
-                TemperatureManager temperatureManager = ((TemperatureManagerAccess) (ServerPlayerEntity) (Object) this).getTemperatureManager();
-                EnvironmentServerPacket.writeS2CSyncEnvPacket((ServerPlayerEntity) (Object) this, temperatureManager.isHotEnvAffected(), temperatureManager.isColdEnvAffected());
+                EnvironmentServerPacket.syncAll((ServerPlayerEntity) (Object) this);
             }
         }
     }
 
     @Inject(method = "Lnet/minecraft/server/network/ServerPlayerEntity;copyFrom(Lnet/minecraft/server/network/ServerPlayerEntity;Z)V", at = @At(value = "TAIL"))
     public void copyFromMixinTwo(ServerPlayerEntity oldPlayer, boolean alive, CallbackInfo info) {
+        ((TemperatureManagerAccess) this).getTemperatureManager().copyFrom(((TemperatureManagerAccess) oldPlayer).getTemperatureManager(), alive);
         compatSync();
     }
 

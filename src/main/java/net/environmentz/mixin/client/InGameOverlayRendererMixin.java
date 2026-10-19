@@ -31,15 +31,18 @@ public abstract class InGameOverlayRendererMixin {
     @Unique
     private static float smoothFreezingRendering;
     @Unique
-    private static int ticker;
+    private static final int FADE_INTERVAL_TICKS = 5;
+    @Unique
+    private static long lastFadeTime;
 
     @Inject(method = "renderOverlays", at = @At(value = "TAIL"))
     private static void renderOverlaysMixin(MinecraftClient minecraftClient, MatrixStack matrixStack, CallbackInfo info) {
         PlayerEntity playerEntity = minecraftClient.player;
-        if (!playerEntity.isCreative() && !playerEntity.isSpectator() && ConfigInit.CONFIG.coldOverlay) {
-            ticker++;
-            if (ticker >= 20) {
-                if (playerEntity.getWorld().getBiome(playerEntity.getBlockPos()).value().getTemperature() <= Temperatures.getBiomeTemperatures(0)
+        if (playerEntity != null && !playerEntity.isCreative() && !playerEntity.isSpectator() && ConfigInit.CONFIG.coldOverlay) {
+            long worldTime = playerEntity.getWorld().getTime();
+            if (worldTime < lastFadeTime || worldTime - lastFadeTime >= FADE_INTERVAL_TICKS) {
+                lastFadeTime = worldTime;
+                if (playerEntity.getWorld().getBiome(playerEntity.getBlockPos()).value().getTemperature() <= Temperatures.getBiomeTemperature().veryCold()
                         && ((TemperatureManagerAccess) playerEntity).getTemperatureManager().getPlayerColdProtectionAmount() <= 0) {
 
                     float maxWhitening = 0.3F;
@@ -52,7 +55,6 @@ public abstract class InGameOverlayRendererMixin {
                 } else if (smoothFreezingRendering > 0.0F) {
                     smoothFreezingRendering = smoothFreezingRendering - 0.02F;
                 }
-                ticker = 0;
             }
             if (smoothFreezingRendering > 0.01F) {
                 renderWinterOverlay(minecraftClient, matrixStack, smoothFreezingRendering);

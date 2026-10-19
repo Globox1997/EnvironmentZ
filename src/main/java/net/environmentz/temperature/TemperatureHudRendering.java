@@ -26,8 +26,8 @@ public class TemperatureHudRendering {
             context.drawTexture(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.iconX, scaledHeight - ConfigInit.CONFIG.iconY, xValue + (extra != 0 ? 26 : 0), yValue, 13, 13, 256, 256);
 
             // Foregound
-            float smooth = heat ? ((float) intensity / (float) (Temperatures.getBodyTemperatures(6) - Temperatures.getBodyTemperatures(5)))
-                    : ((float) intensity / (float) (Math.abs(Temperatures.getBodyTemperatures(0)) - Math.abs(Temperatures.getBodyTemperatures(1))));
+            float smooth = heat ? ((float) intensity / (float) (Temperatures.getBodyTemperature().maxVeryHot() - Temperatures.getBodyTemperature().maxHot()))
+                    : ((float) intensity / (float) (Math.abs(Temperatures.getBodyTemperature().maxVeryCold()) - Math.abs(Temperatures.getBodyTemperature().maxCold())));
 
             context.drawTexture(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.iconX, scaledHeight - ConfigInit.CONFIG.iconY + (13 - iconTextureSplitValue(smooth)), 13,
                     yValue - (iconTextureSplitValue(smooth) - 13), 13, iconTextureSplitValue(smooth), 256, 256);
@@ -35,14 +35,14 @@ public class TemperatureHudRendering {
         } else {
             // body rendering
             context.drawTexture(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.iconX, scaledHeight - ConfigInit.CONFIG.iconY, 0, 0, 13, 13, 256, 256);
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, heat ? ((float) intensity / (float) (Temperatures.getBodyTemperatures(5) - Temperatures.getBodyTemperatures(4)))
-                    : ((float) intensity / (float) (Math.abs(Temperatures.getBodyTemperatures(1)) - Math.abs(Temperatures.getBodyTemperatures(2)))));
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, heat ? ((float) intensity / (float) (Temperatures.getBodyTemperature().maxHot() - Temperatures.getBodyTemperature().minHot()))
+                    : ((float) intensity / (float) (Math.abs(Temperatures.getBodyTemperature().maxCold()) - Math.abs(Temperatures.getBodyTemperature().minCold()))));
 
             context.drawTexture(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.iconX, scaledHeight - ConfigInit.CONFIG.iconY, xValue, yValue, 13, 13, 256, 256);
         }
         // wetness border
         if (extra != 0 && yValue == 0) {
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, (float) extra / Temperatures.getBodyWetness(0));
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, (float) extra / Temperatures.getBodyWetness().max());
             context.drawTexture(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.iconX, scaledHeight - ConfigInit.CONFIG.iconY, 39, 0, 13, 13, 256, 256);
         }
     }

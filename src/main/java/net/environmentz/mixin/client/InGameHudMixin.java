@@ -58,32 +58,32 @@ public abstract class InGameHudMixin {
 
             int playerTemperature = temperatureManager.getPlayerTemperature();
             if (playerTemperature != 0) {
-                if (playerTemperature < Temperatures.getBodyTemperatures(2)) {
+                if (playerTemperature < Temperatures.getBodyTemperature().minCold()) {
                     heat = false;
-                    if (playerTemperature < Temperatures.getBodyTemperatures(1)) {
+                    if (playerTemperature < Temperatures.getBodyTemperature().maxCold()) {
                         xEnvPosition = 0;
                         yEnvPosition = 13;
-                        envIntensity = Math.abs(playerTemperature) - Math.abs(Temperatures.getBodyTemperatures(1));
+                        envIntensity = Math.abs(playerTemperature) - Math.abs(Temperatures.getBodyTemperature().maxCold());
                     } else {
                         xEnvPosition = 26;
                         yEnvPosition = 0;
-                        envIntensity = Math.abs(playerTemperature) - Math.abs(Temperatures.getBodyTemperatures(2));
+                        envIntensity = Math.abs(playerTemperature) - Math.abs(Temperatures.getBodyTemperature().minCold());
                     }
-                } else if (playerTemperature > Temperatures.getBodyTemperatures(4)) {
+                } else if (playerTemperature > Temperatures.getBodyTemperature().minHot()) {
                     heat = true;
-                    if (playerTemperature > Temperatures.getBodyTemperatures(5)) {
+                    if (playerTemperature > Temperatures.getBodyTemperature().maxHot()) {
                         xEnvPosition = 0;
                         yEnvPosition = 26;
-                        envIntensity = Math.abs(playerTemperature - Temperatures.getBodyTemperatures(5));
-                        if (playerTemperature > Temperatures.getBodyTemperatures(5)) {
+                        envIntensity = Math.abs(playerTemperature - Temperatures.getBodyTemperature().maxHot());
+                        if (playerTemperature > Temperatures.getBodyTemperature().maxHot()) {
                             RenderInit.setBlurProgress(
-                                    (float) (playerTemperature - Temperatures.getBodyTemperatures(5)) / (Temperatures.getBodyTemperatures(6) - Temperatures.getBodyTemperatures(5)));
+                                    (float) (playerTemperature - Temperatures.getBodyTemperature().maxHot()) / (Temperatures.getBodyTemperature().maxVeryHot() - Temperatures.getBodyTemperature().maxHot()));
                             // * this.client.options.getDistortionEffectScale().getValue().floatValue()
                         }
                     } else {
                         xEnvPosition = 13;
                         yEnvPosition = 0;
-                        envIntensity = Math.abs(playerTemperature - Temperatures.getBodyTemperatures(4));
+                        envIntensity = Math.abs(playerTemperature - Temperatures.getBodyTemperature().minHot());
                     }
                 } else {
                     xEnvPosition = 0;
@@ -95,7 +95,7 @@ public abstract class InGameHudMixin {
                 yEnvPosition = 0;
                 envIntensity = 0;
             }
-            if (RenderInit.getBlurProgress() > 0.001F && playerTemperature <= Temperatures.getBodyTemperatures(5)) {
+            if (RenderInit.getBlurProgress() > 0.001F && playerTemperature <= Temperatures.getBodyTemperature().maxHot()) {
                 RenderInit.setBlurProgress(0.00F);
             }
 
@@ -108,16 +108,16 @@ public abstract class InGameHudMixin {
 
 
             int thermometerTemperature = temperatureManager.getThermometerTemperature();
-            if (thermometerTemperature <= Temperatures.getThermometerTemperatures(0)) {
+            if (thermometerTemperature <= Temperatures.getThermometerTemperature().veryCold()) {
                 thermometerXPosition = 112;
 
-            } else if (thermometerTemperature >= Temperatures.getThermometerTemperatures(3)) {
+            } else if (thermometerTemperature >= Temperatures.getThermometerTemperature().veryHot()) {
                 thermometerXPosition = 96;
             } else {
                 thermometerXPosition = 80;
-                if (thermometerTemperature <= Temperatures.getThermometerTemperatures(1)) {
+                if (thermometerTemperature <= Temperatures.getThermometerTemperature().cold()) {
                     thermometerYPosition = 18;
-                } else if (thermometerTemperature >= Temperatures.getThermometerTemperatures(2)) {
+                } else if (thermometerTemperature >= Temperatures.getThermometerTemperature().hot()) {
                     thermometerYPosition = 0;
                 } else {
                     thermometerYPosition = 11;

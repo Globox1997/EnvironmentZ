@@ -2,25 +2,20 @@ package net.environmentz.data;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import net.environmentz.EnvironmentzMain;
-import net.environmentz.init.ConfigInit;
 import net.environmentz.temperature.Temperatures;
-import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.environmentz.temperature.data.BlockTemperature;
+import net.minecraft.block.Block;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
-public class BlockTemperatureLoader implements SimpleSynchronousResourceReloadListener {
-
-    // List to store replacing bools
-    private final ArrayList<String> replaceList = new ArrayList<String>();
+public class BlockTemperatureLoader extends TemperatureDataLoader {
 
     @Override
     public Identifier getFabricId() {
@@ -29,53 +24,66 @@ public class BlockTemperatureLoader implements SimpleSynchronousResourceReloadLi
 
     @Override
     public void reload(ResourceManager manager) {
+        Map<Block, BlockTemperature> blocks = new HashMap<>();
+        Map<Fluid, BlockTemperature> fluids = new HashMap<>();
+        Set<String> replaced = new HashSet<>();
 
-        manager.findResources("environment_blocks", id -> id.getPath().endsWith(".json")).forEach((id, resourceRef) -> {
-            try {
-                InputStream stream = resourceRef.getInputStream();
-                JsonObject data = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
-
-                for (String keyString : data.keySet()) {
-
-                    if (replaceList.contains(keyString)) {
-                        continue;
-                    }
-                    Identifier identifier = Identifier.of(keyString);
-                    if (!Registries.BLOCK.containsId(identifier) && !Registries.FLUID.containsId(identifier)) {
-                        EnvironmentzMain.LOGGER.info("{} is not a valid block or fluid identifier", identifier);
-                        continue;
-                    }
-
-                    JsonElement jsonElement = data.get(keyString);
-
-                    if (jsonElement instanceof JsonObject jsonObject) {
-
-                        if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
-                            replaceList.add(keyString);
-                        }
-
-                        HashMap<Integer, Integer> hashMap = new HashMap<Integer, Integer>();
-                        hashMap.put(-1, jsonObject.get("max_count").getAsInt());
-                        for (int i = 0; i <= ConfigInit.CONFIG.heatBlockRadius; i++) {
-                            if (jsonObject.has(String.valueOf(i))) {
-                                hashMap.put(i, jsonObject.get(String.valueOf(i)).getAsInt());
-                            }
-                        }
-                        if (!Registries.BLOCK.containsId(identifier)) {
-                            Temperatures.setFluidTemperatures(Registries.FLUID.getRawId(Registries.FLUID.get(identifier)), hashMap);
-                        } else {
-                            int rawId = Registries.BLOCK.getRawId(Registries.BLOCK.get(identifier));
-                            Temperatures.setBlockTemperatures(rawId, hashMap);
-                            if (jsonObject.has("property")) {
-                                Temperatures.setBlockProperty(rawId, jsonObject.get("property").getAsString());
-                            }
-                        }
-                    }
+        forEachJsonFile(manager, "environment_blocks", (file, data) -> {
+            for (Map.Entry<String, JsonElement> entry : data.entrySet()) {
+                String key = entry.getKey();
+                if (replaced.contains(key)) {
+                    continue;
                 }
-            } catch (Exception e) {
-                EnvironmentzMain.LOGGER.error("Error occurred while loading resource {}. {}", id.toString(), e.toString());
+                Identifier identifier = Identifier.tryParse(key);
+                Optional<Block> block = identifier == null ? Optional.empty() : Registries.BLOCK.getOrEmpty(identifier);
+                Optional<Fluid> fluid = identifier == null || block.isPresent() ? Optional.empty() : Registries.FLUID.getOrEmpty(identifier);
+                if (block.isEmpty() && fluid.isEmpty()) {
+                    EnvironmentzMain.LOGGER.info("{} is not a valid block or fluid identifier", key);
+                    continue;
+                }
+                if (!(entry.getValue() instanceof JsonObject jsonObject)) {
+                    continue;
+                }
+                if (isReplacing(jsonObject)) {
+                    replaced.add(key);
+                }
+                try {
+                    BlockTemperature blockTemperature = parseBlockTemperature(jsonObject);
+                    block.ifPresent(value -> blocks.put(value, blockTemperature));
+                    fluid.ifPresent(value -> fluids.put(value, blockTemperature));
+                } catch (RuntimeException exception) {
+                    EnvironmentzMain.LOGGER.error("Invalid entry {} in {}: {}", key, file, exception.getMessage());
+                }
             }
         });
+
+        Temperatures.setBlocks(blocks, fluids);
     }
 
+    private static BlockTemperature parseBlockTemperature(JsonObject jsonObject) {
+        int maxCount = JsonHelper.getInt(jsonObject, "max_count");
+        Map<Integer, Integer> distances = new HashMap<>();
+        int maxDistance = -1;
+        for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+            Integer distance = parseDistance(entry.getKey());
+            if (distance != null) {
+                distances.put(distance, JsonHelper.asInt(entry.getValue(), entry.getKey()));
+                maxDistance = Math.max(maxDistance, distance);
+            }
+        }
+        int[] temperatures = new int[maxDistance + 1];
+        distances.forEach((distance, temperature) -> temperatures[distance] = temperature);
+
+        BooleanProperty property = jsonObject.has("property") ? BooleanProperty.of(JsonHelper.getString(jsonObject, "property")) : null;
+        return new BlockTemperature(maxCount, temperatures, property);
+    }
+
+    private static Integer parseDistance(String key) {
+        try {
+            int distance = Integer.parseInt(key);
+            return distance >= 0 ? distance : null;
+        } catch (NumberFormatException exception) {
+            return null;
+        }
+    }
 }

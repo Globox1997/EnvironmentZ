@@ -2,24 +2,23 @@ package net.environmentz.data;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.mojang.serialization.Codec;
 import net.environmentz.EnvironmentzMain;
 import net.environmentz.temperature.Temperatures;
-import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.environmentz.temperature.data.*;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
+import java.util.function.Consumer;
 
-public class TemperatureManagerLoader implements SimpleSynchronousResourceReloadListener {
+public class TemperatureManagerLoader extends TemperatureDataLoader {
 
-    // List to store replacing bools
-    private final ArrayList<String> replaceList = new ArrayList<>();
+    private static final String EFFECT_SECTION = "effect";
+    private static final Set<String> SECTIONS = Set.of("body_temperature", "body_wetness", "body_protection", "biome_temperature", "thermometer_temperature", "acclimatization", "room_heat",
+            EFFECT_SECTION);
 
     @Override
     public Identifier getFabricId() {
@@ -28,263 +27,75 @@ public class TemperatureManagerLoader implements SimpleSynchronousResourceReload
 
     @Override
     public void reload(ResourceManager manager) {
+        Map<Identifier, DimensionTemperatures> dimensions = new HashMap<>();
+        Map<StatusEffect, EffectTemperature> effects = new HashMap<>();
+        Set<String> replacedSections = new HashSet<>();
+        Set<String> replacedEffects = new HashSet<>();
+        Set<String> replacedDimensions = new HashSet<>();
 
-        manager.findResources("manager", id -> id.getPath().endsWith(".json")).forEach((id, resourceRef) -> {
-            try {
-                InputStream stream = resourceRef.getInputStream();
-                JsonObject data = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
+        forEachJsonFile(manager, "manager", (file, data) -> {
+            loadSection(data, "body_temperature", BodyTemperature.CODEC, file, replacedSections, Temperatures::setBodyTemperature);
+            loadSection(data, "body_wetness", BodyWetness.CODEC, file, replacedSections, Temperatures::setBodyWetness);
+            loadSection(data, "body_protection", BodyProtection.CODEC, file, replacedSections, Temperatures::setBodyProtection);
+            loadSection(data, "biome_temperature", BiomeTemperature.CODEC, file, replacedSections, Temperatures::setBiomeTemperature);
+            loadSection(data, "thermometer_temperature", ThermometerTemperature.CODEC, file, replacedSections, Temperatures::setThermometerTemperature);
+            loadSection(data, "acclimatization", Acclimatization.CODEC, file, replacedSections, Temperatures::setAcclimatization);
+            loadSection(data, "room_heat", RoomHeat.CODEC, file, replacedSections, Temperatures::setRoomHeat);
 
-                if (data.has("body_temperature")) {
-                    JsonElement bodyTemperatureElement = data.get("body_temperature");
-                    if (bodyTemperatureElement instanceof JsonObject bodyTemperatureObject) {
-                        if (!replaceList.contains("body_temperature")) {
-                            Temperatures.setBodyTemperatures(bodyTemperatureObject.get("max_very_cold").getAsInt(), bodyTemperatureObject.get("max_cold").getAsInt(),
-                                    bodyTemperatureObject.get("min_cold").getAsInt(), bodyTemperatureObject.get("normal").getAsInt(), bodyTemperatureObject.get("min_hot").getAsInt(),
-                                    bodyTemperatureObject.get("max_hot").getAsInt(), bodyTemperatureObject.get("max_very_hot").getAsInt());
-                            if (JsonHelper.getBoolean(bodyTemperatureObject, "replace", false)) {
-                                replaceList.add("body_temperature");
-                            }
-                        }
-                    }
+            if (data.get(EFFECT_SECTION) instanceof JsonObject effectObject && !replacedSections.contains(EFFECT_SECTION)) {
+                loadEffects(effectObject, file, replacedEffects, effects);
+                if (isReplacing(effectObject)) {
+                    replacedSections.add(EFFECT_SECTION);
                 }
-                if (data.has("body_wetness")) {
-                    JsonElement bodyWetnessElement = data.get("body_wetness");
-                    if (bodyWetnessElement instanceof JsonObject bodyWetnessObject) {
-                        if (!replaceList.contains("body_wetness")) {
-                            Temperatures.setBodyWetness(bodyWetnessObject.get("max_wetness").getAsInt(), bodyWetnessObject.get("soaked").getAsInt(), bodyWetnessObject.get("water").getAsInt(),
-                                    bodyWetnessObject.get("rain").getAsInt(), bodyWetnessObject.get("dry").getAsInt());
-                            if (JsonHelper.getBoolean(bodyWetnessObject, "replace", false)) {
-                                replaceList.add("body_wetness");
-                            }
-                        }
-                    }
+            }
+
+            for (Map.Entry<String, JsonElement> entry : data.entrySet()) {
+                String key = entry.getKey();
+                if (SECTIONS.contains(key) || !(entry.getValue() instanceof JsonObject) || replacedDimensions.contains(key)) {
+                    continue;
                 }
-                if (data.has("body_protection")) {
-                    JsonElement bodyProtectionElement = data.get("body_protection");
-                    if (bodyProtectionElement instanceof JsonObject bodyProtectionObject) {
-                        if (!replaceList.contains("body_protection")) {
-                            Temperatures.setBodyProtection(bodyProtectionObject.get("max_heat").getAsInt(), bodyProtectionObject.get("max_cold").getAsInt(),
-                                    bodyProtectionObject.get("max_heat_resistance").getAsInt(), bodyProtectionObject.get("max_cold_resistance").getAsInt());
-                            if (JsonHelper.getBoolean(bodyProtectionObject, "replace", false)) {
-                                replaceList.add("body_protection");
-                            }
-                        }
-                    }
+                Identifier dimensionIdentifier = Identifier.tryParse(key);
+                if (dimensionIdentifier == null) {
+                    EnvironmentzMain.LOGGER.info("{} is not a valid dimension identifier", key);
+                    continue;
                 }
-                if (data.has("biome_temperature")) {
-                    JsonElement biomeTemperatureElement = data.get("biome_temperature");
-                    if (biomeTemperatureElement instanceof JsonObject biomeTemperatureObject) {
-                        if (!replaceList.contains("biome_temperature")) {
-                            Temperatures.setBiomeTemperatures(biomeTemperatureObject.get("very_cold").getAsFloat(), biomeTemperatureObject.get("cold").getAsFloat(),
-                                    biomeTemperatureObject.get("hot").getAsFloat(), biomeTemperatureObject.get("very_hot").getAsFloat());
-                            if (JsonHelper.getBoolean(biomeTemperatureObject, "replace", false)) {
-                                replaceList.add("biome_temperature");
-                            }
-                        }
-                    }
+                if (isReplacing(entry.getValue())) {
+                    replacedDimensions.add(key);
                 }
-                if (data.has("thermometer_temperature")) {
-                    JsonElement thermometerTemperatureElement = data.get("thermometer_temperature");
-                    if (thermometerTemperatureElement instanceof JsonObject thermometerTemperatureObject) {
-                        if (!replaceList.contains("thermometer_temperature")) {
-                            Temperatures.setThermometerTemperatures(thermometerTemperatureObject.get("very_cold").getAsInt(), thermometerTemperatureObject.get("cold").getAsInt(),
-                                    thermometerTemperatureObject.get("hot").getAsInt(), thermometerTemperatureObject.get("very_hot").getAsInt());
-                            if (JsonHelper.getBoolean(thermometerTemperatureObject, "replace", false)) {
-                                replaceList.add("thermometer_temperature");
-                            }
-                        }
-                    }
-                }
-                if (data.has("acclimatization")) {
-                    JsonElement acclimatizationElement = data.get("acclimatization");
-                    if (acclimatizationElement instanceof JsonObject acclimatizationObject) {
-                        if (!replaceList.contains("acclimatization")) {
-                            Temperatures.setAcclimatizationTemperatures(acclimatizationObject.get("hot_body_temperature").getAsInt(), acclimatizationObject.get("hot_body").getAsInt(),
-                                    acclimatizationObject.get("very_hot_body_temperature").getAsInt(), acclimatizationObject.get("very_hot_body").getAsInt(),
-                                    acclimatizationObject.get("cold_body_temperature").getAsInt(), acclimatizationObject.get("cold_body").getAsInt(),
-                                    acclimatizationObject.get("very_cold_body_temperature").getAsInt(), acclimatizationObject.get("very_cold_body").getAsInt());
-                            if (JsonHelper.getBoolean(acclimatizationObject, "replace", false)) {
-                                replaceList.add("acclimatization");
-                            }
-                        }
-                    }
-                }
-                if (data.has("room_heat")) {
-                    JsonElement roomHeatElement = data.get("room_heat");
-                    if (roomHeatElement instanceof JsonObject roomHeatObject) {
-                        if (!replaceList.contains("room_heat")) {
-                            Temperatures.setRoomHeat(
-                                    roomHeatObject.get("factor").getAsFloat(),
-                                    roomHeatObject.get("enclosed_radius").getAsInt()
-                            );
-                            if (JsonHelper.getBoolean(roomHeatObject, "replace", false)) {
-                                replaceList.add("room_heat");
-                            }
-                        }
-                    }
-                }
-                if (data.has("effect")) {
-                    JsonElement effectElement = data.get("effect");
-                    if (effectElement instanceof JsonObject effectObject) {
-                        if (!replaceList.contains("effect")) {
-                            for (String keyString : effectObject.keySet()) {
-                                JsonElement jsonElement = effectObject.get(keyString);
-                                if (jsonElement instanceof JsonObject jsonObject) {
-                                    if (!replaceList.contains(keyString)) {
-                                        if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
-                                            replaceList.add(keyString);
-                                        }
-                                        Identifier effectIdentifier = Identifier.of(keyString);
-                                        if (Registries.STATUS_EFFECT.get(effectIdentifier) == null) {
-                                            EnvironmentzMain.LOGGER.info("{} is not a valid effect identifier", effectIdentifier);
-                                            continue;
-                                        }
-                                        HashMap<Integer, Integer> hashMap = new HashMap<Integer, Integer>();
-                                        hashMap.put(0, jsonObject.get("temperature").getAsInt());
-                                        if (jsonObject.has("heat_protection")) {
-                                            hashMap.put(1, jsonObject.get("heat_protection").getAsInt());
-                                        } else {
-                                            hashMap.put(1, 0);
-                                        }
-                                        if (jsonObject.has("cold_protection")) {
-                                            hashMap.put(2, jsonObject.get("cold_protection").getAsInt());
-                                        } else {
-                                            hashMap.put(2, 0);
-                                        }
-                                        Temperatures.setEffectTemperatures(effectIdentifier, hashMap);
-                                    }
-                                }
-                            }
-
-                            if (JsonHelper.getBoolean(effectObject, "replace", false)) {
-                                replaceList.add("effect");
-                            }
-                        }
-                    }
-                }
-                for (String keyString : data.keySet()) {
-                    if (keyString.equals("body_temperature") || keyString.equals("body_wetness") || keyString.equals("body_protection") || keyString.equals("biome_temperature")
-                            || keyString.equals("thermometer_temperature") || keyString.equals("acclimatization") || keyString.equals("room_heat") || keyString.equals("effect")) {
-                        continue;
-                    }
-
-                    JsonElement jsonElement = data.get(keyString);
-                    if (jsonElement instanceof JsonObject jsonObject) {
-                        if (!replaceList.contains(keyString)) {
-                            if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
-                                replaceList.add(keyString);
-                            }
-                            Identifier dimensionIdentifier = Identifier.of(keyString);
-
-                            if (JsonHelper.getBoolean(jsonObject, "basic", false)) {
-                                if (jsonObject.has("standard")) {
-                                    Temperatures.setDimensionStandardTemperatures(dimensionIdentifier, jsonObject.get("standard").getAsInt(), jsonObject.get("standard").getAsInt(),
-                                            jsonObject.get("standard").getAsInt(), jsonObject.get("standard").getAsInt(), jsonObject.get("standard").getAsInt());
-                                } else {
-                                    Temperatures.setDimensionStandardTemperatures(dimensionIdentifier, 0, 0, 0, 0, 0);
-                                }
-                                if (jsonObject.has("day") && jsonObject.has("night")) {
-                                    Temperatures.setDimensionDayTemperatures(dimensionIdentifier, jsonObject.get("day").getAsInt(), jsonObject.get("day").getAsInt(), jsonObject.get("day").getAsInt(),
-                                            jsonObject.get("day").getAsInt(), jsonObject.get("day").getAsInt());
-                                    Temperatures.setDimensionDayTemperatures(dimensionIdentifier, jsonObject.get("night").getAsInt(), jsonObject.get("night").getAsInt(),
-                                            jsonObject.get("night").getAsInt(), jsonObject.get("night").getAsInt(), jsonObject.get("night").getAsInt());
-                                } else {
-                                    Temperatures.setDimensionDayTemperatures(dimensionIdentifier, 0, 0, 0, 0, 0);
-                                    Temperatures.setDimensionNightTemperatures(dimensionIdentifier, 0, 0, 0, 0, 0);
-                                }
-                                Temperatures.setDimensionArmorTemperatures(dimensionIdentifier, jsonObject.get("armor").getAsFloat(), jsonObject.get("armor").getAsFloat(),
-                                        jsonObject.get("armor").getAsFloat(), jsonObject.get("armor").getAsFloat(), jsonObject.get("armor").getAsFloat());
-
-                                Temperatures.setDimensionInsulatedArmorTemperatures(dimensionIdentifier, jsonObject.get("insulated_armor").getAsFloat(),
-                                        jsonObject.get("insulated_armor").getAsFloat(), jsonObject.get("insulated_armor").getAsFloat(), jsonObject.get("insulated_armor").getAsFloat(),
-                                        jsonObject.get("insulated_armor").getAsFloat());
-
-                                Temperatures.setDimensionIcedArmorTemperatures(dimensionIdentifier, jsonObject.get("iced_armor").getAsFloat(), jsonObject.get("iced_armor").getAsFloat(),
-                                        jsonObject.get("iced_armor").getAsFloat(), jsonObject.get("iced_armor").getAsFloat(), jsonObject.get("iced_armor").getAsFloat());
-
-                                Temperatures.setDimensionSoakedTemperatures(dimensionIdentifier, jsonObject.get("soaked").getAsInt(), jsonObject.get("soaked").getAsInt(),
-                                        jsonObject.get("soaked").getAsInt(), jsonObject.get("soaked").getAsInt(), jsonObject.get("soaked").getAsInt());
-
-                                Temperatures.setDimensionWettTemperatures(dimensionIdentifier, jsonObject.get("wett").getAsInt(), jsonObject.get("wett").getAsInt(), jsonObject.get("wett").getAsInt(),
-                                        jsonObject.get("wett").getAsInt(), jsonObject.get("wett").getAsInt());
-
-                                Temperatures.setDimensionSweatTemperatures(dimensionIdentifier, jsonObject.get("sweat").getAsInt(), jsonObject.get("sweat").getAsInt());
-
-                                Temperatures.setDimensionShadowTemperatures(dimensionIdentifier, jsonObject.get("shadow").getAsInt(), jsonObject.get("shadow").getAsInt(),
-                                        jsonObject.get("shadow").getAsInt(), jsonObject.get("shadow").getAsInt(), jsonObject.get("shadow").getAsInt());
-
-                                Temperatures.setDimensionHeightTemperatures(dimensionIdentifier, jsonObject.get("height").getAsInt(), jsonObject.get("height").getAsInt(),
-                                        jsonObject.get("height").getAsInt(), jsonObject.get("height").getAsInt(), jsonObject.get("height").getAsInt(), jsonObject.get("height").getAsInt(),
-                                        jsonObject.get("height").getAsInt(), jsonObject.get("height").getAsInt());
-
-                                if (jsonObject.has("acclimatization")) {
-                                    Temperatures.setDimensionAcclimatization(dimensionIdentifier, jsonObject.get("acclimatization").getAsInt());
-                                }
-                            } else {
-                                if (jsonObject.has("standard")) {
-                                    Temperatures.setDimensionStandardTemperatures(dimensionIdentifier, jsonObject.get("standard").getAsJsonObject().get("very_cold").getAsInt(),
-                                            jsonObject.get("standard").getAsJsonObject().get("cold").getAsInt(), jsonObject.get("standard").getAsJsonObject().get("normal").getAsInt(),
-                                            jsonObject.get("standard").getAsJsonObject().get("hot").getAsInt(), jsonObject.get("standard").getAsJsonObject().get("very_hot").getAsInt());
-                                } else {
-                                    Temperatures.setDimensionStandardTemperatures(dimensionIdentifier, 0, 0, 0, 0, 0);
-                                }
-                                if (jsonObject.has("day") && jsonObject.has("night")) {
-                                    Temperatures.setDimensionDayTemperatures(dimensionIdentifier, jsonObject.get("day").getAsJsonObject().get("very_cold").getAsInt(),
-                                            jsonObject.get("day").getAsJsonObject().get("cold").getAsInt(), jsonObject.get("day").getAsJsonObject().get("normal").getAsInt(),
-                                            jsonObject.get("day").getAsJsonObject().get("hot").getAsInt(), jsonObject.get("day").getAsJsonObject().get("very_hot").getAsInt());
-                                    Temperatures.setDimensionNightTemperatures(dimensionIdentifier, jsonObject.get("night").getAsJsonObject().get("very_cold").getAsInt(),
-                                            jsonObject.get("night").getAsJsonObject().get("cold").getAsInt(), jsonObject.get("night").getAsJsonObject().get("normal").getAsInt(),
-                                            jsonObject.get("night").getAsJsonObject().get("hot").getAsInt(), jsonObject.get("night").getAsJsonObject().get("very_hot").getAsInt());
-                                } else {
-                                    Temperatures.setDimensionDayTemperatures(dimensionIdentifier, 0, 0, 0, 0, 0);
-                                    Temperatures.setDimensionNightTemperatures(dimensionIdentifier, 0, 0, 0, 0, 0);
-                                }
-                                Temperatures.setDimensionArmorTemperatures(dimensionIdentifier,
-                                        jsonObject.get("armor").getAsJsonObject().get("very_cold").getAsFloat(),
-                                        jsonObject.get("armor").getAsJsonObject().get("cold").getAsFloat(),
-                                        jsonObject.get("armor").getAsJsonObject().get("normal").getAsFloat(),
-                                        jsonObject.get("armor").getAsJsonObject().get("hot").getAsFloat(),
-                                        jsonObject.get("armor").getAsJsonObject().get("very_hot").getAsFloat());
-
-                                Temperatures.setDimensionInsulatedArmorTemperatures(dimensionIdentifier, jsonObject.get("insulated_armor").getAsJsonObject().get("very_cold").getAsFloat(),
-                                        jsonObject.get("insulated_armor").getAsJsonObject().get("cold").getAsFloat(), jsonObject.get("insulated_armor").getAsJsonObject().get("normal").getAsFloat(),
-                                        jsonObject.get("insulated_armor").getAsJsonObject().get("hot").getAsFloat(), jsonObject.get("insulated_armor").getAsJsonObject().get("very_hot").getAsFloat());
-
-                                Temperatures.setDimensionIcedArmorTemperatures(dimensionIdentifier, jsonObject.get("iced_armor").getAsJsonObject().get("very_cold").getAsFloat(),
-                                        jsonObject.get("iced_armor").getAsJsonObject().get("cold").getAsFloat(), jsonObject.get("iced_armor").getAsJsonObject().get("normal").getAsFloat(),
-                                        jsonObject.get("iced_armor").getAsJsonObject().get("hot").getAsFloat(), jsonObject.get("iced_armor").getAsJsonObject().get("very_hot").getAsFloat());
-
-                                Temperatures.setDimensionSoakedTemperatures(dimensionIdentifier, jsonObject.get("soaked").getAsJsonObject().get("very_cold").getAsInt(),
-                                        jsonObject.get("soaked").getAsJsonObject().get("cold").getAsInt(), jsonObject.get("soaked").getAsJsonObject().get("normal").getAsInt(),
-                                        jsonObject.get("soaked").getAsJsonObject().get("hot").getAsInt(), jsonObject.get("soaked").getAsJsonObject().get("very_hot").getAsInt());
-
-                                Temperatures.setDimensionWettTemperatures(dimensionIdentifier, jsonObject.get("wett").getAsJsonObject().get("very_cold").getAsInt(),
-                                        jsonObject.get("wett").getAsJsonObject().get("cold").getAsInt(), jsonObject.get("wett").getAsJsonObject().get("normal").getAsInt(),
-                                        jsonObject.get("wett").getAsJsonObject().get("hot").getAsInt(), jsonObject.get("wett").getAsJsonObject().get("very_hot").getAsInt());
-
-                                Temperatures.setDimensionSweatTemperatures(dimensionIdentifier, jsonObject.get("sweat").getAsJsonObject().get("hot").getAsInt(),
-                                        jsonObject.get("sweat").getAsJsonObject().get("very_hot").getAsInt());
-
-                                Temperatures.setDimensionShadowTemperatures(dimensionIdentifier, jsonObject.get("shadow").getAsJsonObject().get("very_cold").getAsInt(),
-                                        jsonObject.get("shadow").getAsJsonObject().get("cold").getAsInt(), jsonObject.get("shadow").getAsJsonObject().get("normal").getAsInt(),
-                                        jsonObject.get("shadow").getAsJsonObject().get("hot").getAsInt(), jsonObject.get("shadow").getAsJsonObject().get("very_hot").getAsInt());
-
-                                Temperatures.setDimensionHeightTemperatures(dimensionIdentifier, jsonObject.get("height").getAsJsonObject().get("very_low").getAsInt(),
-                                        jsonObject.get("height").getAsJsonObject().get("low").getAsInt(), jsonObject.get("height").getAsJsonObject().get("high").getAsInt(),
-                                        jsonObject.get("height").getAsJsonObject().get("very_high").getAsInt(), jsonObject.get("height").getAsJsonObject().get("very_low_height").getAsInt(),
-                                        jsonObject.get("height").getAsJsonObject().get("low_height").getAsInt(), jsonObject.get("height").getAsJsonObject().get("high_height").getAsInt(),
-                                        jsonObject.get("height").getAsJsonObject().get("very_high_height").getAsInt());
-
-                            }
-                            // System.out.println("Standard: " + keyString + " : " + Temperatures.getDimensionStandardTemperatures(dimensionIdentifier, 3));
-                        }
-                    }
-                }
-
-            } catch (Exception e) {
-                EnvironmentzMain.LOGGER.error("Error occurred while loading resource {}. {}", id.toString(), e.toString());
+                parse(DimensionTemperatures.CODEC, entry.getValue(), file, key).ifPresent(dimension -> dimensions.put(dimensionIdentifier, dimension));
             }
         });
+
+        Temperatures.setDimensions(dimensions);
+        Temperatures.setEffects(effects);
     }
 
+    private static <T> void loadSection(JsonObject data, String key, Codec<T> codec, Identifier file, Set<String> replacedSections, Consumer<T> setter) {
+        if (!(data.get(key) instanceof JsonObject jsonObject) || replacedSections.contains(key)) {
+            return;
+        }
+        parse(codec, jsonObject, file, key).ifPresent(setter);
+        if (isReplacing(jsonObject)) {
+            replacedSections.add(key);
+        }
+    }
+
+    private static void loadEffects(JsonObject effectObject, Identifier file, Set<String> replacedEffects, Map<StatusEffect, EffectTemperature> effects) {
+        for (Map.Entry<String, JsonElement> entry : effectObject.entrySet()) {
+            String key = entry.getKey();
+            if (!(entry.getValue() instanceof JsonObject) || replacedEffects.contains(key)) {
+                continue;
+            }
+            if (isReplacing(entry.getValue())) {
+                replacedEffects.add(key);
+            }
+            Identifier effectIdentifier = Identifier.tryParse(key);
+            Optional<StatusEffect> effect = effectIdentifier == null ? Optional.empty() : Registries.STATUS_EFFECT.getOrEmpty(effectIdentifier);
+            if (effect.isEmpty()) {
+                EnvironmentzMain.LOGGER.info("{} is not a valid effect identifier", key);
+                continue;
+            }
+            parse(EffectTemperature.CODEC, entry.getValue(), file, key).ifPresent(effectTemperature -> effects.put(effect.get(), effectTemperature));
+        }
+    }
 }

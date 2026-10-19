@@ -1,25 +1,21 @@
 package net.environmentz.data;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import net.environmentz.EnvironmentzMain;
 import net.environmentz.temperature.Temperatures;
-import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.environmentz.temperature.data.ItemTemperature;
+import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
-public class ItemTemperatureLoader implements SimpleSynchronousResourceReloadListener {
-
-    // List to store replacing bools
-    private final ArrayList<String> replaceList = new ArrayList<String>();
+public class ItemTemperatureLoader extends TemperatureDataLoader {
 
     @Override
     public Identifier getFabricId() {
@@ -28,57 +24,28 @@ public class ItemTemperatureLoader implements SimpleSynchronousResourceReloadLis
 
     @Override
     public void reload(ResourceManager manager) {
+        Map<Item, ItemTemperature> items = new HashMap<>();
+        Set<String> replaced = new HashSet<>();
 
-        manager.findResources("environment_items", id -> id.getPath().endsWith(".json")).forEach((id, resourceRef) -> {
-            try {
-                InputStream stream = resourceRef.getInputStream();
-                JsonObject data = JsonParser.parseReader(new InputStreamReader(stream)).getAsJsonObject();
-
-                for (String keyString : data.keySet()) {
-
-                    if (replaceList.contains(keyString)) {
-                        continue;
-                    }
-                    Identifier identifier = Identifier.of(keyString);
-                    if (!Registries.ITEM.containsId(identifier)) {
-                        EnvironmentzMain.LOGGER.info("{} is not a valid item identifier", identifier);
-                        continue;
-                    }
-
-                    JsonElement jsonElement = data.get(keyString);
-
-                    if (jsonElement instanceof JsonObject jsonObject) {
-
-                        if (JsonHelper.getBoolean(jsonObject, "replace", false)) {
-                            replaceList.add(keyString);
-                        }
-
-                        HashMap<Integer, Integer> hashMap = new HashMap<Integer, Integer>();
-
-                        hashMap.put(0, jsonObject.get("temperature").getAsInt());
-                        if (jsonObject.has("damage")) {
-                            hashMap.put(-1, jsonObject.get("damage").getAsInt());
-                        } else {
-                            hashMap.put(-1, 0);
-                        }
-                        if (jsonObject.has("heat_protection")) {
-                            hashMap.put(1, jsonObject.get("heat_protection").getAsInt());
-                        } else {
-                            hashMap.put(1, 0);
-                        }
-                        if (jsonObject.has("cold_protection")) {
-                            hashMap.put(2, jsonObject.get("cold_protection").getAsInt());
-                        } else {
-                            hashMap.put(2, 0);
-                        }
-                        int rawId = Registries.ITEM.getRawId(Registries.ITEM.get(identifier));
-                        Temperatures.setItemTemperatures(rawId, hashMap);
-                    }
+        forEachJsonFile(manager, "environment_items", (file, data) -> {
+            for (Map.Entry<String, JsonElement> entry : data.entrySet()) {
+                String key = entry.getKey();
+                if (replaced.contains(key)) {
+                    continue;
                 }
-            } catch (Exception e) {
-                EnvironmentzMain.LOGGER.error("Error occurred while loading resource {}. {}", id.toString(), e.toString());
+                Identifier identifier = Identifier.tryParse(key);
+                Optional<Item> item = identifier == null ? Optional.empty() : Registries.ITEM.getOrEmpty(identifier);
+                if (item.isEmpty()) {
+                    EnvironmentzMain.LOGGER.info("{} is not a valid item identifier", key);
+                    continue;
+                }
+                if (isReplacing(entry.getValue())) {
+                    replaced.add(key);
+                }
+                parse(ItemTemperature.CODEC, entry.getValue(), file, key).ifPresent(itemTemperature -> items.put(item.get(), itemTemperature));
             }
         });
-    }
 
+        Temperatures.setItems(items);
+    }
 }
