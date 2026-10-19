@@ -4,9 +4,9 @@ import net.environmentz.block.CopperHeater;
 import net.environmentz.block.screen.CopperHeaterScreenHandler;
 import net.environmentz.init.BlockInit;
 import net.environmentz.init.EffectInit;
+import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -139,7 +139,7 @@ public class CopperHeaterEntity extends LockableContainerBlockEntity implements 
         }
 
         if (blockEntity.isBurning() && world.getTime() % COMFORT_CHECK_INTERVAL == 0) {
-            blockEntity.warmNearbyPlayers(world, pos);
+            blockEntity.warmNearbyPlayers(world, pos, state);
         }
 
         if (wasBurning != blockEntity.isBurning()) {
@@ -153,8 +153,15 @@ public class CopperHeaterEntity extends LockableContainerBlockEntity implements 
         }
     }
 
-    private void warmNearbyPlayers(World world, BlockPos pos) {
-        List<PlayerEntity> players = world.getEntitiesByClass(PlayerEntity.class, new Box(pos).expand(8.0D, 4.0D, 8.0D), EntityPredicates.EXCEPT_SPECTATOR);
+    private void warmNearbyPlayers(World world, BlockPos pos, BlockState state) {
+        double range = switch (state.get(CopperHeater.OXIDATION)) {
+            case 0 -> 8.0f;
+            case 1 -> 6.0f;
+            case 2 -> 4.0f;
+            default -> 2.0f;
+        };
+
+        List<PlayerEntity> players = world.getEntitiesByClass(PlayerEntity.class, new Box(pos).expand(range, range / 2.0f, range), EntityPredicates.EXCEPT_SPECTATOR);
 
         if (!players.isEmpty()) {
             List<UUID> presentUuids = new ArrayList<>();
@@ -188,11 +195,13 @@ public class CopperHeaterEntity extends LockableContainerBlockEntity implements 
         if (fuel.isEmpty()) {
             return 0;
         }
-        return AbstractFurnaceBlockEntity.createFuelTimeMap().getOrDefault(fuel.getItem(), 0);
+        Integer fuelTime = FuelRegistry.INSTANCE.get(fuel.getItem());
+        return fuelTime == null ? 0 : fuelTime;
     }
 
     public static boolean canUseAsFuel(ItemStack stack) {
-        return AbstractFurnaceBlockEntity.createFuelTimeMap().containsKey(stack.getItem());
+        Integer fuelTime = FuelRegistry.INSTANCE.get(stack.getItem());
+        return fuelTime != null && fuelTime > 0;
     }
 
     @Override
@@ -235,7 +244,6 @@ public class CopperHeaterEntity extends LockableContainerBlockEntity implements 
         if (slot != FUEL_SLOT_INDEX) {
             return false;
         }
-        ItemStack currentFuel = this.inventory.get(FUEL_SLOT_INDEX);
-        return canUseAsFuel(stack) || stack.isOf(Items.BUCKET) && !currentFuel.isOf(Items.BUCKET);
+        return canUseAsFuel(stack);
     }
 }

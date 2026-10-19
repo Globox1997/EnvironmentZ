@@ -7,27 +7,30 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.BlockMirror;
-import net.minecraft.util.BlockRotation;
-import net.minecraft.util.ItemScatterer;
+import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class CopperHeater extends BlockWithEntity {
@@ -35,10 +38,11 @@ public class CopperHeater extends BlockWithEntity {
     public static final MapCodec<CopperHeater> CODEC = createCodec(CopperHeater::new);
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     public static final BooleanProperty LIT = Properties.LIT;
+    public static final IntProperty OXIDATION = IntProperty.of("oxidation", 0, 3);
 
     public CopperHeater(Settings settings) {
         super(settings);
-        this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(LIT, false));
+        this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(LIT, false).with(OXIDATION, 0));
     }
 
     @Override
@@ -73,6 +77,19 @@ public class CopperHeater extends BlockWithEntity {
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+    }
+
+    @Override
+    protected boolean hasRandomTicks(BlockState state) {
+        return state.get(OXIDATION) < 3;
+    }
+
+    @Override
+    protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        int level = state.get(OXIDATION);
+        if (level < 3 && random.nextFloat() < 0.02f) {
+            world.setBlockState(pos, state.with(OXIDATION, level + 1), Block.NOTIFY_LISTENERS);
+        }
     }
 
     @Override
@@ -115,6 +132,22 @@ public class CopperHeater extends BlockWithEntity {
     }
 
     @Override
+    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (stack.isIn(ItemTags.AXES) && state.get(OXIDATION) > 0) {
+            if (!world.isClient()) {
+                world.setBlockState(pos, state.with(OXIDATION, state.get(OXIDATION) - 1), Block.NOTIFY_LISTENERS);
+                world.playSound(null, pos, SoundEvents.ITEM_AXE_SCRAPE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+                if (player instanceof ServerPlayerEntity serverPlayerEntity) {
+                    stack.damage(1, serverPlayerEntity, hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
+                }
+            }
+            return ItemActionResult.SUCCESS;
+        }
+        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    @Override
     protected boolean hasComparatorOutput(BlockState state) {
         return true;
     }
@@ -141,7 +174,7 @@ public class CopperHeater extends BlockWithEntity {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(FACING, LIT);
+        builder.add(FACING, LIT, OXIDATION);
     }
 
     @Nullable
