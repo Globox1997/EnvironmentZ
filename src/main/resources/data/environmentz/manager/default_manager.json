@@ -50,11 +50,11 @@
     "effect": {
         "environmentz:cooling": {
             "temperature": -8,
-            "cold_protection": 2
+            "heat_protection": 2
         },
         "environmentz:warming": {
             "temperature": 8,
-            "heat_protection": 2
+            "cold_protection": 2
         },
         "environmentz:comfort": {
             "temperature": 0,
