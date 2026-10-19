@@ -80,17 +80,17 @@ public class ItemInit {
     }
 
     private static <T> ComponentType<T> registerComponent(String id, UnaryOperator<ComponentType.Builder<T>> builderOperator) {
-        return Registry.register(Registries.DATA_COMPONENT_TYPE, id, builderOperator.apply(ComponentType.builder()).build());
+        return Registry.register(Registries.DATA_COMPONENT_TYPE, EnvironmentzMain.identifierOf(id), builderOperator.apply(ComponentType.builder()).build());
     }
 
     public static void init() {
         Registry.register(Registries.ITEM_GROUP, ENVIRONMENTZ_ITEM_GROUP,
                 FabricItemGroup.builder().icon(() -> new ItemStack(WOLF_CHESTPLATE)).displayName(Text.translatable("item.environmentz.item_group")).build());
 
-        CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(WOLF_HELMET, CauldronBehavior.CLEAN_DYEABLE_ITEM);
-        CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(WOLF_CHESTPLATE, CauldronBehavior.CLEAN_DYEABLE_ITEM);
-        CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(WOLF_LEGGINGS, CauldronBehavior.CLEAN_DYEABLE_ITEM);
-        CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(WOLF_BOOTS, CauldronBehavior.CLEAN_DYEABLE_ITEM);
+        CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(WANDERER_HELMET, CauldronBehavior.CLEAN_DYEABLE_ITEM);
+        CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(WANDERER_CHESTPLATE, CauldronBehavior.CLEAN_DYEABLE_ITEM);
+        CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(WANDERER_LEGGINGS, CauldronBehavior.CLEAN_DYEABLE_ITEM);
+        CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(WANDERER_BOOTS, CauldronBehavior.CLEAN_DYEABLE_ITEM);
     }
 
 }
