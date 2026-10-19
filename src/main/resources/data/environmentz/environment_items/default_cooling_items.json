@@ -24,17 +24,5 @@
     },
     "minecraft:snowball": {
         "temperature": -1
-    },
-    "environmentz:wanderer_helmet": {
-        "temperature": -1
-    },
-    "environmentz:wanderer_chestplate": {
-        "temperature": -1
-    },
-    "environmentz:wanderer_leggings": {
-        "temperature": -1
-    },
-    "environmentz:wanderer_boots": {
-        "temperature": -1
     }
 }

@@ -60,6 +60,14 @@ public class ItemInit {
     public static final Item WANDERER_BOOTS = register("wanderer_boots",
             new ArmorItem(EnvironmentzArmorMaterials.WANDERER, ArmorItem.Type.BOOTS, new Item.Settings().maxDamage(ArmorItem.Type.BOOTS.getMaxDamage(4)).component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(0xffe3c88e, false))));
 
+    public static final Item WOOL_HELMET = register("wool_helmet",
+            new ArmorItem(EnvironmentzArmorMaterials.WOOL, ArmorItem.Type.HELMET, new Item.Settings().maxDamage(ArmorItem.Type.HELMET.getMaxDamage(4)).component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(0xffffff, false))));
+    public static final Item WOOL_CHESTPLATE = register("wool_chestplate",
+            new ArmorItem(EnvironmentzArmorMaterials.WOOL, ArmorItem.Type.CHESTPLATE, new Item.Settings().maxDamage(ArmorItem.Type.CHESTPLATE.getMaxDamage(4)).component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(0xffffff, false))));
+    public static final Item WOOL_LEGGINGS = register("wool_leggings",
+            new ArmorItem(EnvironmentzArmorMaterials.WOOL, ArmorItem.Type.LEGGINGS, new Item.Settings().maxDamage(ArmorItem.Type.LEGGINGS.getMaxDamage(4)).component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(0xffffff, false))));
+    public static final Item WOOL_BOOTS = register("wool_boots",
+            new ArmorItem(EnvironmentzArmorMaterials.WOOL, ArmorItem.Type.BOOTS, new Item.Settings().maxDamage(ArmorItem.Type.BOOTS.getMaxDamage(4)).component(DataComponentTypes.DYED_COLOR, new DyedColorComponent(0xffffff, false))));
     // Potion
     public static final RegistryEntry<Potion> COLD_RESISTANCE = registerPotion("cold_resistance", new Potion(new StatusEffectInstance(EffectInit.WARMING, 3600)));
     public static final RegistryEntry<Potion> LONG_COLD_RESISTANCE = registerPotion("long_cold_resistance", new Potion(new StatusEffectInstance(EffectInit.WARMING, 9600)));
@@ -91,6 +99,11 @@ public class ItemInit {
         CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(WANDERER_CHESTPLATE, CauldronBehavior.CLEAN_DYEABLE_ITEM);
         CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(WANDERER_LEGGINGS, CauldronBehavior.CLEAN_DYEABLE_ITEM);
         CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(WANDERER_BOOTS, CauldronBehavior.CLEAN_DYEABLE_ITEM);
+
+        CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(WOOL_HELMET, CauldronBehavior.CLEAN_DYEABLE_ITEM);
+        CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(WOOL_CHESTPLATE, CauldronBehavior.CLEAN_DYEABLE_ITEM);
+        CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(WOOL_LEGGINGS, CauldronBehavior.CLEAN_DYEABLE_ITEM);
+        CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(WOOL_BOOTS, CauldronBehavior.CLEAN_DYEABLE_ITEM);
     }
 
 }

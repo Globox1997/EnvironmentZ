@@ -2,6 +2,7 @@
     "replace": false,
     "values": [
         "environmentz:wolf_boots",
-        "environmentz:wanderer_boots"
+        "environmentz:wanderer_boots",
+        "environmentz:wool_boots"
     ]
 }

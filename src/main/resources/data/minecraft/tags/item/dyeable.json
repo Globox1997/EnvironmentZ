@@ -4,6 +4,10 @@
     "environmentz:wanderer_helmet",
     "environmentz:wanderer_chestplate",
     "environmentz:wanderer_leggings",
-    "environmentz:wanderer_boots"
+    "environmentz:wanderer_boots",
+    "environmentz:wool_helmet",
+    "environmentz:wool_chestplate",
+    "environmentz:wool_leggings",
+    "environmentz:wool_boots"
   ]
 }

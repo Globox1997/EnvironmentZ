@@ -2,6 +2,7 @@
     "replace": false,
     "values": [
         "environmentz:wolf_helmet",
-        "environmentz:wanderer_helmet"
+        "environmentz:wanderer_helmet",
+        "environmentz:wool_helmet"
     ]
 }

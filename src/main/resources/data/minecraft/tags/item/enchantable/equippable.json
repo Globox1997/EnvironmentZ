@@ -3,11 +3,15 @@
   "values": [
     "environmentz:wolf_helmet",
     "environmentz:wanderer_helmet",
+    "environmentz:wool_helmet",
     "environmentz:wolf_chestplate",
     "environmentz:wanderer_chestplate",
+    "environmentz:wool_chestplate",
     "environmentz:wolf_leggings",
     "environmentz:wanderer_leggings",
+    "environmentz:wool_leggings",
     "environmentz:wolf_boots",
-    "environmentz:wanderer_boots"
+    "environmentz:wanderer_boots",
+    "environmentz:wool_boots"
   ]
 }
