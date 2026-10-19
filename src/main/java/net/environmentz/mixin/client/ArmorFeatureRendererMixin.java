@@ -1,18 +1,7 @@
 package net.environmentz.mixin.client;
 
-import java.util.Map;
-
+import com.llamalad7.mixinextras.sugar.Local;
 import net.environmentz.init.ItemInit;
-import net.minecraft.component.type.DyedColorComponent;
-import net.minecraft.item.ArmorMaterial;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.ColorHelper;
-import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import net.environmentz.init.TagInit;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
@@ -20,39 +9,50 @@ import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ArmorMaterial;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import net.minecraft.util.math.ColorHelper;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ArmorFeatureRenderer.class)
 public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extends BipedEntityModel<T>, A extends BipedEntityModel<T>> extends FeatureRenderer<T, M> {
 
-    @Shadow
-    @Mutable
-    @Final
-    private static Map<String, Identifier> ARMOR_TEXTURE_CACHE;
-
     @Unique
+    @Nullable
     private LivingEntity livingEntity = null;
 
     public ArmorFeatureRendererMixin(FeatureRendererContext<T, M> context) {
         super(context);
     }
 
-    @Inject(method = "render", at = @At("HEAD"))
+    @Inject(method = "render*", at = @At("HEAD"))
     private void renderMixin(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l, CallbackInfo info) {
-        if (this.livingEntity == null) {
-            this.livingEntity = livingEntity;
-        }
+        this.livingEntity = livingEntity;
     }
 
-    @Inject(method = "renderArmor", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/item/ItemStack;isIn(Lnet/minecraft/registry/tag/TagKey;)Z"), locals = LocalCapture.CAPTURE_FAILSOFT, cancellable = true)
-    private void renderArmorMixin(MatrixStack matrices, VertexConsumerProvider vertexConsumers, T entity, EquipmentSlot armorSlot, int light, A model, CallbackInfo info, ItemStack itemStack, ArmorItem armorItem, boolean bl, ArmorMaterial armorMaterial) {
+    @Inject(method = "render*", at = @At("RETURN"))
+    private void renderReturnMixin(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l,
+                                   CallbackInfo info) {
+        this.livingEntity = null;
+    }
+
+    @Inject(method = "renderArmor", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/item/ItemStack;isIn(Lnet/minecraft/registry/tag/TagKey;)Z"), cancellable = true)
+    private void renderArmorMixin(MatrixStack matrices, VertexConsumerProvider vertexConsumers, T entity, EquipmentSlot armorSlot, int light, A model, CallbackInfo info,
+                                  @Local ItemStack itemStack, @Local boolean bl, @Local ArmorMaterial armorMaterial) {
         if (bl && armorSlot.equals(EquipmentSlot.LEGS) && itemStack.isOf(ItemInit.WANDERER_LEGGINGS)) {
-            int j = ColorHelper.Argb.fullAlpha(DyedColorComponent.getColor(itemStack, -6265536));
-            this.renderArmorParts(matrices, vertexConsumers, light, model, j, armorMaterial.layers().getFirst().getTexture(!bl));
+            int color = ColorHelper.Argb.fullAlpha(DyedColorComponent.getColor(itemStack, -6265536));
+            this.renderArmorParts(matrices, vertexConsumers, light, model, color, armorMaterial.layers().getFirst().getTexture(false));
             if (itemStack.hasGlint()) {
                 this.renderGlint(matrices, vertexConsumers, light, model);
             }
@@ -68,7 +68,7 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
     }
 
     @Shadow
-    abstract void renderGlint(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, A model);
+    protected abstract void renderGlint(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, A model);
 
     @Shadow
     protected abstract void renderArmorParts(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, A model, int i, Identifier identifier);
