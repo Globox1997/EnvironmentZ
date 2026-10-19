@@ -7,6 +7,7 @@ import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
+import net.environmentz.EnvironmentzMain;
 import net.environmentz.init.ItemInit;
 import net.environmentz.init.TagInit;
 import net.minecraft.item.Item;
@@ -22,7 +23,8 @@ public class EnvironmentzEmiPlugin implements EmiPlugin {
     private static void addRecipe(EmiRegistry registry, Item item) {
         if (!itemList.contains(item)) {
             ItemStack itemStack = new ItemStack(item);
-            Identifier recipeIdentifier = Identifier.of(Registries.ITEM.getId(item).getPath() + "_fur_insolated");
+            Identifier itemIdentifier = Registries.ITEM.getId(item);
+            Identifier recipeIdentifier = EnvironmentzMain.identifierOf("/" + itemIdentifier.getNamespace() + "/" + itemIdentifier.getPath() + "_insulated");
 
             if (!itemStack.isIn(TagInit.WARM_ARMOR)) {
                 ItemStack itemStack2 = itemStack.copy();
@@ -32,7 +34,7 @@ public class EnvironmentzEmiPlugin implements EmiPlugin {
                 itemStack2 = itemStack.copy();
                 itemStack2.set(ItemInit.ICED,ItemInit.COOLING_HEATING_VALUE);
                 registry.addRecipe(new EnvironmentEmiAnvilRecipe(EmiStack.of(itemStack), EmiIngredient.of(TagInit.ICE_ITEMS), EmiStack.of(itemStack2),
-                        Identifier.of(Registries.ITEM.getId(item).getPath() + "_cooled")));
+                        EnvironmentzMain.identifierOf("/" + itemIdentifier.getNamespace() + "/" + itemIdentifier.getPath() + "_cooled")));
 
                 itemList.add(item);
             }

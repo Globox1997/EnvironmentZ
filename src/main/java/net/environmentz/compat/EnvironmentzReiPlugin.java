@@ -5,6 +5,7 @@ import java.util.List;
 import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
 import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
 import me.shedaniel.rei.plugin.common.displays.anvil.AnvilRecipe;
+import net.environmentz.EnvironmentzMain;
 import net.environmentz.init.ItemInit;
 import net.environmentz.init.TagInit;
 import net.fabricmc.api.EnvType;
@@ -28,7 +29,8 @@ public class EnvironmentzReiPlugin implements REIClientPlugin {
 
     private static void addRecipe(DisplayRegistry registry, Item item) {
         ItemStack itemStack = new ItemStack(item);
-        Identifier recipeIdentifier = Identifier.of(Registries.ITEM.getId(item).getPath() + "_fur_insolated");
+        Identifier itemIdentifier = Registries.ITEM.getId(item);
+        Identifier recipeIdentifier = EnvironmentzMain.identifierOf("anvil/" + itemIdentifier.getNamespace() + "/" + itemIdentifier.getPath() + "_insulated");
 
         if (registry.getRecipeManager().get(recipeIdentifier).isEmpty()) {
             if (!itemStack.isIn(TagInit.WARM_ARMOR)) {
@@ -38,7 +40,7 @@ public class EnvironmentzReiPlugin implements REIClientPlugin {
 
                 itemStack2 = itemStack.copy();
                 itemStack2.set(ItemInit.ICED,ItemInit.COOLING_HEATING_VALUE);
-                registry.add(new AnvilRecipe(Identifier.of(Registries.ITEM.getId(item).getPath() + "_cooled"), List.of(itemStack), List.of(new ItemStack(Items.ICE)), List.of(itemStack2)));
+                registry.add(new AnvilRecipe(EnvironmentzMain.identifierOf("anvil/" + itemIdentifier.getNamespace() + "/" + itemIdentifier.getPath() + "_cooled"), List.of(itemStack), List.of(new ItemStack(Items.ICE)), List.of(itemStack2)));
             }
         }
     }
