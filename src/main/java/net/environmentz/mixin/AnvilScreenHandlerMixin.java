@@ -24,7 +24,16 @@ import net.minecraft.world.WorldEvents;
 public abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
 
     @Unique
-    private boolean removedInsulation = false;
+    private static final int NO_RESULT = 0;
+    @Unique
+    private static final int ICED_RESULT = 1;
+    @Unique
+    private static final int INSULATED_RESULT = 2;
+    @Unique
+    private static final int REMOVED_INSULATION_RESULT = 3;
+
+    @Unique
+    private int environmentzResult = NO_RESULT;
 
     public AnvilScreenHandlerMixin(ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
         super(type, syncId, playerInventory, context);
@@ -32,60 +41,54 @@ public abstract class AnvilScreenHandlerMixin extends ForgingScreenHandler {
 
     @Inject(method = "canTakeOutput", at = @At("HEAD"), cancellable = true)
     protected void canTakeOutputMixin(PlayerEntity player, boolean present, CallbackInfoReturnable<Boolean> info) {
-        ItemStack itemStack = this.input.getStack(0);
-        ItemStack itemStack2 = this.input.getStack(1);
-        if (itemStack.isIn(TagInit.ARMOR_ITEMS) && ((itemStack2.isIn(TagInit.INSOLATING_ITEM) && itemStack.get(ItemInit.INSULATED) == null)
-                || (itemStack2.getItem() instanceof ShearsItem && itemStack.get(ItemInit.INSULATED) != null) || (itemStack2.isIn(TagInit.ICE_ITEMS)))) {
-            info.setReturnValue(true);
+        if (this.environmentzResult != NO_RESULT) {
+            info.setReturnValue(present);
         }
     }
 
     @Inject(method = "onTakeOutput", at = @At("HEAD"), cancellable = true)
     protected void onTakeOutputMixin(PlayerEntity player, ItemStack stack, CallbackInfo info) {
-        if (this.input.getStack(1).getItem() instanceof ShearsItem && this.removedInsulation) {
-            this.input.setStack(0, ItemStack.EMPTY);
-            player.playSound(SoundEvents.ENTITY_SHEEP_SHEAR, 1.0f, 1.0f);
-            info.cancel();
-        } else if (this.input.getStack(1).isIn(TagInit.ICE_ITEMS) || this.input.getStack(1).isIn(TagInit.INSOLATING_ITEM)) {
-            this.input.setStack(0, ItemStack.EMPTY);
-            this.input.setStack(1, ItemStack.EMPTY);
-            this.context.run((world, pos) -> {
-                world.syncWorldEvent(WorldEvents.ANVIL_USED, pos, 0);
-            });
-            info.cancel();
+        if (this.environmentzResult == NO_RESULT) {
+            return;
         }
+        int result = this.environmentzResult;
+        this.environmentzResult = NO_RESULT;
+        this.input.setStack(0, ItemStack.EMPTY);
+        if (result == REMOVED_INSULATION_RESULT) {
+            player.playSound(SoundEvents.ENTITY_SHEEP_SHEAR, 1.0f, 1.0f);
+        } else {
+            ItemStack resourceStack = this.input.getStack(1);
+            resourceStack.decrement(1);
+            this.input.setStack(1, resourceStack);
+            this.context.run((world, pos) -> world.syncWorldEvent(WorldEvents.ANVIL_USED, pos, 0));
+        }
+        info.cancel();
     }
 
     @Inject(method = "updateResult", at = @At("HEAD"), cancellable = true)
     private void updateResultMixin(CallbackInfo info) {
-        ItemStack itemStack = this.input.getStack(0);
-        ItemStack itemStack2 = this.input.getStack(1);
+        this.environmentzResult = NO_RESULT;
+        ItemStack armorStack = this.input.getStack(0);
+        ItemStack resourceStack = this.input.getStack(1);
 
-        if (itemStack.isIn(TagInit.ARMOR_ITEMS) && !itemStack.isIn(TagInit.WARM_ARMOR)) {
-            if (itemStack2.isIn(TagInit.ICE_ITEMS)) {
-                ItemStack itemStack3 = itemStack.copy();
-                itemStack3.set(ItemInit.ICED, ItemInit.COOLING_HEATING_VALUE);
-                this.output.setStack(0, itemStack3);
-                info.cancel();
-            } else {
-                this.removedInsulation = false;
-                if (itemStack.get(ItemInit.INSULATED) == null || !itemStack.get(ItemInit.INSULATED)) {
-                    if (itemStack2.isIn(TagInit.INSOLATING_ITEM)) {
-                        ItemStack itemStack3 = itemStack.copy();
-                        itemStack3.set(ItemInit.INSULATED, true);
-                        this.output.setStack(0, itemStack3);
-                        info.cancel();
-                    }
-                } else {
-                    if (itemStack2.getItem() instanceof ShearsItem) {
-                        ItemStack itemStack3 = itemStack.copy();
-                        itemStack3.remove(ItemInit.INSULATED);
-                        this.output.setStack(0, itemStack3);
-                        this.removedInsulation = true;
-                        info.cancel();
-                    }
-                }
-            }
+        if (!armorStack.isIn(TagInit.ARMOR_ITEMS) || armorStack.isIn(TagInit.WARM_ARMOR)) {
+            return;
         }
+        boolean isInsulated = Boolean.TRUE.equals(armorStack.get(ItemInit.INSULATED));
+        ItemStack resultStack = armorStack.copy();
+        if (resourceStack.isIn(TagInit.ICE_ITEMS)) {
+            resultStack.set(ItemInit.ICED, ItemInit.COOLING_HEATING_VALUE);
+            this.environmentzResult = ICED_RESULT;
+        } else if (!isInsulated && resourceStack.isIn(TagInit.INSOLATING_ITEM)) {
+            resultStack.set(ItemInit.INSULATED, true);
+            this.environmentzResult = INSULATED_RESULT;
+        } else if (isInsulated && resourceStack.getItem() instanceof ShearsItem) {
+            resultStack.remove(ItemInit.INSULATED);
+            this.environmentzResult = REMOVED_INSULATION_RESULT;
+        } else {
+            return;
+        }
+        this.output.setStack(0, resultStack);
+        info.cancel();
     }
 }
