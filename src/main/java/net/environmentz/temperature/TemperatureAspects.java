@@ -101,7 +101,7 @@ public class TemperatureAspects {
         EnvironmentServerPacket.syncThermometer(player, false);
 
         int oldTemperature = temperatureManager.getPlayerTemperature();
-        int playerTemperature = applyBodyLimits(oldTemperature + temperatureChange, environmentCode);
+        int playerTemperature = applyBodyLimits(oldTemperature, oldTemperature + temperatureChange, environmentCode);
         int bodyLimit = playerTemperature - (oldTemperature + temperatureChange);
         if ((!temperatureManager.isColdEnvAffected() && playerTemperature < 0) || (!temperatureManager.isHotEnvAffected() && playerTemperature > 0)) {
             playerTemperature = 0;
@@ -144,15 +144,11 @@ public class TemperatureAspects {
         return temperature;
     }
 
-    public static int applyBodyLimits(int temperature, EnvironmentCode environmentCode) {
+    public static int applyBodyLimits(int oldTemperature, int temperature, EnvironmentCode environmentCode) {
         BodyTemperature bodyTemperature = Temperatures.getBodyTemperature();
-        Acclimatization acclimatization = Temperatures.getAcclimatization();
-        if (environmentCode.isCold() && temperature > bodyTemperature.minHot()) {
-            temperature += acclimatization.hotBody() * 2;
-        } else if (environmentCode.isHot() && temperature < bodyTemperature.minCold()) {
-            temperature += acclimatization.coldBody() * 2;
-        }
-        return MathHelper.clamp(temperature, bodyTemperature.maxVeryCold(), bodyTemperature.maxVeryHot());
+        int min = environmentCode.isHot() ? Math.min(oldTemperature, bodyTemperature.minCold() + 1) : bodyTemperature.maxVeryCold();
+        int max = environmentCode.isCold() ? Math.max(oldTemperature, bodyTemperature.minHot() - 1) : bodyTemperature.maxVeryHot();
+        return MathHelper.clamp(temperature, Math.max(min, bodyTemperature.maxVeryCold()), Math.min(max, bodyTemperature.maxVeryHot()));
     }
 
     private static int absorb(int temperature, int buffer, IntConsumer bufferSetter) {
