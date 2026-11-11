@@ -3,6 +3,7 @@ package net.environmentz.mixin.client;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.environmentz.access.TemperatureManagerAccess;
 import net.environmentz.init.ConfigInit;
+import net.environmentz.temperature.TemperatureBlurRendering;
 import net.environmentz.temperature.Temperatures;
 import net.environmentz.temperature.data.BodyTemperature;
 import net.fabricmc.api.EnvType;
@@ -45,5 +46,10 @@ public class GameRendererMixin {
         if (period <= 0 || this.ticks % period < period / 2) {
             matrix4f.translate((float) Math.cos(this.ticks * Math.PI) * 0.01f * this.client.options.getDistortionEffectScale().getValue().floatValue(), 0.0f, 0.0f);
         }
+    }
+
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gl/Framebuffer;beginWrite(Z)V"))
+    private void renderBlurMixin(RenderTickCounter tickCounter, boolean tick, CallbackInfo info) {
+        TemperatureBlurRendering.render(this.client, tickCounter.getLastFrameDuration());
     }
 }

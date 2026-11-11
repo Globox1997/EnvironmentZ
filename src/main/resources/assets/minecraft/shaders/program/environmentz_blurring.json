@@ -5,7 +5,7 @@
         "dstrgb": "1-srcalpha"
     },
     "vertex": "sobel",
-    "fragment": "environmentz:blurring",
+    "fragment": "environmentz_blurring",
     "attributes": [ "Position" ],
     "samplers": [
         { "name": "DiffuseSampler" }
