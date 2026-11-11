@@ -6,6 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.MathHelper;
 
 public class TemperatureManager {
 
@@ -106,11 +107,11 @@ public class TemperatureManager {
     }
 
     public void setPlayerHeatResistance(int amount) {
-        this.playerHeatResistance = amount;
+        this.playerHeatResistance = MathHelper.clamp(amount, 0, Temperatures.getBodyProtection().maxHeatResistance());
     }
 
     public void setPlayerColdResistance(int amount) {
-        this.playerColdResistance = amount;
+        this.playerColdResistance = MathHelper.clamp(amount, 0, Temperatures.getBodyProtection().maxColdResistance());
     }
 
     public void setThermometerTemperature(int temperature) {

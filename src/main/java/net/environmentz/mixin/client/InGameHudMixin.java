@@ -58,9 +58,9 @@ public abstract class InGameHudMixin {
 
             int playerTemperature = temperatureManager.getPlayerTemperature();
             if (playerTemperature != 0) {
-                if (playerTemperature < Temperatures.getBodyTemperature().minCold()) {
+                if (playerTemperature <= Temperatures.getBodyTemperature().minCold()) {
                     heat = false;
-                    if (playerTemperature < Temperatures.getBodyTemperature().maxCold()) {
+                    if (playerTemperature <= Temperatures.getBodyTemperature().maxCold()) {
                         xEnvPosition = 0;
                         yEnvPosition = 13;
                         envIntensity = Math.abs(playerTemperature) - Math.abs(Temperatures.getBodyTemperature().maxCold());
@@ -69,9 +69,9 @@ public abstract class InGameHudMixin {
                         yEnvPosition = 0;
                         envIntensity = Math.abs(playerTemperature) - Math.abs(Temperatures.getBodyTemperature().minCold());
                     }
-                } else if (playerTemperature > Temperatures.getBodyTemperature().minHot()) {
+                } else if (playerTemperature >= Temperatures.getBodyTemperature().minHot()) {
                     heat = true;
-                    if (playerTemperature > Temperatures.getBodyTemperature().maxHot()) {
+                    if (playerTemperature >= Temperatures.getBodyTemperature().maxHot()) {
                         xEnvPosition = 0;
                         yEnvPosition = 26;
                         envIntensity = Math.abs(playerTemperature - Temperatures.getBodyTemperature().maxHot());

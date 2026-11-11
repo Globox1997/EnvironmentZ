@@ -102,6 +102,7 @@ public class TemperatureAspects {
 
         int oldTemperature = temperatureManager.getPlayerTemperature();
         int playerTemperature = applyBodyLimits(oldTemperature + temperatureChange, environmentCode);
+        int bodyLimit = playerTemperature - (oldTemperature + temperatureChange);
         if ((!temperatureManager.isColdEnvAffected() && playerTemperature < 0) || (!temperatureManager.isHotEnvAffected() && playerTemperature > 0)) {
             playerTemperature = 0;
         }
@@ -109,7 +110,8 @@ public class TemperatureAspects {
         updateDebuffs(player, playerTemperature);
 
         if (breakdown.isDebug()) {
-            EnvironmentzMain.LOGGER.info("Total: {} New Player Tmp: {}{} Cold Debuff: {} Hot Debuff: {} : {}", temperatureChange, playerTemperature, breakdown.getDebugText(),
+            EnvironmentzMain.LOGGER.info("Total: {} Body Limit: {} New Player Tmp: {}{} Cold Debuff: {} Hot Debuff: {} : {}", temperatureChange, bodyLimit, playerTemperature,
+                    breakdown.getDebugText(),
                     hasModifier(player, EntityAttributes.GENERIC_MOVEMENT_SPEED, COLD_DEBUFF), hasModifier(player, EntityAttributes.GENERIC_ATTACK_DAMAGE, HOT_DEBUFF), environmentCode);
         }
 
@@ -146,10 +148,9 @@ public class TemperatureAspects {
         BodyTemperature bodyTemperature = Temperatures.getBodyTemperature();
         Acclimatization acclimatization = Temperatures.getAcclimatization();
         if (environmentCode.isCold() && temperature > bodyTemperature.minHot()) {
-            return temperature + acclimatization.hotBody() * 2;
-        }
-        if (environmentCode.isHot() && temperature < bodyTemperature.minCold()) {
-            return temperature + acclimatization.coldBody() * 2;
+            temperature += acclimatization.hotBody() * 2;
+        } else if (environmentCode.isHot() && temperature < bodyTemperature.minCold()) {
+            temperature += acclimatization.coldBody() * 2;
         }
         return MathHelper.clamp(temperature, bodyTemperature.maxVeryCold(), bodyTemperature.maxVeryHot());
     }
@@ -374,7 +375,7 @@ public class TemperatureAspects {
                 }
                 if (!player.isCreative()) {
                     if (remainingDurability - itemTemperature.damage() <= 0) {
-                        stack.setDamage(0);
+                        stack.setDamage(stack.getMaxDamage() - 1);
                     } else {
                         stack.damage(itemTemperature.damage(), player, slot);
                     }
