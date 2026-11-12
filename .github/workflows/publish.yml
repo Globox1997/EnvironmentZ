@@ -46,7 +46,6 @@ jobs:
           dependencies: |
             fabric-api | depends | *
             cloth-config | depends | *
-            satin-api | depends | *
 
           changelog-file: CHANGELOG.md
 
