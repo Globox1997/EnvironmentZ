@@ -31,11 +31,15 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.IntConsumer;
 
@@ -53,6 +57,9 @@ public class TemperatureAspects {
             EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE);
 
     public static final RegistryKey<DamageType> FREEZING_DAMAGE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, EnvironmentzMain.identifierOf("freezing"));
+
+    @Nullable
+    private static HeatScanArea heatScanArea;
 
     public static void tickPlayerEnvironment(TemperatureManager temperatureManager, ServerPlayerEntity player) {
         World world = player.getWorld();
@@ -85,7 +92,7 @@ public class TemperatureAspects {
             breakdown.add("Shadow", dimension.shadow().get(environmentCode), true);
         }
         if (DehydrationCompat.IS_LOADED && environmentCode.isHot()) {
-            breakdown.add("Sweat", sweatTemperature(player, dimension, environmentCode), false);
+            breakdown.add("Sweat", sweatTemperature(player, temperatureManager, dimension, environmentCode), false);
         }
         breakdown.add("Armor", armorTemperature(player, dimension, environmentCode), false);
         breakdown.add("Height", dimension.height().getTemperature(player.getBlockY()), true);
@@ -212,7 +219,10 @@ public class TemperatureAspects {
         };
     }
 
-    private static int sweatTemperature(PlayerEntity player, DimensionTemperatures dimension, EnvironmentCode environmentCode) {
+    private static int sweatTemperature(PlayerEntity player, TemperatureManager temperatureManager, DimensionTemperatures dimension, EnvironmentCode environmentCode) {
+        if (temperatureManager.getPlayerTemperature() <= Temperatures.getBodyTemperature().normal()) {
+            return 0;
+        }
         float exhaustion = ConfigInit.CONFIG.overheatingExhaustion;
         if (ConfigInit.CONFIG.exhaustionInsteadDehydration) {
             if (player.getHungerManager().getFoodLevel() <= 6) {
@@ -274,28 +284,13 @@ public class TemperatureAspects {
         BlockPos playerPos = player.getBlockPos();
         Map<Block, Integer> blockCounts = new HashMap<>();
         Map<Fluid, Integer> fluidCounts = new HashMap<>();
-        int heatBlockRadius = ConfigInit.CONFIG.heatBlockRadius;
-        int radius = heatBlockRadius + 2;
+        HeatScanArea scanArea = getHeatScanArea(ConfigInit.CONFIG.heatBlockRadius);
+        BlockPos.Mutable pos = new BlockPos.Mutable();
         int blockHeatSum = 0;
 
-        for (int i = 0; i <= heatBlockRadius * 2; i++) {
-            int height = i > heatBlockRadius ? -(i - heatBlockRadius) : i;
-            int x = 0;
-            int z = 0;
-            int dx = 0;
-            int dz = -1;
-            for (int k = 0; k < radius * radius; k++) {
-                if (-radius / 2 <= x && x <= radius / 2 && -radius / 2 <= z && z <= radius / 2) {
-                    blockHeatSum += addBlockTemperature(world, player, playerPos, playerPos.add(x, height, z), blockCounts, fluidCounts, breakdown);
-                }
-                if (x == z || (x < 0 && x == -z) || (x > 0 && x == 1 - z)) {
-                    int turn = dx;
-                    dx = -dz;
-                    dz = turn;
-                }
-                x += dx;
-                z += dz;
-            }
+        for (int i = 0; i < scanArea.offsets().length; i++) {
+            pos.set(playerPos, scanArea.offsets()[i]);
+            blockHeatSum += addBlockTemperature(world, player, pos, scanArea.distances()[i], blockCounts, fluidCounts, breakdown);
         }
 
         if (isSkyNotVisible && blockHeatSum > 0 && isEnclosed(world, playerPos)) {
@@ -303,13 +298,21 @@ public class TemperatureAspects {
         }
     }
 
-    private static int addBlockTemperature(World world, PlayerEntity player, BlockPos playerPos, BlockPos pos, Map<Block, Integer> blockCounts, Map<Fluid, Integer> fluidCounts,
+    private static HeatScanArea getHeatScanArea(int radius) {
+        HeatScanArea area = heatScanArea;
+        if (area == null || area.radius() != radius) {
+            area = HeatScanArea.create(radius);
+            heatScanArea = area;
+        }
+        return area;
+    }
+
+    private static int addBlockTemperature(World world, PlayerEntity player, BlockPos pos, int distance, Map<Block, Integer> blockCounts, Map<Fluid, Integer> fluidCounts,
                                            Breakdown breakdown) {
         BlockState state = world.getBlockState(pos);
         if (state.isAir()) {
             return 0;
         }
-        int distance = (int) Math.sqrt(playerPos.getSquaredDistance(pos));
         BlockTemperature blockTemperature = Temperatures.getBlockTemperature(state.getBlock());
         if (blockTemperature != null) {
             BooleanProperty property = blockTemperature.property();
@@ -410,6 +413,37 @@ public class TemperatureAspects {
         int currentColdProtection = temperatureManager.getPlayerColdProtectionAmount();
         if (coldProtection != 0 && currentColdProtection < limits.maxCold()) {
             temperatureManager.setPlayerColdProtectionAmount(Math.min(currentColdProtection + coldProtection, limits.maxCold()));
+        }
+    }
+
+    private record HeatScanArea(int radius, Vec3i[] offsets, int[] distances) {
+
+        private static HeatScanArea create(int radius) {
+            int range = Math.max(radius, 0);
+            List<Vec3i> offsets = new ArrayList<>();
+            for (int x = -range; x <= range; x++) {
+                for (int y = -range; y <= range; y++) {
+                    for (int z = -range; z <= range; z++) {
+                        if (distance(x * x + y * y + z * z) <= range) {
+                            offsets.add(new Vec3i(x, y, z));
+                        }
+                    }
+                }
+            }
+            offsets.sort(Comparator.comparingInt(HeatScanArea::squaredLength));
+            int[] distances = new int[offsets.size()];
+            for (int i = 0; i < distances.length; i++) {
+                distances[i] = distance(squaredLength(offsets.get(i)));
+            }
+            return new HeatScanArea(radius, offsets.toArray(new Vec3i[0]), distances);
+        }
+
+        private static int squaredLength(Vec3i offset) {
+            return offset.getX() * offset.getX() + offset.getY() * offset.getY() + offset.getZ() * offset.getZ();
+        }
+
+        private static int distance(int squaredLength) {
+            return (int) Math.sqrt(squaredLength);
         }
     }
 

@@ -70,7 +70,7 @@ public class TemperatureManager {
 
     public void tick(PlayerEntity playerEntity) {
         if (playerEntity instanceof ServerPlayerEntity serverPlayerEntity && !playerEntity.isCreative() && !playerEntity.isSpectator() && playerEntity.isAlive()) {
-            if (this.environmentTicker++ >= ConfigInit.CONFIG.temperatureCalculationTime) {
+            if (++this.environmentTicker >= ConfigInit.CONFIG.temperatureCalculationTime) {
                 TemperatureAspects.tickPlayerEnvironment(this, serverPlayerEntity);
                 this.environmentTicker = 0;
             }
@@ -95,11 +95,11 @@ public class TemperatureManager {
     }
 
     public void setPlayerHeatProtectionAmount(int amount) {
-        this.playerHotProtectionAmount = amount;
+        this.playerHotProtectionAmount = MathHelper.clamp(amount, 0, Temperatures.getBodyProtection().maxHeat());
     }
 
     public void setPlayerColdProtectionAmount(int amount) {
-        this.playerColdProtectionAmount = amount;
+        this.playerColdProtectionAmount = MathHelper.clamp(amount, 0, Temperatures.getBodyProtection().maxCold());
     }
 
     public void setPlayerWetIntensityValue(int amount) {

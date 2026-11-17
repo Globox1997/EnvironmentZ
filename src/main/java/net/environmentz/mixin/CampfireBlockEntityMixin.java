@@ -50,8 +50,6 @@ public class CampfireBlockEntityMixin {
                     }
                     playerUuids.add(uuid);
                 }
-                playerUuids.add(UUID.randomUUID());
-                playerUuids.add(UUID.randomUUID());
 
                 currentPlayerComfortMap.entrySet().removeIf(entry -> !playerUuids.contains(entry.getKey()));
             } else {
