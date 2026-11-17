@@ -8,10 +8,10 @@ import net.environmentz.temperature.Temperatures;
 import net.environmentz.temperature.data.BodyTemperature;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.GameRenderer;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,14 +26,14 @@ public class GameRendererMixin {
 
     @Final
     @Shadow
-    MinecraftClient client;
+    Minecraft minecraft;
 
     @Shadow
-    private int ticks;
+    private int confusionAnimationTick;
 
-    @Inject(method = "renderWorld", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/util/math/MathHelper;lerp(FFF)F", ordinal = 0))
-    private void renderWorldMixin(RenderTickCounter tickCounter, CallbackInfo info, @Local(ordinal = 0) Matrix4f matrix4f) {
-        ClientPlayerEntity player = this.client.player;
+    @Inject(method = "renderLevel", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/util/Mth;lerp(FFF)F", ordinal = 0))
+    private void renderWorldMixin(DeltaTracker tickCounter, CallbackInfo info, @Local(ordinal = 0) Matrix4f matrix4f) {
+        LocalPlayer player = this.minecraft.player;
         if (!ConfigInit.CONFIG.shakingScreenEffect || player == null || player.isCreative() || player.isSpectator()) {
             return;
         }
@@ -43,13 +43,13 @@ public class GameRendererMixin {
             return;
         }
         int period = Math.abs(bodyTemperature.maxVeryCold() * 2) + playerTemperature * 2;
-        if (period <= 0 || this.ticks % period < period / 2) {
-            matrix4f.translate((float) Math.cos(this.ticks * Math.PI) * 0.01f * this.client.options.getDistortionEffectScale().getValue().floatValue(), 0.0f, 0.0f);
+        if (period <= 0 || this.confusionAnimationTick % period < period / 2) {
+            matrix4f.translate((float) Math.cos(this.confusionAnimationTick * Math.PI) * 0.01f * this.minecraft.options.screenEffectScale().get().floatValue(), 0.0f, 0.0f);
         }
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gl/Framebuffer;beginWrite(Z)V"))
-    private void renderBlurMixin(RenderTickCounter tickCounter, boolean tick, CallbackInfo info) {
-        TemperatureBlurRendering.render(this.client, tickCounter.getLastFrameDuration());
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;bindWrite(Z)V"))
+    private void renderBlurMixin(DeltaTracker tickCounter, boolean tick, CallbackInfo info) {
+        TemperatureBlurRendering.render(this.minecraft, tickCounter.getGameTimeDeltaTicks());
     }
 }

@@ -3,7 +3,7 @@ package net.environmentz.api;
 import net.environmentz.temperature.data.EnvironmentCode;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 public final class TemperatureEvents {
 
@@ -26,11 +26,11 @@ public final class TemperatureEvents {
 
     @FunctionalInterface
     public interface ModifyTemperature {
-        int modifyTemperature(ServerPlayerEntity player, EnvironmentCode environmentCode, int temperature);
+        int modifyTemperature(ServerPlayer player, EnvironmentCode environmentCode, int temperature);
     }
 
     @FunctionalInterface
     public interface TemperatureChanged {
-        void onTemperatureChanged(ServerPlayerEntity player, int oldTemperature, int newTemperature);
+        void onTemperatureChanged(ServerPlayer player, int oldTemperature, int newTemperature);
     }
 }

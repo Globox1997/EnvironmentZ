@@ -1,12 +1,12 @@
 package net.environmentz.effect;
 
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectCategory;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 
 @SuppressWarnings("unused")
-public class WarmEffect extends StatusEffect {
+public class WarmEffect extends MobEffect {
 
-    public WarmEffect(StatusEffectCategory type, int color) {
+    public WarmEffect(MobEffectCategory type, int color) {
         super(type, color);
     }
 

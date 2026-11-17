@@ -9,7 +9,7 @@ import net.environmentz.temperature.TemperatureManager;
 import net.environmentz.temperature.Temperatures;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 public class EnvironmentServerPacket {
 
@@ -20,16 +20,16 @@ public class EnvironmentServerPacket {
         PayloadTypeRegistry.playS2C().register(SyncValuesPacket.PACKET_ID, SyncValuesPacket.PACKET_CODEC);
     }
 
-    public static void writeS2CSyncEnvPacket(ServerPlayerEntity serverPlayerEntity, boolean heatAffected, boolean coldAffected) {
+    public static void writeS2CSyncEnvPacket(ServerPlayer serverPlayerEntity, boolean heatAffected, boolean coldAffected) {
         ServerPlayNetworking.send(serverPlayerEntity, new AffectionPacket(heatAffected, coldAffected));
     }
 
-    public static void writeS2CSyncValuesPacket(ServerPlayerEntity serverPlayerEntity) {
+    public static void writeS2CSyncValuesPacket(ServerPlayer serverPlayerEntity) {
         ServerPlayNetworking.send(serverPlayerEntity, new SyncValuesPacket(Temperatures.getBodyTemperature(), Temperatures.getBodyWetness(), Temperatures.getThermometerTemperature(),
                 Temperatures.getBiomeTemperature()));
     }
 
-    public static void syncTemperature(ServerPlayerEntity serverPlayerEntity, boolean force) {
+    public static void syncTemperature(ServerPlayer serverPlayerEntity, boolean force) {
         TemperatureManager temperatureManager = ((TemperatureManagerAccess) serverPlayerEntity).getTemperatureManager();
         if (force || !temperatureManager.isTemperatureSynced()) {
             ServerPlayNetworking.send(serverPlayerEntity, new TemperaturePacket(temperatureManager.getPlayerTemperature(), temperatureManager.getPlayerWetIntensityValue()));
@@ -37,7 +37,7 @@ public class EnvironmentServerPacket {
         }
     }
 
-    public static void syncThermometer(ServerPlayerEntity serverPlayerEntity, boolean force) {
+    public static void syncThermometer(ServerPlayer serverPlayerEntity, boolean force) {
         TemperatureManager temperatureManager = ((TemperatureManagerAccess) serverPlayerEntity).getTemperatureManager();
         if (force || !temperatureManager.isThermometerSynced()) {
             ServerPlayNetworking.send(serverPlayerEntity, new ThermometerPacket(temperatureManager.getThermometerTemperature()));
@@ -45,7 +45,7 @@ public class EnvironmentServerPacket {
         }
     }
 
-    public static void syncAll(ServerPlayerEntity serverPlayerEntity) {
+    public static void syncAll(ServerPlayer serverPlayerEntity) {
         TemperatureManager temperatureManager = ((TemperatureManagerAccess) serverPlayerEntity).getTemperatureManager();
         writeS2CSyncEnvPacket(serverPlayerEntity, temperatureManager.isHotEnvAffected(), temperatureManager.isColdEnvAffected());
         syncTemperature(serverPlayerEntity, true);

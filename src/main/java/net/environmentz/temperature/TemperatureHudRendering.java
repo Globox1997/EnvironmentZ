@@ -5,17 +5,17 @@ import net.environmentz.EnvironmentzMain;
 import net.environmentz.init.ConfigInit;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 
 @Environment(EnvType.CLIENT)
 public class TemperatureHudRendering {
 
-    private static final Identifier INDICATOR_ICON = EnvironmentzMain.identifierOf("textures/gui/indicator_icon.png");
+    private static final ResourceLocation INDICATOR_ICON = EnvironmentzMain.identifierOf("textures/gui/indicator_icon.png");
 
-    public static void renderPlayerTemperatureIcon(DrawContext context, MinecraftClient client, PlayerEntity playerEntity, boolean heat, int xValue, int yValue, int extra, int intensity,
+    public static void renderPlayerTemperatureIcon(GuiGraphics context, Minecraft client, Player playerEntity, boolean heat, int xValue, int yValue, int extra, int intensity,
                                                    int scaledWidth, int scaledHeight) {
 
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -23,49 +23,49 @@ public class TemperatureHudRendering {
         if (yValue != 0) {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             // Background
-            context.drawTexture(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.iconX, scaledHeight - ConfigInit.CONFIG.iconY, xValue + (extra != 0 ? 26 : 0), yValue, 13, 13, 256, 256);
+            context.blit(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.iconX, scaledHeight - ConfigInit.CONFIG.iconY, xValue + (extra != 0 ? 26 : 0), yValue, 13, 13, 256, 256);
 
             // Foregound
             float smooth = heat ? ((float) intensity / (float) (Temperatures.getBodyTemperature().maxVeryHot() - Temperatures.getBodyTemperature().maxHot()))
                     : ((float) intensity / (float) (Math.abs(Temperatures.getBodyTemperature().maxVeryCold()) - Math.abs(Temperatures.getBodyTemperature().maxCold())));
 
-            context.drawTexture(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.iconX, scaledHeight - ConfigInit.CONFIG.iconY + (13 - iconTextureSplitValue(smooth)), 13,
+            context.blit(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.iconX, scaledHeight - ConfigInit.CONFIG.iconY + (13 - iconTextureSplitValue(smooth)), 13,
                     yValue - (iconTextureSplitValue(smooth) - 13), 13, iconTextureSplitValue(smooth), 256, 256);
 
         } else {
             // body rendering
-            context.drawTexture(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.iconX, scaledHeight - ConfigInit.CONFIG.iconY, 0, 0, 13, 13, 256, 256);
+            context.blit(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.iconX, scaledHeight - ConfigInit.CONFIG.iconY, 0, 0, 13, 13, 256, 256);
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, heat ? ((float) intensity / (float) (Temperatures.getBodyTemperature().maxHot() - Temperatures.getBodyTemperature().minHot()))
                     : ((float) intensity / (float) (Math.abs(Temperatures.getBodyTemperature().maxCold()) - Math.abs(Temperatures.getBodyTemperature().minCold()))));
 
-            context.drawTexture(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.iconX, scaledHeight - ConfigInit.CONFIG.iconY, xValue, yValue, 13, 13, 256, 256);
+            context.blit(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.iconX, scaledHeight - ConfigInit.CONFIG.iconY, xValue, yValue, 13, 13, 256, 256);
         }
         // wetness border
         if (extra != 0 && yValue == 0) {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, (float) extra / Temperatures.getBodyWetness().max());
-            context.drawTexture(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.iconX, scaledHeight - ConfigInit.CONFIG.iconY, 39, 0, 13, 13, 256, 256);
+            context.blit(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.iconX, scaledHeight - ConfigInit.CONFIG.iconY, 39, 0, 13, 13, 256, 256);
         }
     }
 
-    public static void renderThermometerIcon(DrawContext context, MinecraftClient client, PlayerEntity playerEntity, int xValue, int yValue, int scaledWidth, int scaledHeight) {
+    public static void renderThermometerIcon(GuiGraphics context, Minecraft client, Player playerEntity, int xValue, int yValue, int scaledWidth, int scaledHeight) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
         // Foregound
         if (xValue == 112 || xValue == 96)
-            context.drawTexture(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.thermometerIconX, scaledHeight - ConfigInit.CONFIG.thermometerIconY, xValue, 0, 16, 32, 256, 256);
+            context.blit(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.thermometerIconX, scaledHeight - ConfigInit.CONFIG.thermometerIconY, xValue, 0, 16, 32, 256, 256);
         else {
             // Background
-            context.drawTexture(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.thermometerIconX, scaledHeight - ConfigInit.CONFIG.thermometerIconY, 64, 0, 16, 32, 256, 256);
+            context.blit(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.thermometerIconX, scaledHeight - ConfigInit.CONFIG.thermometerIconY, 64, 0, 16, 32, 256, 256);
             // Foregound
-            context.drawTexture(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.thermometerIconX, scaledHeight - ConfigInit.CONFIG.thermometerIconY + yValue, xValue, yValue, 16, 32 - yValue,
+            context.blit(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.thermometerIconX, scaledHeight - ConfigInit.CONFIG.thermometerIconY + yValue, xValue, yValue, 16, 32 - yValue,
                     256, 256);
         }
     }
 
     // 0: no change, 1: increase, 2: decrease
-    public static void renderTemperatureArrowIcon(DrawContext context, MinecraftClient client, PlayerEntity playerEntity, int isChangingPlayerTemperature, int scaledWidth, int scaledHeight) {
+    public static void renderTemperatureArrowIcon(GuiGraphics context, Minecraft client, Player playerEntity, int isChangingPlayerTemperature, int scaledWidth, int scaledHeight) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        context.drawTexture(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.temperatureArrowIconX, scaledHeight - ConfigInit.CONFIG.temperatureArrowIconY, (isChangingPlayerTemperature == 1 ? 0 : 7), 39, 7, 9, 256, 256);
+        context.blit(INDICATOR_ICON, (scaledWidth / 2) - ConfigInit.CONFIG.temperatureArrowIconX, scaledHeight - ConfigInit.CONFIG.temperatureArrowIconY, (isChangingPlayerTemperature == 1 ? 0 : 7), 39, 7, 9, 256, 256);
     }
 
     private static int iconTextureSplitValue(float smooth) {

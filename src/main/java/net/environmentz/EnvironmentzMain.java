@@ -1,10 +1,10 @@
 package net.environmentz;
 
-import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import net.fabricmc.api.ModInitializer;
+import net.minecraft.resources.ResourceLocation;
 import net.environmentz.init.*;
 import net.environmentz.network.EnvironmentServerPacket;
 
@@ -26,8 +26,8 @@ public class EnvironmentzMain implements ModInitializer {
         EnvironmentServerPacket.init();
     }
 
-    public static Identifier identifierOf(String name) {
-        return Identifier.of("environmentz", name);
+    public static ResourceLocation identifierOf(String name) {
+        return ResourceLocation.fromNamespaceAndPath("environmentz", name);
     }
 }
 

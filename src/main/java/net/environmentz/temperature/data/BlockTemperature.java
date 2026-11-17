@@ -1,6 +1,6 @@
 package net.environmentz.temperature.data;
 
-import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import org.jetbrains.annotations.Nullable;
 
 public record BlockTemperature(int maxCount, int[] temperatures, @Nullable BooleanProperty property) {

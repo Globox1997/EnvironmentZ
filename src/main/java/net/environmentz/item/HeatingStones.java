@@ -1,23 +1,23 @@
 package net.environmentz.item;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.StonecutterScreenHandler;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.StonecutterMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 public class HeatingStones extends Item {
 
-    public HeatingStones(Item.Settings settings) {
+    public HeatingStones(Item.Properties settings) {
         super(settings);
     }
 
     @Override
-    public void onCraftByPlayer(ItemStack stack, World world, PlayerEntity player) {
-        if (!world.isClient && player.currentScreenHandler instanceof StonecutterScreenHandler) {
-            stack.setDamage(stack.getMaxDamage() - 1);
+    public void onCraftedBy(ItemStack stack, Level world, Player player) {
+        if (!world.isClientSide && player.containerMenu instanceof StonecutterMenu) {
+            stack.setDamageValue(stack.getMaxDamage() - 1);
         }
-        super.onCraftByPlayer(stack, world, player);
+        super.onCraftedBy(stack, world, player);
     }
 
 

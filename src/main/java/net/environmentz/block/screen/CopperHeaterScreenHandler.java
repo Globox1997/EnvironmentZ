@@ -2,42 +2,42 @@ package net.environmentz.block.screen;
 
 import net.environmentz.block.entity.CopperHeaterEntity;
 import net.environmentz.init.BlockInit;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ArrayPropertyDelegate;
-import net.minecraft.screen.PropertyDelegate;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
-public class CopperHeaterScreenHandler extends ScreenHandler {
+public class CopperHeaterScreenHandler extends AbstractContainerMenu {
 
     private static final int FUEL_SLOT_INDEX = 0;
     private static final int PLAYER_INVENTORY_START = 1;
     private static final int PLAYER_INVENTORY_END = 28;
     private static final int PLAYER_HOTBAR_END = 37;
 
-    private final Inventory inventory;
-    private final PropertyDelegate propertyDelegate;
+    private final Container inventory;
+    private final ContainerData propertyDelegate;
 
-    public CopperHeaterScreenHandler(int syncId, PlayerInventory playerInventory) {
-        this(syncId, playerInventory, new SimpleInventory(1), new ArrayPropertyDelegate(CopperHeaterEntity.PROPERTY_COUNT));
+    public CopperHeaterScreenHandler(int syncId, Inventory playerInventory) {
+        this(syncId, playerInventory, new SimpleContainer(1), new SimpleContainerData(CopperHeaterEntity.PROPERTY_COUNT));
     }
 
-    public CopperHeaterScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
+    public CopperHeaterScreenHandler(int syncId, Inventory playerInventory, Container inventory, ContainerData propertyDelegate) {
         super(BlockInit.COPPER_HEATER_SCREEN_HANDLER_TYPE, syncId);
-        checkSize(inventory, 1);
-        checkDataCount(propertyDelegate, CopperHeaterEntity.PROPERTY_COUNT);
+        checkContainerSize(inventory, 1);
+        checkContainerDataCount(propertyDelegate, CopperHeaterEntity.PROPERTY_COUNT);
         this.inventory = inventory;
         this.propertyDelegate = propertyDelegate;
 
         this.addSlot(new Slot(inventory, FUEL_SLOT_INDEX, 80, 53) {
             @Override
-            public boolean canInsert(ItemStack stack) {
-                return CopperHeaterScreenHandler.this.inventory.isValid(FUEL_SLOT_INDEX, stack);
+            public boolean mayPlace(ItemStack stack) {
+                return CopperHeaterScreenHandler.this.inventory.canPlaceItem(FUEL_SLOT_INDEX, stack);
             }
         });
 
@@ -51,56 +51,56 @@ public class CopperHeaterScreenHandler extends ScreenHandler {
             this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
         }
 
-        this.addProperties(propertyDelegate);
-        this.inventory.onOpen(playerInventory.player);
+        this.addDataSlots(propertyDelegate);
+        this.inventory.startOpen(playerInventory.player);
     }
 
     @Override
-    public boolean canUse(PlayerEntity player) {
-        return this.inventory.canPlayerUse(player);
+    public boolean stillValid(Player player) {
+        return this.inventory.stillValid(player);
     }
 
     @Override
-    public void onClosed(PlayerEntity player) {
-        super.onClosed(player);
-        this.inventory.onClose(player);
+    public void removed(Player player) {
+        super.removed(player);
+        this.inventory.stopOpen(player);
     }
 
     @Override
-    public ItemStack quickMove(PlayerEntity player, int slot) {
+    public ItemStack quickMoveStack(Player player, int slot) {
         ItemStack result = ItemStack.EMPTY;
         Slot clickedSlot = this.slots.get(slot);
-        if (clickedSlot != null && clickedSlot.hasStack()) {
-            ItemStack stackInSlot = clickedSlot.getStack();
+        if (clickedSlot != null && clickedSlot.hasItem()) {
+            ItemStack stackInSlot = clickedSlot.getItem();
             result = stackInSlot.copy();
 
             if (slot == FUEL_SLOT_INDEX) {
-                if (!this.insertItem(stackInSlot, PLAYER_INVENTORY_START, PLAYER_HOTBAR_END, true)) {
+                if (!this.moveItemStackTo(stackInSlot, PLAYER_INVENTORY_START, PLAYER_HOTBAR_END, true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (this.inventory.isValid(FUEL_SLOT_INDEX, stackInSlot)) {
-                if (!this.insertItem(stackInSlot, FUEL_SLOT_INDEX, FUEL_SLOT_INDEX + 1, false)) {
+            } else if (this.inventory.canPlaceItem(FUEL_SLOT_INDEX, stackInSlot)) {
+                if (!this.moveItemStackTo(stackInSlot, FUEL_SLOT_INDEX, FUEL_SLOT_INDEX + 1, false)) {
                     return ItemStack.EMPTY;
                 }
             } else if (slot < PLAYER_INVENTORY_END) {
-                if (!this.insertItem(stackInSlot, PLAYER_INVENTORY_END, PLAYER_HOTBAR_END, false)) {
+                if (!this.moveItemStackTo(stackInSlot, PLAYER_INVENTORY_END, PLAYER_HOTBAR_END, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (slot < PLAYER_HOTBAR_END && !this.insertItem(stackInSlot, PLAYER_INVENTORY_START, PLAYER_INVENTORY_END, false)) {
+            } else if (slot < PLAYER_HOTBAR_END && !this.moveItemStackTo(stackInSlot, PLAYER_INVENTORY_START, PLAYER_INVENTORY_END, false)) {
                 return ItemStack.EMPTY;
             }
 
             if (stackInSlot.isEmpty()) {
-                clickedSlot.setStack(ItemStack.EMPTY);
+                clickedSlot.setByPlayer(ItemStack.EMPTY);
             } else {
-                clickedSlot.markDirty();
+                clickedSlot.setChanged();
             }
 
             if (stackInSlot.getCount() == result.getCount()) {
                 return ItemStack.EMPTY;
             }
 
-            clickedSlot.onTakeItem(player, stackInSlot);
+            clickedSlot.onTake(player, stackInSlot);
         }
 
         return result;
@@ -115,6 +115,6 @@ public class CopperHeaterScreenHandler extends ScreenHandler {
         if (fuelTime == 0) {
             fuelTime = 200;
         }
-        return MathHelper.clamp((float) this.propertyDelegate.get(CopperHeaterEntity.BURN_TIME_PROPERTY_INDEX) / fuelTime, 0.0F, 1.0F);
+        return Mth.clamp((float) this.propertyDelegate.get(CopperHeaterEntity.BURN_TIME_PROPERTY_INDEX) / fuelTime, 0.0F, 1.0F);
     }
 }

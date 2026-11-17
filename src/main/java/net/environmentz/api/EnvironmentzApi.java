@@ -5,39 +5,39 @@ import net.environmentz.network.EnvironmentServerPacket;
 import net.environmentz.temperature.TemperatureManager;
 import net.environmentz.temperature.Temperatures;
 import net.environmentz.temperature.data.BodyTemperature;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 
 public final class EnvironmentzApi {
 
     private EnvironmentzApi() {
     }
 
-    public static TemperatureManager getTemperatureManager(PlayerEntity player) {
+    public static TemperatureManager getTemperatureManager(Player player) {
         return ((TemperatureManagerAccess) player).getTemperatureManager();
     }
 
-    public static int getTemperature(PlayerEntity player) {
+    public static int getTemperature(Player player) {
         return getTemperatureManager(player).getPlayerTemperature();
     }
 
-    public static int getWetness(PlayerEntity player) {
+    public static int getWetness(Player player) {
         return getTemperatureManager(player).getPlayerWetIntensityValue();
     }
 
-    public static boolean isHeatAffected(PlayerEntity player) {
+    public static boolean isHeatAffected(Player player) {
         return getTemperatureManager(player).isHotEnvAffected();
     }
 
-    public static boolean isColdAffected(PlayerEntity player) {
+    public static boolean isColdAffected(Player player) {
         return getTemperatureManager(player).isColdEnvAffected();
     }
 
-    public static boolean isFreezing(PlayerEntity player) {
+    public static boolean isFreezing(Player player) {
         return getTemperature(player) <= Temperatures.getBodyTemperature().maxCold();
     }
 
-    public static boolean isOverheating(PlayerEntity player) {
+    public static boolean isOverheating(Player player) {
         return getTemperature(player) >= Temperatures.getBodyTemperature().maxHot();
     }
 
@@ -45,7 +45,7 @@ public final class EnvironmentzApi {
         return Temperatures.getBodyTemperature();
     }
 
-    public static void setTemperature(ServerPlayerEntity player, int temperature) {
+    public static void setTemperature(ServerPlayer player, int temperature) {
         TemperatureManager temperatureManager = getTemperatureManager(player);
         int oldTemperature = temperatureManager.getPlayerTemperature();
         temperatureManager.setPlayerTemperature(temperature);
@@ -55,18 +55,18 @@ public final class EnvironmentzApi {
         }
     }
 
-    public static void setEnvironmentAffection(ServerPlayerEntity player, boolean heatAffected, boolean coldAffected) {
+    public static void setEnvironmentAffection(ServerPlayer player, boolean heatAffected, boolean coldAffected) {
         getTemperatureManager(player).setEnvironmentAffection(heatAffected, coldAffected);
         EnvironmentServerPacket.writeS2CSyncEnvPacket(player, heatAffected, coldAffected);
     }
 
-    public static void setResistance(ServerPlayerEntity player, int heatResistance, int coldResistance) {
+    public static void setResistance(ServerPlayer player, int heatResistance, int coldResistance) {
         TemperatureManager temperatureManager = getTemperatureManager(player);
         temperatureManager.setPlayerHeatResistance(heatResistance);
         temperatureManager.setPlayerColdResistance(coldResistance);
     }
 
-    public static void setProtection(ServerPlayerEntity player, int heatProtection, int coldProtection) {
+    public static void setProtection(ServerPlayer player, int heatProtection, int coldProtection) {
         TemperatureManager temperatureManager = getTemperatureManager(player);
         temperatureManager.setPlayerHeatProtectionAmount(heatProtection);
         temperatureManager.setPlayerColdProtectionAmount(coldProtection);

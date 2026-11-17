@@ -2,7 +2,7 @@ package net.environmentz.compat;
 
 import net.dehydration.access.ThirstManagerAccess;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 
 public final class DehydrationCompat {
 
@@ -11,11 +11,11 @@ public final class DehydrationCompat {
     private DehydrationCompat() {
     }
 
-    public static int getThirstLevel(PlayerEntity player) {
+    public static int getThirstLevel(Player player) {
         return ((ThirstManagerAccess) player).getThirstManager().getThirstLevel();
     }
 
-    public static void addDehydration(PlayerEntity player, float amount) {
+    public static void addDehydration(Player player, float amount) {
         ((ThirstManagerAccess) player).getThirstManager().addDehydration(amount);
     }
 }

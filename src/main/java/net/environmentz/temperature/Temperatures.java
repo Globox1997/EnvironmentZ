@@ -1,18 +1,18 @@
 package net.environmentz.temperature;
 
 import net.environmentz.temperature.data.*;
-import net.minecraft.block.Block;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.Item;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
 public final class Temperatures {
 
-    public static final Identifier OVERWORLD = Identifier.ofVanilla("overworld");
+    public static final ResourceLocation OVERWORLD = ResourceLocation.withDefaultNamespace("overworld");
 
     private static BodyTemperature bodyTemperature = BodyTemperature.EMPTY;
     private static BodyWetness bodyWetness = BodyWetness.EMPTY;
@@ -22,8 +22,8 @@ public final class Temperatures {
     private static Acclimatization acclimatization = Acclimatization.EMPTY;
     private static RoomHeat roomHeat = RoomHeat.DEFAULT;
 
-    private static Map<Identifier, DimensionTemperatures> dimensions = Map.of();
-    private static Map<StatusEffect, EffectTemperature> effects = Map.of();
+    private static Map<ResourceLocation, DimensionTemperatures> dimensions = Map.of();
+    private static Map<MobEffect, EffectTemperature> effects = Map.of();
     private static Map<Block, BlockTemperature> blocks = Map.of();
     private static Map<Fluid, BlockTemperature> fluids = Map.of();
     private static Map<Item, ItemTemperature> items = Map.of();
@@ -87,11 +87,11 @@ public final class Temperatures {
         roomHeat = value;
     }
 
-    public static void setDimensions(Map<Identifier, DimensionTemperatures> value) {
+    public static void setDimensions(Map<ResourceLocation, DimensionTemperatures> value) {
         dimensions = Map.copyOf(value);
     }
 
-    public static void setEffects(Map<StatusEffect, EffectTemperature> value) {
+    public static void setEffects(Map<MobEffect, EffectTemperature> value) {
         effects = Map.copyOf(value);
     }
 
@@ -105,11 +105,11 @@ public final class Temperatures {
     }
 
     @Nullable
-    public static DimensionTemperatures getRawDimension(Identifier dimensionIdentifier) {
+    public static DimensionTemperatures getRawDimension(ResourceLocation dimensionIdentifier) {
         return dimensions.get(dimensionIdentifier);
     }
 
-    public static DimensionTemperatures getDimension(Identifier dimensionIdentifier) {
+    public static DimensionTemperatures getDimension(ResourceLocation dimensionIdentifier) {
         DimensionTemperatures dimension = dimensions.get(dimensionIdentifier);
         if (dimension == null || dimension.isUnset()) {
             return dimensions.getOrDefault(OVERWORLD, DimensionTemperatures.EMPTY);
@@ -118,7 +118,7 @@ public final class Temperatures {
     }
 
     @Nullable
-    public static EffectTemperature getEffectTemperature(StatusEffect effect) {
+    public static EffectTemperature getEffectTemperature(MobEffect effect) {
         return effects.get(effect);
     }
 

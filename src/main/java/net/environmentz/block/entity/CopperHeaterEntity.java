@@ -5,31 +5,31 @@ import net.environmentz.block.screen.CopperHeaterScreenHandler;
 import net.environmentz.init.BlockInit;
 import net.environmentz.init.EffectInit;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.LockableContainerBlockEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.SidedInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.screen.PropertyDelegate;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.text.Text;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RaycastContext;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-public class CopperHeaterEntity extends LockableContainerBlockEntity implements SidedInventory {
+public class CopperHeaterEntity extends BaseContainerBlockEntity implements WorldlyContainer {
 
     protected static final int FUEL_SLOT_INDEX = 0;
     private static final int[] SLOTS = new int[]{FUEL_SLOT_INDEX};
@@ -50,13 +50,13 @@ public class CopperHeaterEntity extends LockableContainerBlockEntity implements 
     private static final int COMFORT_THRESHOLD = 3;
     private static final int COMFORT_EFFECT_DURATION = 2400;
 
-    protected DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
+    protected NonNullList<ItemStack> inventory = NonNullList.withSize(1, ItemStack.EMPTY);
     int burnTime;
     int fuelTime;
 
     private final HashMap<UUID, Integer> playerComfortMap = new HashMap<>();
 
-    protected final PropertyDelegate propertyDelegate = new PropertyDelegate() {
+    protected final ContainerData propertyDelegate = new ContainerData() {
         @Override
         public int get(int index) {
             return switch (index) {
@@ -77,7 +77,7 @@ public class CopperHeaterEntity extends LockableContainerBlockEntity implements 
         }
 
         @Override
-        public int size() {
+        public int getCount() {
             return PROPERTY_COUNT;
         }
     };
@@ -91,27 +91,27 @@ public class CopperHeaterEntity extends LockableContainerBlockEntity implements 
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
-        this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        Inventories.readNbt(nbt, this.inventory, registryLookup);
+    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        super.loadAdditional(nbt, registryLookup);
+        this.inventory = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
+        ContainerHelper.loadAllItems(nbt, this.inventory, registryLookup);
         this.burnTime = nbt.getShort("BurnTime");
         this.fuelTime = this.getFuelTime(this.inventory.get(FUEL_SLOT_INDEX));
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
+    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        super.saveAdditional(nbt, registryLookup);
         nbt.putShort("BurnTime", (short) this.burnTime);
-        Inventories.writeNbt(nbt, this.inventory, registryLookup);
+        ContainerHelper.saveAllItems(nbt, this.inventory, registryLookup);
     }
 
     @Override
-    protected Text getContainerName() {
-        return Text.translatable("block.environmentz.copper_heater");
+    protected Component getDefaultName() {
+        return Component.translatable("block.environmentz.copper_heater");
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, CopperHeaterEntity blockEntity) {
+    public static void tick(Level world, BlockPos pos, BlockState state, CopperHeaterEntity blockEntity) {
         boolean wasBurning = blockEntity.isBurning();
         boolean dirty = false;
 
@@ -128,9 +128,9 @@ public class CopperHeaterEntity extends LockableContainerBlockEntity implements 
                     blockEntity.fuelTime = fuelTime;
 
                     Item item = fuelStack.getItem();
-                    fuelStack.decrement(1);
+                    fuelStack.shrink(1);
                     if (fuelStack.isEmpty()) {
-                        Item remainder = item.getRecipeRemainder();
+                        Item remainder = item.getCraftingRemainingItem();
                         blockEntity.inventory.set(FUEL_SLOT_INDEX, remainder == null ? ItemStack.EMPTY : new ItemStack(remainder));
                     }
                     dirty = true;
@@ -138,47 +138,47 @@ public class CopperHeaterEntity extends LockableContainerBlockEntity implements 
             }
         }
 
-        if (blockEntity.isBurning() && world.getTime() % COMFORT_CHECK_INTERVAL == 0) {
+        if (blockEntity.isBurning() && world.getGameTime() % COMFORT_CHECK_INTERVAL == 0) {
             blockEntity.warmNearbyPlayers(world, pos, state);
         }
 
         if (wasBurning != blockEntity.isBurning()) {
             dirty = true;
-            state = state.with(CopperHeater.LIT, blockEntity.isBurning());
-            world.setBlockState(pos, state, Block.NOTIFY_ALL);
+            state = state.setValue(CopperHeater.LIT, blockEntity.isBurning());
+            world.setBlock(pos, state, Block.UPDATE_ALL);
         }
 
         if (dirty) {
-            markDirty(world, pos, state);
+            setChanged(world, pos, state);
         }
     }
 
-    private void warmNearbyPlayers(World world, BlockPos pos, BlockState state) {
-        double range = switch (state.get(CopperHeater.OXIDATION)) {
+    private void warmNearbyPlayers(Level world, BlockPos pos, BlockState state) {
+        double range = switch (state.getValue(CopperHeater.OXIDATION)) {
             case 0 -> 8.0f;
             case 1 -> 6.0f;
             case 2 -> 4.0f;
             default -> 2.0f;
         };
 
-        List<PlayerEntity> players = world.getEntitiesByClass(PlayerEntity.class, new Box(pos).expand(range, range / 2.0f, range), EntityPredicates.EXCEPT_SPECTATOR);
+        List<Player> players = world.getEntitiesOfClass(Player.class, new AABB(pos).inflate(range, range / 2.0f, range), EntitySelector.NO_SPECTATORS);
 
         if (!players.isEmpty()) {
             List<UUID> presentUuids = new ArrayList<>();
 
-            for (PlayerEntity player : players) {
+            for (Player player : players) {
 
-                BlockHitResult hitResult = world.raycast(new RaycastContext(new Vec3d(player.getX(), player.getY() + player.getHeight() / 2f, player.getZ()), new Vec3d(pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f),
-                        RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, player));
+                BlockHitResult hitResult = world.clip(new ClipContext(new Vec3(player.getX(), player.getY() + player.getBbHeight() / 2f, player.getZ()), new Vec3(pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f),
+                        ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
                 if (!hitResult.getBlockPos().equals(pos)) {
                     continue;
                 }
 
-                UUID uuid = player.getUuid();
+                UUID uuid = player.getUUID();
                 int comfort = this.playerComfortMap.getOrDefault(uuid, 0) + 1;
 
                 if (comfort > COMFORT_THRESHOLD) {
-                    player.addStatusEffect(new StatusEffectInstance(EffectInit.COMFORT, COMFORT_EFFECT_DURATION, 0, false, false, true));
+                    player.addEffect(new MobEffectInstance(EffectInit.COMFORT, COMFORT_EFFECT_DURATION, 0, false, false, true));
                     comfort = 0;
                 }
                 this.playerComfortMap.put(uuid, comfort);
@@ -205,42 +205,42 @@ public class CopperHeaterEntity extends LockableContainerBlockEntity implements 
     }
 
     @Override
-    public int[] getAvailableSlots(Direction side) {
+    public int[] getSlotsForFace(Direction side) {
         return SLOTS;
     }
 
     @Override
-    public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
-        return this.isValid(slot, stack);
+    public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction dir) {
+        return this.canPlaceItem(slot, stack);
     }
 
     @Override
-    public boolean canExtract(int slot, ItemStack stack, Direction dir) {
-        return stack.isOf(Items.WATER_BUCKET) || stack.isOf(Items.BUCKET);
+    public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction dir) {
+        return stack.is(Items.WATER_BUCKET) || stack.is(Items.BUCKET);
     }
 
     @Override
-    public int size() {
+    public int getContainerSize() {
         return this.inventory.size();
     }
 
     @Override
-    protected DefaultedList<ItemStack> getHeldStacks() {
+    protected NonNullList<ItemStack> getItems() {
         return this.inventory;
     }
 
     @Override
-    protected void setHeldStacks(DefaultedList<ItemStack> inventory) {
+    protected void setItems(NonNullList<ItemStack> inventory) {
         this.inventory = inventory;
     }
 
     @Override
-    protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
+    protected AbstractContainerMenu createMenu(int syncId, Inventory playerInventory) {
         return new CopperHeaterScreenHandler(syncId, playerInventory, this, this.propertyDelegate);
     }
 
     @Override
-    public boolean isValid(int slot, ItemStack stack) {
+    public boolean canPlaceItem(int slot, ItemStack stack) {
         if (slot != FUEL_SLOT_INDEX) {
             return false;
         }

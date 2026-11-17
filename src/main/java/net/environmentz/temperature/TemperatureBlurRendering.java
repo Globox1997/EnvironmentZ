@@ -1,6 +1,7 @@
 package net.environmentz.temperature;
 
 import com.google.gson.JsonSyntaxException;
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.environmentz.EnvironmentzMain;
 import net.environmentz.init.ConfigInit;
@@ -9,13 +10,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.PostEffectProcessor;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.util.Window;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceType;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.PostChain;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -23,56 +23,56 @@ import java.io.IOException;
 @Environment(EnvType.CLIENT)
 public class TemperatureBlurRendering {
 
-    private static final Identifier BLUR_SHADER = EnvironmentzMain.identifierOf("shaders/post/blurring.json");
+    private static final ResourceLocation BLUR_SHADER = EnvironmentzMain.identifierOf("shaders/post/blurring.json");
 
     @Nullable
-    private static PostEffectProcessor blurProcessor;
+    private static PostChain blurProcessor;
     private static boolean loadFailed;
     private static int framebufferWidth;
     private static int framebufferHeight;
 
     public static void init() {
-        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
+        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
             @Override
-            public Identifier getFabricId() {
+            public ResourceLocation getFabricId() {
                 return EnvironmentzMain.identifierOf("blur_shader");
             }
 
             @Override
-            public void reload(ResourceManager manager) {
+            public void onResourceManagerReload(ResourceManager manager) {
                 close();
             }
         });
     }
 
-    public static void render(MinecraftClient client, float tickDelta) {
-        ClientPlayerEntity player = client.player;
+    public static void render(Minecraft client, float tickDelta) {
+        LocalPlayer player = client.player;
         float progress = RenderInit.getBlurProgress();
         if (!ConfigInit.CONFIG.blurScreenEffect || progress <= 0.01F || player == null || player.isCreative() || player.isSpectator()) {
             return;
         }
-        PostEffectProcessor processor = getProcessor(client);
+        PostChain processor = getProcessor(client);
         if (processor == null) {
             return;
         }
         Window window = client.getWindow();
-        if (window.getFramebufferWidth() != framebufferWidth || window.getFramebufferHeight() != framebufferHeight) {
-            framebufferWidth = window.getFramebufferWidth();
-            framebufferHeight = window.getFramebufferHeight();
-            processor.setupDimensions(framebufferWidth, framebufferHeight);
+        if (window.getWidth() != framebufferWidth || window.getHeight() != framebufferHeight) {
+            framebufferWidth = window.getWidth();
+            framebufferHeight = window.getHeight();
+            processor.resize(framebufferWidth, framebufferHeight);
         }
-        processor.setUniforms("Progress", progress);
+        processor.setUniform("Progress", progress);
         RenderSystem.disableBlend();
         RenderSystem.disableDepthTest();
         RenderSystem.resetTextureMatrix();
-        processor.render(tickDelta);
+        processor.process(tickDelta);
     }
 
     @Nullable
-    private static PostEffectProcessor getProcessor(MinecraftClient client) {
+    private static PostChain getProcessor(Minecraft client) {
         if (blurProcessor == null && !loadFailed) {
             try {
-                blurProcessor = new PostEffectProcessor(client.getTextureManager(), client.getResourceManager(), client.getFramebuffer(), BLUR_SHADER);
+                blurProcessor = new PostChain(client.getTextureManager(), client.getResourceManager(), client.getMainRenderTarget(), BLUR_SHADER);
                 framebufferWidth = -1;
                 framebufferHeight = -1;
             } catch (IOException | JsonSyntaxException exception) {

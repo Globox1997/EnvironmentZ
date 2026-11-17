@@ -19,8 +19,6 @@ import org.spongepowered.asm.mixin.injection.At;
 // import io.github.apace100.origins.origin.OriginLayer;
 import net.environmentz.access.PlayerEnvAccess;
 import net.environmentz.network.EnvironmentServerPacket;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
 
 @SuppressWarnings("unused")
 // @Mixin(OriginCommand.class)

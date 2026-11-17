@@ -1,10 +1,10 @@
 package net.environmentz.item;
 
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 
 public class PolarBearFurItem extends Item {
 
-    public PolarBearFurItem(Settings settings) {
+    public PolarBearFurItem(Properties settings) {
         super(settings);
     }
 

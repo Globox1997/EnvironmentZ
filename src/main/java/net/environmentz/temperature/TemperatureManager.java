@@ -3,10 +3,10 @@ package net.environmentz.temperature;
 import net.environmentz.init.ConfigInit;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 
 public class TemperatureManager {
 
@@ -30,7 +30,7 @@ public class TemperatureManager {
     private int syncedWetness = NOT_SYNCED;
     private int syncedThermometerTemperature = NOT_SYNCED;
 
-    public void readNbt(NbtCompound nbt) {
+    public void readNbt(CompoundTag nbt) {
         this.isHotEnvAffected = !nbt.contains("IsHotEnvAffected") || nbt.getBoolean("IsHotEnvAffected");
         this.isColdEnvAffected = !nbt.contains("IsColdEnvAffected") || nbt.getBoolean("IsColdEnvAffected");
         this.playerTemperature = nbt.getInt("PlayerTemperature");
@@ -42,7 +42,7 @@ public class TemperatureManager {
         this.thermometerTemperature = nbt.getInt("ThermometerTemperature");
     }
 
-    public void writeNbt(NbtCompound nbt) {
+    public void writeNbt(CompoundTag nbt) {
         nbt.putBoolean("IsHotEnvAffected", this.isHotEnvAffected);
         nbt.putBoolean("IsColdEnvAffected", this.isColdEnvAffected);
         nbt.putInt("PlayerTemperature", this.playerTemperature);
@@ -68,8 +68,8 @@ public class TemperatureManager {
         }
     }
 
-    public void tick(PlayerEntity playerEntity) {
-        if (playerEntity instanceof ServerPlayerEntity serverPlayerEntity && !playerEntity.isCreative() && !playerEntity.isSpectator() && playerEntity.isAlive()) {
+    public void tick(Player playerEntity) {
+        if (playerEntity instanceof ServerPlayer serverPlayerEntity && !playerEntity.isCreative() && !playerEntity.isSpectator() && playerEntity.isAlive()) {
             if (++this.environmentTicker >= ConfigInit.CONFIG.temperatureCalculationTime) {
                 TemperatureAspects.tickPlayerEnvironment(this, serverPlayerEntity);
                 this.environmentTicker = 0;
@@ -95,11 +95,11 @@ public class TemperatureManager {
     }
 
     public void setPlayerHeatProtectionAmount(int amount) {
-        this.playerHotProtectionAmount = MathHelper.clamp(amount, 0, Temperatures.getBodyProtection().maxHeat());
+        this.playerHotProtectionAmount = Mth.clamp(amount, 0, Temperatures.getBodyProtection().maxHeat());
     }
 
     public void setPlayerColdProtectionAmount(int amount) {
-        this.playerColdProtectionAmount = MathHelper.clamp(amount, 0, Temperatures.getBodyProtection().maxCold());
+        this.playerColdProtectionAmount = Mth.clamp(amount, 0, Temperatures.getBodyProtection().maxCold());
     }
 
     public void setPlayerWetIntensityValue(int amount) {
@@ -107,11 +107,11 @@ public class TemperatureManager {
     }
 
     public void setPlayerHeatResistance(int amount) {
-        this.playerHeatResistance = MathHelper.clamp(amount, 0, Temperatures.getBodyProtection().maxHeatResistance());
+        this.playerHeatResistance = Mth.clamp(amount, 0, Temperatures.getBodyProtection().maxHeatResistance());
     }
 
     public void setPlayerColdResistance(int amount) {
-        this.playerColdResistance = MathHelper.clamp(amount, 0, Temperatures.getBodyProtection().maxColdResistance());
+        this.playerColdResistance = Mth.clamp(amount, 0, Temperatures.getBodyProtection().maxColdResistance());
     }
 
     public void setThermometerTemperature(int temperature) {

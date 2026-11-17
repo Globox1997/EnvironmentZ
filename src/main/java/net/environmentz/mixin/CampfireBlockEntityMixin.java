@@ -14,14 +14,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.environmentz.init.EffectInit;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.CampfireBlockEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.CampfireBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 
 @Mixin(value = CampfireBlockEntity.class, priority = 1001)
 public class CampfireBlockEntityMixin {
@@ -29,20 +29,20 @@ public class CampfireBlockEntityMixin {
     @Unique
     private HashMap<UUID, Integer> playerComfortMap = new HashMap<>();
 
-    @Inject(method = "litServerTick", at = @At("TAIL"))
-    private static void litServerTickMixin(World world, BlockPos pos, BlockState state, CampfireBlockEntity campfire, CallbackInfo info) {
-        if (world.getTime() % 200 == 0) {
-            List<PlayerEntity> playerEntities = world.getEntitiesByClass(PlayerEntity.class, new Box(pos.up()).expand(4.0D, 2.0D, 4.0D), EntityPredicates.EXCEPT_SPECTATOR);
+    @Inject(method = "cookTick", at = @At("TAIL"))
+    private static void litServerTickMixin(Level world, BlockPos pos, BlockState state, CampfireBlockEntity campfire, CallbackInfo info) {
+        if (world.getGameTime() % 200 == 0) {
+            List<Player> playerEntities = world.getEntitiesOfClass(Player.class, new AABB(pos.above()).inflate(4.0D, 2.0D, 4.0D), EntitySelector.NO_SPECTATORS);
             if (!playerEntities.isEmpty()) {
                 List<UUID> playerUuids = new ArrayList<>();
                 HashMap<UUID, Integer> currentPlayerComfortMap = ((CampfireBlockEntityMixin) (Object) campfire).playerComfortMap;
 
-                for (PlayerEntity playerEntity : playerEntities) {
-                    UUID uuid = playerEntity.getUuid();
+                for (Player playerEntity : playerEntities) {
+                    UUID uuid = playerEntity.getUUID();
                     if (currentPlayerComfortMap.containsKey(uuid)) {
                         currentPlayerComfortMap.put(uuid, currentPlayerComfortMap.get(uuid) + 1);
                         if (currentPlayerComfortMap.get(uuid) > 6) {
-                            playerEntity.addStatusEffect(new StatusEffectInstance(EffectInit.COMFORT, 2400, 0, false, false, true));
+                            playerEntity.addEffect(new MobEffectInstance(EffectInit.COMFORT, 2400, 0, false, false, true));
                             currentPlayerComfortMap.put(uuid, 0);
                         }
                     } else {

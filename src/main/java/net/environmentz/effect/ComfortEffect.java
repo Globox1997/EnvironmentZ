@@ -1,11 +1,11 @@
 package net.environmentz.effect;
 
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectCategory;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 
-public class ComfortEffect extends StatusEffect {
+public class ComfortEffect extends MobEffect {
 
-    public ComfortEffect(StatusEffectCategory category, int color) {
+    public ComfortEffect(MobEffectCategory category, int color) {
         super(category, color);
     }
 

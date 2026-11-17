@@ -1,10 +1,10 @@
 package net.environmentz.item;
 
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 
 public class WolfPeltItem extends Item {
 
-    public WolfPeltItem(Settings settings) {
+    public WolfPeltItem(Properties settings) {
         super(settings);
     }
 

@@ -5,25 +5,24 @@ import com.google.gson.JsonObject;
 import net.environmentz.EnvironmentzMain;
 import net.environmentz.temperature.Temperatures;
 import net.environmentz.temperature.data.BlockTemperature;
-import net.minecraft.block.Block;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.registry.Registries;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
-
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.material.Fluid;
 import java.util.*;
 
 public class BlockTemperatureLoader extends TemperatureDataLoader {
 
     @Override
-    public Identifier getFabricId() {
+    public ResourceLocation getFabricId() {
         return EnvironmentzMain.identifierOf("block_temperature_loader");
     }
 
     @Override
-    public void reload(ResourceManager manager) {
+    public void onResourceManagerReload(ResourceManager manager) {
         Map<Block, BlockTemperature> blocks = new HashMap<>();
         Map<Fluid, BlockTemperature> fluids = new HashMap<>();
         Set<String> replaced = new HashSet<>();
@@ -34,9 +33,9 @@ public class BlockTemperatureLoader extends TemperatureDataLoader {
                 if (replaced.contains(key)) {
                     continue;
                 }
-                Identifier identifier = Identifier.tryParse(key);
-                Optional<Block> block = identifier == null ? Optional.empty() : Registries.BLOCK.getOrEmpty(identifier);
-                Optional<Fluid> fluid = identifier == null || block.isPresent() ? Optional.empty() : Registries.FLUID.getOrEmpty(identifier);
+                ResourceLocation identifier = ResourceLocation.tryParse(key);
+                Optional<Block> block = identifier == null ? Optional.empty() : BuiltInRegistries.BLOCK.getOptional(identifier);
+                Optional<Fluid> fluid = identifier == null || block.isPresent() ? Optional.empty() : BuiltInRegistries.FLUID.getOptional(identifier);
                 if (block.isEmpty() && fluid.isEmpty()) {
                     EnvironmentzMain.LOGGER.info("{} is not a valid block or fluid identifier", key);
                     continue;
@@ -61,20 +60,20 @@ public class BlockTemperatureLoader extends TemperatureDataLoader {
     }
 
     private static BlockTemperature parseBlockTemperature(JsonObject jsonObject) {
-        int maxCount = JsonHelper.getInt(jsonObject, "max_count");
+        int maxCount = GsonHelper.getAsInt(jsonObject, "max_count");
         Map<Integer, Integer> distances = new HashMap<>();
         int maxDistance = -1;
         for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
             Integer distance = parseDistance(entry.getKey());
             if (distance != null) {
-                distances.put(distance, JsonHelper.asInt(entry.getValue(), entry.getKey()));
+                distances.put(distance, GsonHelper.convertToInt(entry.getValue(), entry.getKey()));
                 maxDistance = Math.max(maxDistance, distance);
             }
         }
         int[] temperatures = new int[maxDistance + 1];
         distances.forEach((distance, temperature) -> temperatures[distance] = temperature);
 
-        BooleanProperty property = jsonObject.has("property") ? BooleanProperty.of(JsonHelper.getString(jsonObject, "property")) : null;
+        BooleanProperty property = jsonObject.has("property") ? BooleanProperty.create(GsonHelper.getAsString(jsonObject, "property")) : null;
         return new BlockTemperature(maxCount, temperatures, property);
     }
 

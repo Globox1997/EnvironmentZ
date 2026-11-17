@@ -2,31 +2,31 @@ package net.environmentz.init;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.item.ModelPredicateProviderRegistry;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.resources.ResourceLocation;
 
 @Environment(EnvType.CLIENT)
 public class ModelInit {
 
     public static void init() {
-        ModelPredicateProviderRegistry.register(ItemInit.HEATING_STONES_ITEM, Identifier.of("heated"), (stack, world, entity, seed) -> {
+        ItemProperties.register(ItemInit.HEATING_STONES_ITEM, ResourceLocation.parse("heated"), (stack, world, entity, seed) -> {
             if (entity == null)
                 return 0.0F;
             else
-                return stack.getMaxDamage() - stack.getDamage() > 1 ? 1.0F : 0.0F;
+                return stack.getMaxDamage() - stack.getDamageValue() > 1 ? 1.0F : 0.0F;
         });
-        ModelPredicateProviderRegistry.register(ItemInit.ICE_PACK_ITEM, Identifier.of("melting"), (stack, world, entity, seed) -> {
+        ItemProperties.register(ItemInit.ICE_PACK_ITEM, ResourceLocation.parse("melting"), (stack, world, entity, seed) -> {
             if (entity == null)
                 return 0.0F;
             else
-                return stack.getDamage() == 0 ? 0.0F : 1.0F;
+                return stack.getDamageValue() == 0 ? 0.0F : 1.0F;
         });
 
-        ModelPredicateProviderRegistry.register(ItemInit.ICE_PACK_ITEM, Identifier.of("melt"), (stack, world, entity, seed) -> {
+        ItemProperties.register(ItemInit.ICE_PACK_ITEM, ResourceLocation.parse("melt"), (stack, world, entity, seed) -> {
             if (entity == null)
                 return 0.0F;
             else
-                return stack.getDamage() == 0 ? 0.0F : (float) stack.getDamage() / stack.getMaxDamage();
+                return stack.getDamageValue() == 0 ? 0.0F : (float) stack.getDamageValue() / stack.getMaxDamage();
         });
     }
 }

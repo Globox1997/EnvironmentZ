@@ -8,24 +8,24 @@ import net.environmentz.temperature.TemperatureManager;
 import net.environmentz.temperature.Temperatures;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Environment(EnvType.CLIENT)
-@Mixin(InGameHud.class)
+@Mixin(Gui.class)
 public abstract class InGameHudMixin {
 
     @Shadow
     @Final
     @Mutable
-    private final MinecraftClient client;
+    private final Minecraft minecraft;
 
     @Unique
     private int xEnvPosition;
@@ -46,14 +46,14 @@ public abstract class InGameHudMixin {
     @Unique // 0: no change, 1: increase, 2: decrease
     private int isChangingPlayerTemperature = 0;
 
-    public InGameHudMixin(MinecraftClient client) {
-        this.client = client;
+    public InGameHudMixin(Minecraft client) {
+        this.minecraft = client;
     }
 
     @Inject(method = "tick()V", at = @At("TAIL"))
     private void tickMixin(CallbackInfo info) {
-        PlayerEntity playerEntity = client.player;
-        if (playerEntity != null && playerEntity.getWorld().getTime() % 20 == 0) {
+        Player playerEntity = minecraft.player;
+        if (playerEntity != null && playerEntity.level().getGameTime() % 20 == 0) {
             TemperatureManager temperatureManager = ((TemperatureManagerAccess) playerEntity).getTemperatureManager();
 
             int playerTemperature = temperatureManager.getPlayerTemperature();
@@ -124,7 +124,7 @@ public abstract class InGameHudMixin {
                 }
             }
 
-            if (playerEntity.getWorld().getTime() % 40 == 0) {
+            if (playerEntity.level().getGameTime() % 40 == 0) {
                 if (oldPlayerTemperature < temperatureManager.getPlayerTemperature() - 10) {
                     isChangingPlayerTemperature = 1;
                 } else if (oldPlayerTemperature > temperatureManager.getPlayerTemperature() + 10) {
@@ -137,23 +137,23 @@ public abstract class InGameHudMixin {
         }
     }
 
-    @Inject(method = "renderMainHud", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHotbar(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/client/render/RenderTickCounter;)V"))
-    private void renderMainHudMixin(DrawContext context, RenderTickCounter tickCounter, CallbackInfo info) {
-        PlayerEntity playerEntity = client.player;
+    @Inject(method = "renderHotbarAndDecorations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderItemHotbar(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
+    private void renderMainHudMixin(GuiGraphics context, DeltaTracker tickCounter, CallbackInfo info) {
+        Player playerEntity = minecraft.player;
 
-        int scaledWidth = client.getWindow().getScaledWidth();
-        int scaledHeight = client.getWindow().getScaledHeight();
+        int scaledWidth = minecraft.getWindow().getGuiScaledWidth();
+        int scaledHeight = minecraft.getWindow().getGuiScaledHeight();
         if (playerEntity != null) {
             if (!playerEntity.isCreative() && !playerEntity.isSpectator() && !playerEntity.isInvulnerable()) {
 
-                TemperatureHudRendering.renderPlayerTemperatureIcon(context, client, playerEntity, heat, xEnvPosition, yEnvPosition, extraEnvPosition, envIntensity, scaledWidth, scaledHeight);
+                TemperatureHudRendering.renderPlayerTemperatureIcon(context, minecraft, playerEntity, heat, xEnvPosition, yEnvPosition, extraEnvPosition, envIntensity, scaledWidth, scaledHeight);
 
                 if (ConfigInit.CONFIG.showThermometer) {
-                    TemperatureHudRendering.renderThermometerIcon(context, client, playerEntity, thermometerXPosition, thermometerYPosition, scaledWidth, scaledHeight);
+                    TemperatureHudRendering.renderThermometerIcon(context, minecraft, playerEntity, thermometerXPosition, thermometerYPosition, scaledWidth, scaledHeight);
                 }
 
                 if (ConfigInit.CONFIG.showTemperatureArrow && isChangingPlayerTemperature != 0) {
-                    TemperatureHudRendering.renderTemperatureArrowIcon(context, client, playerEntity, isChangingPlayerTemperature, scaledWidth, scaledHeight);
+                    TemperatureHudRendering.renderTemperatureArrowIcon(context, minecraft, playerEntity, isChangingPlayerTemperature, scaledWidth, scaledHeight);
                 }
             } else if ((playerEntity.isCreative() || playerEntity.isSpectator()) && RenderInit.getBlurProgress() > 0.001F) {
                 RenderInit.setBlurProgress(0.00F);

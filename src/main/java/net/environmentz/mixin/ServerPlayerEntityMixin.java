@@ -13,40 +13,40 @@ import org.spongepowered.asm.mixin.injection.At;
 import net.environmentz.access.PlayerEnvAccess;
 import net.environmentz.access.TemperatureManagerAccess;
 import net.environmentz.network.EnvironmentServerPacket;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
-@Mixin(ServerPlayerEntity.class)
-public abstract class ServerPlayerEntityMixin extends PlayerEntity implements PlayerEnvAccess {
+@Mixin(ServerPlayer.class)
+public abstract class ServerPlayerEntityMixin extends Player implements PlayerEnvAccess {
 
     @Unique
     public int compatSync = 0;
 
-    public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
+    public ServerPlayerEntityMixin(Level world, BlockPos pos, float yaw, GameProfile gameProfile) {
         super(world, pos, yaw, gameProfile);
     }
 
-    @Inject(method = "playerTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;tick()V", shift = Shift.AFTER))
+    @Inject(method = "doTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;tick()V", shift = Shift.AFTER))
     public void playerTickMixin(CallbackInfo info) {
         if (compatSync > 0) {
             compatSync--;
             if (compatSync == 1) {
-                EnvironmentServerPacket.syncAll((ServerPlayerEntity) (Object) this);
+                EnvironmentServerPacket.syncAll((ServerPlayer) (Object) this);
             }
         }
     }
 
-    @Inject(method = "Lnet/minecraft/server/network/ServerPlayerEntity;copyFrom(Lnet/minecraft/server/network/ServerPlayerEntity;Z)V", at = @At(value = "TAIL"))
-    public void copyFromMixinTwo(ServerPlayerEntity oldPlayer, boolean alive, CallbackInfo info) {
+    @Inject(method = "restoreFrom(Lnet/minecraft/server/level/ServerPlayer;Z)V", at = @At(value = "TAIL"))
+    public void copyFromMixinTwo(ServerPlayer oldPlayer, boolean alive, CallbackInfo info) {
         ((TemperatureManagerAccess) this).getTemperatureManager().copyFrom(((TemperatureManagerAccess) oldPlayer).getTemperatureManager(), alive);
         compatSync();
     }
 
-    @Inject(method = "Lnet/minecraft/server/network/ServerPlayerEntity;teleport(Lnet/minecraft/server/world/ServerWorld;DDDFF)V", at = @At("TAIL"))
-    private void teleportMixin(ServerWorld targetWorld, double x, double y, double z, float yaw, float pitch, CallbackInfo info) {
+    @Inject(method = "teleportTo(Lnet/minecraft/server/level/ServerLevel;DDDFF)V", at = @At("TAIL"))
+    private void teleportMixin(ServerLevel targetWorld, double x, double y, double z, float yaw, float pitch, CallbackInfo info) {
         compatSync();
     }
 

@@ -9,31 +9,31 @@ import net.environmentz.init.TagInit;
 import net.environmentz.mixin.access.EntityAccessor;
 import net.environmentz.network.EnvironmentServerPacket;
 import net.environmentz.temperature.data.*;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageType;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.RaycastContext;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -45,34 +45,34 @@ import java.util.function.IntConsumer;
 
 public class TemperatureAspects {
 
-    private static final EntityAttributeModifier FREEZING_DEBUFF = new EntityAttributeModifier(EnvironmentzMain.identifierOf("freezing_debuff"), -0.25,
-            EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE);
-    private static final EntityAttributeModifier OVERHEATING_DEBUFF = new EntityAttributeModifier(EnvironmentzMain.identifierOf("overheating_debuff"), -0.3,
-            EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE);
-    private static final EntityAttributeModifier COLD_DEBUFF = new EntityAttributeModifier(EnvironmentzMain.identifierOf("cold_debuff"), -0.08,
-            EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE);
-    private static final EntityAttributeModifier HOT_DEBUFF = new EntityAttributeModifier(EnvironmentzMain.identifierOf("hot_debuff"), -0.12,
-            EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE);
-    private static final EntityAttributeModifier GENERAL_DEBUFF = new EntityAttributeModifier(EnvironmentzMain.identifierOf("general_debuff"), -0.2,
-            EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+    private static final AttributeModifier FREEZING_DEBUFF = new AttributeModifier(EnvironmentzMain.identifierOf("freezing_debuff"), -0.25,
+            AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+    private static final AttributeModifier OVERHEATING_DEBUFF = new AttributeModifier(EnvironmentzMain.identifierOf("overheating_debuff"), -0.3,
+            AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+    private static final AttributeModifier COLD_DEBUFF = new AttributeModifier(EnvironmentzMain.identifierOf("cold_debuff"), -0.08,
+            AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+    private static final AttributeModifier HOT_DEBUFF = new AttributeModifier(EnvironmentzMain.identifierOf("hot_debuff"), -0.12,
+            AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+    private static final AttributeModifier GENERAL_DEBUFF = new AttributeModifier(EnvironmentzMain.identifierOf("general_debuff"), -0.2,
+            AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
 
-    public static final RegistryKey<DamageType> FREEZING_DAMAGE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, EnvironmentzMain.identifierOf("freezing"));
+    public static final ResourceKey<DamageType> FREEZING_DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE, EnvironmentzMain.identifierOf("freezing"));
 
     @Nullable
     private static HeatScanArea heatScanArea;
 
-    public static void tickPlayerEnvironment(TemperatureManager temperatureManager, ServerPlayerEntity player) {
-        World world = player.getWorld();
-        BlockPos playerPos = player.getBlockPos();
+    public static void tickPlayerEnvironment(TemperatureManager temperatureManager, ServerPlayer player) {
+        Level world = player.level();
+        BlockPos playerPos = player.blockPosition();
         Breakdown breakdown = new Breakdown();
 
-        float biomeTemperature = world.getBiome(playerPos).value().getTemperature();
+        float biomeTemperature = world.getBiome(playerPos).value().getBaseTemperature();
         EnvironmentCode environmentCode = EnvironmentCode.fromBiomeTemperature(biomeTemperature, Temperatures.getBiomeTemperature());
-        DimensionTemperatures dimension = Temperatures.getDimension(world.getRegistryKey().getValue());
+        DimensionTemperatures dimension = Temperatures.getDimension(world.dimension().location());
 
         updateWetness(player, temperatureManager);
         int wetness = temperatureManager.getPlayerWetIntensityValue();
-        boolean isSkyNotVisible = !world.isSkyVisible(playerPos.up());
+        boolean isSkyNotVisible = !world.canSeeSky(playerPos.above());
 
         if (dimension.usesStandardTemperatures()) {
             breakdown.add("Standard", dimension.standard().get(environmentCode), true);
@@ -119,17 +119,17 @@ public class TemperatureAspects {
         if (breakdown.isDebug()) {
             EnvironmentzMain.LOGGER.info("Total: {} Body Limit: {} New Player Tmp: {}{} Cold Debuff: {} Hot Debuff: {} : {}", temperatureChange, bodyLimit, playerTemperature,
                     breakdown.getDebugText(),
-                    hasModifier(player, EntityAttributes.GENERIC_MOVEMENT_SPEED, COLD_DEBUFF), hasModifier(player, EntityAttributes.GENERIC_ATTACK_DAMAGE, HOT_DEBUFF), environmentCode);
+                    hasModifier(player, Attributes.MOVEMENT_SPEED, COLD_DEBUFF), hasModifier(player, Attributes.ATTACK_DAMAGE, HOT_DEBUFF), environmentCode);
         }
 
         BodyTemperature bodyTemperature = Temperatures.getBodyTemperature();
         if (playerTemperature <= bodyTemperature.maxVeryCold()) {
-            player.damage(player.getDamageSources().create(FREEZING_DAMAGE), 1.0F);
+            player.hurt(player.damageSources().source(FREEZING_DAMAGE), 1.0F);
         } else if (playerTemperature >= bodyTemperature.maxVeryHot()) {
             if (DehydrationCompat.IS_LOADED && !ConfigInit.CONFIG.exhaustionInsteadDehydration) {
                 DehydrationCompat.addDehydration(player, ConfigInit.CONFIG.overheatingExhaustion);
             } else {
-                player.addExhaustion(ConfigInit.CONFIG.overheatingExhaustion);
+                player.causeFoodExhaustion(ConfigInit.CONFIG.overheatingExhaustion);
             }
         }
 
@@ -155,7 +155,7 @@ public class TemperatureAspects {
         BodyTemperature bodyTemperature = Temperatures.getBodyTemperature();
         int min = environmentCode.isHot() ? Math.min(oldTemperature, bodyTemperature.minCold() + 1) : bodyTemperature.maxVeryCold();
         int max = environmentCode.isCold() ? Math.max(oldTemperature, bodyTemperature.minHot() - 1) : bodyTemperature.maxVeryHot();
-        return MathHelper.clamp(temperature, Math.max(min, bodyTemperature.maxVeryCold()), Math.min(max, bodyTemperature.maxVeryHot()));
+        return Mth.clamp(temperature, Math.max(min, bodyTemperature.maxVeryCold()), Math.min(max, bodyTemperature.maxVeryHot()));
     }
 
     private static int absorb(int temperature, int buffer, IntConsumer bufferSetter) {
@@ -167,16 +167,16 @@ public class TemperatureAspects {
         return temperature - Integer.signum(temperature) * absorbed;
     }
 
-    private static void updateDebuffs(PlayerEntity player, int temperature) {
+    private static void updateDebuffs(Player player, int temperature) {
         BodyTemperature bodyTemperature = Temperatures.getBodyTemperature();
         boolean freezing = temperature <= bodyTemperature.maxCold();
         boolean cold = !freezing && temperature <= bodyTemperature.minCold();
         boolean overheating = temperature >= bodyTemperature.maxHot();
         boolean hot = !overheating && temperature >= bodyTemperature.minHot();
 
-        EntityAttributeInstance speed = player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-        EntityAttributeInstance attackDamage = player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-        EntityAttributeInstance attackSpeed = player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_SPEED);
+        AttributeInstance speed = player.getAttribute(Attributes.MOVEMENT_SPEED);
+        AttributeInstance attackDamage = player.getAttribute(Attributes.ATTACK_DAMAGE);
+        AttributeInstance attackSpeed = player.getAttribute(Attributes.ATTACK_SPEED);
         setModifier(speed, FREEZING_DEBUFF, freezing);
         setModifier(speed, COLD_DEBUFF, cold);
         setModifier(attackDamage, OVERHEATING_DEBUFF, overheating);
@@ -184,20 +184,20 @@ public class TemperatureAspects {
         setModifier(attackSpeed, GENERAL_DEBUFF, freezing || overheating);
     }
 
-    private static void setModifier(@Nullable EntityAttributeInstance instance, EntityAttributeModifier modifier, boolean active) {
+    private static void setModifier(@Nullable AttributeInstance instance, AttributeModifier modifier, boolean active) {
         if (instance == null) {
             return;
         }
         boolean present = instance.hasModifier(modifier.id());
         if (active && !present) {
-            instance.addTemporaryModifier(modifier);
+            instance.addTransientModifier(modifier);
         } else if (!active && present) {
             instance.removeModifier(modifier.id());
         }
     }
 
-    private static boolean hasModifier(PlayerEntity player, RegistryEntry<EntityAttribute> attribute, EntityAttributeModifier modifier) {
-        EntityAttributeInstance instance = player.getAttributeInstance(attribute);
+    private static boolean hasModifier(Player player, Holder<Attribute> attribute, AttributeModifier modifier) {
+        AttributeInstance instance = player.getAttribute(attribute);
         return instance != null && instance.hasModifier(modifier.id());
     }
 
@@ -219,16 +219,16 @@ public class TemperatureAspects {
         };
     }
 
-    private static int sweatTemperature(PlayerEntity player, TemperatureManager temperatureManager, DimensionTemperatures dimension, EnvironmentCode environmentCode) {
+    private static int sweatTemperature(Player player, TemperatureManager temperatureManager, DimensionTemperatures dimension, EnvironmentCode environmentCode) {
         if (temperatureManager.getPlayerTemperature() <= Temperatures.getBodyTemperature().normal()) {
             return 0;
         }
         float exhaustion = ConfigInit.CONFIG.overheatingExhaustion;
         if (ConfigInit.CONFIG.exhaustionInsteadDehydration) {
-            if (player.getHungerManager().getFoodLevel() <= 6) {
+            if (player.getFoodData().getFoodLevel() <= 6) {
                 return 0;
             }
-            player.addExhaustion(exhaustion);
+            player.causeFoodExhaustion(exhaustion);
         } else {
             if (DehydrationCompat.getThirstLevel(player) <= 6) {
                 return 0;
@@ -238,14 +238,14 @@ public class TemperatureAspects {
         return dimension.sweat().get(environmentCode);
     }
 
-    private static int armorTemperature(PlayerEntity player, DimensionTemperatures dimension, EnvironmentCode environmentCode) {
+    private static int armorTemperature(Player player, DimensionTemperatures dimension, EnvironmentCode environmentCode) {
         float temperature = 0.0F;
         for (ItemStack stack : player.getInventory().armor) {
             if (stack.isEmpty()) {
                 continue;
             }
-            boolean isWarmArmor = stack.isIn(TagInit.WARM_ARMOR);
-            if (!stack.isIn(TagInit.NON_AFFECTING_ARMOR)) {
+            boolean isWarmArmor = stack.is(TagInit.WARM_ARMOR);
+            if (!stack.is(TagInit.NON_AFFECTING_ARMOR)) {
                 boolean isInsulated = isWarmArmor || Boolean.TRUE.equals(stack.get(ItemInit.INSULATED));
                 temperature += isInsulated ? dimension.insulatedArmor().get(environmentCode) : dimension.armor().get(environmentCode);
             }
@@ -262,12 +262,12 @@ public class TemperatureAspects {
         return Math.round(temperature);
     }
 
-    private static void updateWetness(PlayerEntity player, TemperatureManager temperatureManager) {
+    private static void updateWetness(Player player, TemperatureManager temperatureManager) {
         BodyWetness bodyWetness = Temperatures.getBodyWetness();
         int wetness = temperatureManager.getPlayerWetIntensityValue();
-        if (player.isTouchingWaterOrRain()) {
+        if (player.isInWaterOrRain()) {
             if (wetness < bodyWetness.max()) {
-                if (player.isTouchingWater()) {
+                if (player.isInWater()) {
                     wetness += bodyWetness.water();
                 } else if (((EntityAccessor) player).callIsBeingRainedOn()) {
                     wetness += bodyWetness.rain();
@@ -279,17 +279,17 @@ public class TemperatureAspects {
         }
     }
 
-    private static void addBlockTemperatures(PlayerEntity player, Breakdown breakdown, boolean isSkyNotVisible) {
-        World world = player.getWorld();
-        BlockPos playerPos = player.getBlockPos();
+    private static void addBlockTemperatures(Player player, Breakdown breakdown, boolean isSkyNotVisible) {
+        Level world = player.level();
+        BlockPos playerPos = player.blockPosition();
         Map<Block, Integer> blockCounts = new HashMap<>();
         Map<Fluid, Integer> fluidCounts = new HashMap<>();
         HeatScanArea scanArea = getHeatScanArea(ConfigInit.CONFIG.heatBlockRadius);
-        BlockPos.Mutable pos = new BlockPos.Mutable();
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         int blockHeatSum = 0;
 
         for (int i = 0; i < scanArea.offsets().length; i++) {
-            pos.set(playerPos, scanArea.offsets()[i]);
+            pos.setWithOffset(playerPos, scanArea.offsets()[i]);
             blockHeatSum += addBlockTemperature(world, player, pos, scanArea.distances()[i], blockCounts, fluidCounts, breakdown);
         }
 
@@ -307,7 +307,7 @@ public class TemperatureAspects {
         return area;
     }
 
-    private static int addBlockTemperature(World world, PlayerEntity player, BlockPos pos, int distance, Map<Block, Integer> blockCounts, Map<Fluid, Integer> fluidCounts,
+    private static int addBlockTemperature(Level world, Player player, BlockPos pos, int distance, Map<Block, Integer> blockCounts, Map<Fluid, Integer> fluidCounts,
                                            Breakdown breakdown) {
         BlockState state = world.getBlockState(pos);
         if (state.isAir()) {
@@ -316,7 +316,7 @@ public class TemperatureAspects {
         BlockTemperature blockTemperature = Temperatures.getBlockTemperature(state.getBlock());
         if (blockTemperature != null) {
             BooleanProperty property = blockTemperature.property();
-            if (property != null && state.contains(property) && !state.get(property)) {
+            if (property != null && state.hasProperty(property) && !state.getValue(property)) {
                 return 0;
             }
             if (isObstructed(world, player, pos)) {
@@ -330,7 +330,7 @@ public class TemperatureAspects {
             return temperature;
         }
         if (!state.getFluidState().isEmpty()) {
-            Fluid fluid = state.getFluidState().getFluid();
+            Fluid fluid = state.getFluidState().getType();
             BlockTemperature fluidTemperature = Temperatures.getFluidTemperature(fluid);
             if (fluidTemperature != null && fluidCounts.merge(fluid, 1, Integer::sum) <= fluidTemperature.maxCount()) {
                 breakdown.add(breakdown.isDebug() ? "Fluid " + state.getBlock().getName().getString() : "Fluid", fluidTemperature.getTemperature(distance), true);
@@ -339,27 +339,27 @@ public class TemperatureAspects {
         return 0;
     }
 
-    private static boolean isObstructed(World world, PlayerEntity player, BlockPos pos) {
-        Vec3d start = new Vec3d(player.getX(), player.getY() + player.getHeight() / 2f, player.getZ());
-        BlockHitResult hitResult = world.raycast(new RaycastContext(start, Vec3d.ofCenter(pos), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, player));
+    private static boolean isObstructed(Level world, Player player, BlockPos pos) {
+        Vec3 start = new Vec3(player.getX(), player.getY() + player.getBbHeight() / 2f, player.getZ());
+        BlockHitResult hitResult = world.clip(new ClipContext(start, Vec3.atCenterOf(pos), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
         return hitResult.getType() != HitResult.Type.MISS && !hitResult.getBlockPos().equals(pos);
     }
 
-    private static boolean isEnclosed(World world, BlockPos playerPos) {
+    private static boolean isEnclosed(Level world, BlockPos playerPos) {
         int enclosedRadius = Temperatures.getRoomHeat().enclosedRadius();
-        BlockPos[] checkPositions = {playerPos.add(enclosedRadius, 1, 0), playerPos.add(-enclosedRadius, 1, 0), playerPos.add(0, 1, enclosedRadius), playerPos.add(0, 1, -enclosedRadius)};
+        BlockPos[] checkPositions = {playerPos.offset(enclosedRadius, 1, 0), playerPos.offset(-enclosedRadius, 1, 0), playerPos.offset(0, 1, enclosedRadius), playerPos.offset(0, 1, -enclosedRadius)};
         for (BlockPos pos : checkPositions) {
-            if (world.isSkyVisible(pos)) {
+            if (world.canSeeSky(pos)) {
                 return false;
             }
         }
         return true;
     }
 
-    private static int itemTemperature(PlayerEntity player, TemperatureManager temperatureManager) {
+    private static int itemTemperature(Player player, TemperatureManager temperatureManager) {
         int temperature = 0;
         for (EquipmentSlot slot : EquipmentSlot.values()) {
-            ItemStack stack = player.getEquippedStack(slot);
+            ItemStack stack = player.getItemBySlot(slot);
             if (stack.isEmpty()) {
                 continue;
             }
@@ -367,16 +367,16 @@ public class TemperatureAspects {
             if (itemTemperature == null) {
                 continue;
             }
-            if (itemTemperature.damage() != 0 && stack.isDamageable() && !stack.isIn(TagInit.ARMOR_ITEMS)) {
-                int remainingDurability = stack.getMaxDamage() - stack.getDamage();
+            if (itemTemperature.damage() != 0 && stack.isDamageableItem() && !stack.is(TagInit.ARMOR_ITEMS)) {
+                int remainingDurability = stack.getMaxDamage() - stack.getDamageValue();
                 if (remainingDurability <= 1) {
                     continue;
                 }
                 if (!player.isCreative()) {
                     if (remainingDurability - itemTemperature.damage() <= 0) {
-                        stack.setDamage(stack.getMaxDamage() - 1);
+                        stack.setDamageValue(stack.getMaxDamage() - 1);
                     } else {
-                        stack.damage(itemTemperature.damage(), player, slot);
+                        stack.hurtAndBreak(itemTemperature.damage(), player, slot);
                     }
                 }
             }
@@ -386,12 +386,12 @@ public class TemperatureAspects {
         return temperature;
     }
 
-    private static int effectTemperature(PlayerEntity player, TemperatureManager temperatureManager) {
+    private static int effectTemperature(Player player, TemperatureManager temperatureManager) {
         int temperature = 0;
         int normal = Temperatures.getBodyTemperature().normal();
         int playerTemperature = temperatureManager.getPlayerTemperature();
-        for (StatusEffectInstance statusEffectInstance : player.getStatusEffects()) {
-            EffectTemperature effectTemperature = Temperatures.getEffectTemperature(statusEffectInstance.getEffectType().value());
+        for (MobEffectInstance statusEffectInstance : player.getActiveEffects()) {
+            EffectTemperature effectTemperature = Temperatures.getEffectTemperature(statusEffectInstance.getEffect().value());
             if (effectTemperature == null) {
                 continue;
             }

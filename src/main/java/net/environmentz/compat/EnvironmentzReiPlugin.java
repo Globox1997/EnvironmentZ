@@ -10,30 +10,30 @@ import net.environmentz.init.ItemInit;
 import net.environmentz.init.TagInit;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 @Environment(EnvType.CLIENT)
 public class EnvironmentzReiPlugin implements REIClientPlugin {
 
     @Override
     public void registerDisplays(DisplayRegistry registry) {
-        for (RegistryEntry<Item> registryEntry : Registries.ITEM.iterateEntries(TagInit.ARMOR_ITEMS)) {
+        for (Holder<Item> registryEntry : BuiltInRegistries.ITEM.getTagOrEmpty(TagInit.ARMOR_ITEMS)) {
             addRecipe(registry, registryEntry.value());
         }
     }
 
     private static void addRecipe(DisplayRegistry registry, Item item) {
         ItemStack itemStack = new ItemStack(item);
-        Identifier itemIdentifier = Registries.ITEM.getId(item);
-        Identifier recipeIdentifier = EnvironmentzMain.identifierOf("anvil/" + itemIdentifier.getNamespace() + "/" + itemIdentifier.getPath() + "_insulated");
+        ResourceLocation itemIdentifier = BuiltInRegistries.ITEM.getKey(item);
+        ResourceLocation recipeIdentifier = EnvironmentzMain.identifierOf("anvil/" + itemIdentifier.getNamespace() + "/" + itemIdentifier.getPath() + "_insulated");
 
-        if (registry.getRecipeManager().get(recipeIdentifier).isEmpty()) {
-            if (!itemStack.isIn(TagInit.WARM_ARMOR)) {
+        if (registry.getRecipeManager().byKey(recipeIdentifier).isEmpty()) {
+            if (!itemStack.is(TagInit.WARM_ARMOR)) {
                 ItemStack itemStack2 = itemStack.copy();
                 itemStack2.set(ItemInit.INSULATED,true);
                 registry.add(new AnvilRecipe(recipeIdentifier, List.of(itemStack), List.of(new ItemStack(ItemInit.POLAR_BEAR_FUR_ITEM)), List.of(itemStack2)));

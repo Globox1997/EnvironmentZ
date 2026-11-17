@@ -7,9 +7,9 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistryBuilder;
-import net.minecraft.item.Items;
-import net.minecraft.potion.Potions;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potions;
 
 public class EventInit {
 
@@ -18,10 +18,10 @@ public class EventInit {
             ((PlayerEnvAccess) player).compatSync();
         });
         FabricBrewingRecipeRegistryBuilder.BUILD.register((builder) -> {
-            builder.registerPotionRecipe(Potions.AWKWARD, Items.FIRE_CHARGE, ItemInit.COLD_RESISTANCE);
-            builder.registerPotionRecipe(ItemInit.COLD_RESISTANCE, Items.REDSTONE, ItemInit.LONG_COLD_RESISTANCE);
-            builder.registerPotionRecipe(Potions.AWKWARD, Items.SNOWBALL, ItemInit.OVERHEATING_RESISTANCE);
-            builder.registerPotionRecipe(ItemInit.OVERHEATING_RESISTANCE, Items.REDSTONE, ItemInit.LONG_OVERHEATING_RESISTANCE);
+            builder.addMix(Potions.AWKWARD, Items.FIRE_CHARGE, ItemInit.COLD_RESISTANCE);
+            builder.addMix(ItemInit.COLD_RESISTANCE, Items.REDSTONE, ItemInit.LONG_COLD_RESISTANCE);
+            builder.addMix(Potions.AWKWARD, Items.SNOWBALL, ItemInit.OVERHEATING_RESISTANCE);
+            builder.addMix(ItemInit.OVERHEATING_RESISTANCE, Items.REDSTONE, ItemInit.LONG_OVERHEATING_RESISTANCE);
         });
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             EnvironmentServerPacket.writeS2CSyncValuesPacket(handler.player);
@@ -32,7 +32,7 @@ public class EventInit {
         });
         ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
             if (success) {
-                for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+                for (ServerPlayer player : server.getPlayerList().getPlayers()) {
                     EnvironmentServerPacket.writeS2CSyncValuesPacket(player);
                 }
             }

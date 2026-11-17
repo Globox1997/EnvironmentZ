@@ -6,11 +6,10 @@ import com.mojang.serialization.Codec;
 import net.environmentz.EnvironmentzMain;
 import net.environmentz.temperature.Temperatures;
 import net.environmentz.temperature.data.*;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.registry.Registries;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.effect.MobEffect;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -21,14 +20,14 @@ public class TemperatureManagerLoader extends TemperatureDataLoader {
             EFFECT_SECTION);
 
     @Override
-    public Identifier getFabricId() {
+    public ResourceLocation getFabricId() {
         return EnvironmentzMain.identifierOf("temperature_manager_loader");
     }
 
     @Override
-    public void reload(ResourceManager manager) {
-        Map<Identifier, DimensionTemperatures> dimensions = new HashMap<>();
-        Map<StatusEffect, EffectTemperature> effects = new HashMap<>();
+    public void onResourceManagerReload(ResourceManager manager) {
+        Map<ResourceLocation, DimensionTemperatures> dimensions = new HashMap<>();
+        Map<MobEffect, EffectTemperature> effects = new HashMap<>();
         Set<String> replacedSections = new HashSet<>();
         Set<String> replacedEffects = new HashSet<>();
         Set<String> replacedDimensions = new HashSet<>();
@@ -54,7 +53,7 @@ public class TemperatureManagerLoader extends TemperatureDataLoader {
                 if (SECTIONS.contains(key) || !(entry.getValue() instanceof JsonObject) || replacedDimensions.contains(key)) {
                     continue;
                 }
-                Identifier dimensionIdentifier = Identifier.tryParse(key);
+                ResourceLocation dimensionIdentifier = ResourceLocation.tryParse(key);
                 if (dimensionIdentifier == null) {
                     EnvironmentzMain.LOGGER.info("{} is not a valid dimension identifier", key);
                     continue;
@@ -70,7 +69,7 @@ public class TemperatureManagerLoader extends TemperatureDataLoader {
         Temperatures.setEffects(effects);
     }
 
-    private static <T> void loadSection(JsonObject data, String key, Codec<T> codec, Identifier file, Set<String> replacedSections, Consumer<T> setter) {
+    private static <T> void loadSection(JsonObject data, String key, Codec<T> codec, ResourceLocation file, Set<String> replacedSections, Consumer<T> setter) {
         if (!(data.get(key) instanceof JsonObject jsonObject) || replacedSections.contains(key)) {
             return;
         }
@@ -80,7 +79,7 @@ public class TemperatureManagerLoader extends TemperatureDataLoader {
         }
     }
 
-    private static void loadEffects(JsonObject effectObject, Identifier file, Set<String> replacedEffects, Map<StatusEffect, EffectTemperature> effects) {
+    private static void loadEffects(JsonObject effectObject, ResourceLocation file, Set<String> replacedEffects, Map<MobEffect, EffectTemperature> effects) {
         for (Map.Entry<String, JsonElement> entry : effectObject.entrySet()) {
             String key = entry.getKey();
             if (!(entry.getValue() instanceof JsonObject) || replacedEffects.contains(key)) {
@@ -89,8 +88,8 @@ public class TemperatureManagerLoader extends TemperatureDataLoader {
             if (isReplacing(entry.getValue())) {
                 replacedEffects.add(key);
             }
-            Identifier effectIdentifier = Identifier.tryParse(key);
-            Optional<StatusEffect> effect = effectIdentifier == null ? Optional.empty() : Registries.STATUS_EFFECT.getOrEmpty(effectIdentifier);
+            ResourceLocation effectIdentifier = ResourceLocation.tryParse(key);
+            Optional<MobEffect> effect = effectIdentifier == null ? Optional.empty() : BuiltInRegistries.MOB_EFFECT.getOptional(effectIdentifier);
             if (effect.isEmpty()) {
                 EnvironmentzMain.LOGGER.info("{} is not a valid effect identifier", key);
                 continue;

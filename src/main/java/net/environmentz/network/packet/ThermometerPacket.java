@@ -1,20 +1,20 @@
 package net.environmentz.network.packet;
 
 import net.environmentz.EnvironmentzMain;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-public record ThermometerPacket(int temperature) implements CustomPayload {
+public record ThermometerPacket(int temperature) implements CustomPacketPayload {
 
-    public static final CustomPayload.Id<ThermometerPacket> PACKET_ID = new CustomPayload.Id<>(EnvironmentzMain.identifierOf("thermometer_packet"));
+    public static final CustomPacketPayload.Type<ThermometerPacket> PACKET_ID = new CustomPacketPayload.Type<>(EnvironmentzMain.identifierOf("thermometer_packet"));
 
-    public static final PacketCodec<RegistryByteBuf, ThermometerPacket> PACKET_CODEC = PacketCodec.of((value, buf) -> {
+    public static final StreamCodec<RegistryFriendlyByteBuf, ThermometerPacket> PACKET_CODEC = StreamCodec.ofMember((value, buf) -> {
         buf.writeInt(value.temperature());
     }, buf -> new ThermometerPacket(buf.readInt()));
 
     @Override
-    public Id<? extends CustomPayload> getId() {
+    public Type<? extends CustomPacketPayload> type() {
         return PACKET_ID;
     }
 

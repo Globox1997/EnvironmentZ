@@ -4,11 +4,10 @@ import com.google.gson.JsonElement;
 import net.environmentz.EnvironmentzMain;
 import net.environmentz.temperature.Temperatures;
 import net.environmentz.temperature.data.ItemTemperature;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.item.Item;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,12 +17,12 @@ import java.util.Set;
 public class ItemTemperatureLoader extends TemperatureDataLoader {
 
     @Override
-    public Identifier getFabricId() {
+    public ResourceLocation getFabricId() {
         return EnvironmentzMain.identifierOf("item_temperature_loader");
     }
 
     @Override
-    public void reload(ResourceManager manager) {
+    public void onResourceManagerReload(ResourceManager manager) {
         Map<Item, ItemTemperature> items = new HashMap<>();
         Set<String> replaced = new HashSet<>();
 
@@ -33,8 +32,8 @@ public class ItemTemperatureLoader extends TemperatureDataLoader {
                 if (replaced.contains(key)) {
                     continue;
                 }
-                Identifier identifier = Identifier.tryParse(key);
-                Optional<Item> item = identifier == null ? Optional.empty() : Registries.ITEM.getOrEmpty(identifier);
+                ResourceLocation identifier = ResourceLocation.tryParse(key);
+                Optional<Item> item = identifier == null ? Optional.empty() : BuiltInRegistries.ITEM.getOptional(identifier);
                 if (item.isEmpty()) {
                     EnvironmentzMain.LOGGER.info("{} is not a valid item identifier", key);
                     continue;

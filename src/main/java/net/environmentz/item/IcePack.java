@@ -1,11 +1,11 @@
 package net.environmentz.item;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 public class IcePack extends Item {
 
-    public IcePack(Settings settings) {
+    public IcePack(Properties settings) {
         super(settings);
     }
 
