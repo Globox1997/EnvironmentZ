@@ -9,6 +9,11 @@
       {
         "texture": "environmentz:wolf"
       }
+    ],
+    "humanoid_baby": [
+      {
+        "texture": "environmentz:wolf"
+      }
     ]
   }
 }

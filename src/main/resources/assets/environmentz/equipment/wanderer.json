@@ -15,6 +15,14 @@
           "color_when_undyed": 10511680
         }
       }
+    ],
+    "humanoid_baby": [
+      {
+        "texture": "environmentz:wanderer",
+        "dyeable": {
+          "color_when_undyed": 10511680
+        }
+      }
     ]
   }
 }
