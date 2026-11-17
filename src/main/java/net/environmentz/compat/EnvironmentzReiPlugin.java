@@ -12,7 +12,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -29,19 +29,17 @@ public class EnvironmentzReiPlugin implements REIClientPlugin {
 
     private static void addRecipe(DisplayRegistry registry, Item item) {
         ItemStack itemStack = new ItemStack(item);
-        ResourceLocation itemIdentifier = BuiltInRegistries.ITEM.getKey(item);
-        ResourceLocation recipeIdentifier = EnvironmentzMain.identifierOf("anvil/" + itemIdentifier.getNamespace() + "/" + itemIdentifier.getPath() + "_insulated");
+        Identifier itemIdentifier = BuiltInRegistries.ITEM.getKey(item);
+        Identifier recipeIdentifier = EnvironmentzMain.identifierOf("anvil/" + itemIdentifier.getNamespace() + "/" + itemIdentifier.getPath() + "_insulated");
 
-        if (registry.getRecipeManager().byKey(recipeIdentifier).isEmpty()) {
-            if (!itemStack.is(TagInit.WARM_ARMOR)) {
-                ItemStack itemStack2 = itemStack.copy();
-                itemStack2.set(ItemInit.INSULATED,true);
-                registry.add(new AnvilRecipe(recipeIdentifier, List.of(itemStack), List.of(new ItemStack(ItemInit.POLAR_BEAR_FUR_ITEM)), List.of(itemStack2)));
+        if (!itemStack.is(TagInit.WARM_ARMOR)) {
+            ItemStack itemStack2 = itemStack.copy();
+            itemStack2.set(ItemInit.INSULATED,true);
+            registry.add(new AnvilRecipe(recipeIdentifier, List.of(itemStack), List.of(new ItemStack(ItemInit.POLAR_BEAR_FUR_ITEM)), List.of(itemStack2)));
 
-                itemStack2 = itemStack.copy();
-                itemStack2.set(ItemInit.ICED,ItemInit.COOLING_HEATING_VALUE);
-                registry.add(new AnvilRecipe(EnvironmentzMain.identifierOf("anvil/" + itemIdentifier.getNamespace() + "/" + itemIdentifier.getPath() + "_cooled"), List.of(itemStack), List.of(new ItemStack(Items.ICE)), List.of(itemStack2)));
-            }
+            itemStack2 = itemStack.copy();
+            itemStack2.set(ItemInit.ICED,ItemInit.COOLING_HEATING_VALUE);
+            registry.add(new AnvilRecipe(EnvironmentzMain.identifierOf("anvil/" + itemIdentifier.getNamespace() + "/" + itemIdentifier.getPath() + "_cooled"), List.of(itemStack), List.of(new ItemStack(Items.ICE)), List.of(itemStack2)));
         }
     }
 

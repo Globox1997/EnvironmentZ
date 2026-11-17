@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:brewing",
+  "input": {
+    "item": "minecraft:splash_potion",
+    "potion_contents": {
+      "potions": "environmentz:long_cold_resistance"
+    }
+  },
+  "output": {
+    "components": {
+      "minecraft:potion_contents": {
+        "potion": "environmentz:long_cold_resistance"
+      }
+    },
+    "id": "minecraft:lingering_potion"
+  },
+  "reagent": {
+    "item": "minecraft:dragon_breath"
+  }
+}

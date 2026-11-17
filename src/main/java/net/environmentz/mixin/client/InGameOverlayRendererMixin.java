@@ -1,20 +1,17 @@
 package net.environmentz.mixin.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.Lightmap;
 import net.minecraft.client.renderer.ScreenEffectRenderer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.state.level.PlayerRenderState;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Player;
-import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -31,7 +28,7 @@ import net.fabricmc.api.EnvType;
 @Mixin(ScreenEffectRenderer.class)
 public abstract class InGameOverlayRendererMixin {
     @Unique
-    private static final ResourceLocation COLDNESS_OVERLAY = ResourceLocation.parse("environmentz:textures/gui/coldness_overlay.png");
+    private static final Identifier COLDNESS_OVERLAY = Identifier.parse("environmentz:textures/gui/coldness_overlay.png");
     @Unique
     private static float smoothFreezingRendering;
     @Unique
@@ -39,9 +36,14 @@ public abstract class InGameOverlayRendererMixin {
     @Unique
     private static long lastFadeTime;
 
-    @Inject(method = "renderScreenEffect", at = @At(value = "TAIL"))
-    private static void renderOverlaysMixin(Minecraft minecraftClient, PoseStack matrixStack, CallbackInfo info) {
+    @Inject(method = "submit", at = @At(value = "TAIL"))
+    private void renderOverlaysMixin(float partialTicks, SubmitNodeCollector submitNodeCollector, PlayerRenderState playerRenderState, CameraRenderState cameraRenderState,
+                                     boolean hideGui, CallbackInfo info) {
+        Minecraft minecraftClient = Minecraft.getInstance();
         Player playerEntity = minecraftClient.player;
+        if (!cameraRenderState.isFirstPerson || cameraRenderState.entityRenderState.isSleeping || !playerRenderState.hasPlayer) {
+            return;
+        }
         if (playerEntity != null && !playerEntity.isCreative() && !playerEntity.isSpectator() && ConfigInit.CONFIG.coldOverlay) {
             long worldTime = playerEntity.level().getGameTime();
             if (worldTime < lastFadeTime || worldTime - lastFadeTime >= FADE_INTERVAL_TICKS) {
@@ -61,30 +63,24 @@ public abstract class InGameOverlayRendererMixin {
                 }
             }
             if (smoothFreezingRendering > 0.01F) {
-                renderWinterOverlay(minecraftClient, matrixStack, smoothFreezingRendering);
+                renderWinterOverlay(playerEntity, submitNodeCollector, smoothFreezingRendering);
             }
         }
     }
 
-    private static void renderWinterOverlay(Minecraft client, PoseStack matrices, float smooth) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, COLDNESS_OVERLAY);
-        BlockPos blockPos = BlockPos.containing(client.player.getX(), client.player.getEyeY(), client.player.getZ());
-        float f = LightTexture.getBrightness(client.player.level().dimensionType(), client.player.level().getMaxLocalRawBrightness(blockPos));
-        RenderSystem.enableBlend();
-        RenderSystem.setShaderColor(f, f, f, smooth);
-
-        float m = -client.player.getYRot() / 64.0f;
-        float n = client.player.getXRot() / 64.0f;
-        Matrix4f matrix4f = matrices.last().pose();
-        BufferBuilder bufferBuilder =  bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        bufferBuilder.addVertex(matrix4f, -1.0f, -1.0f, -0.5f).setUv(4.0f + m, 4.0f + n);
-        bufferBuilder.addVertex(matrix4f, 1.0f, -1.0f, -0.5f).setUv(0.0f + m, 4.0f + n);
-        bufferBuilder.addVertex(matrix4f, 1.0f, 1.0f, -0.5f).setUv(0.0f + m, 0.0f + n);
-        bufferBuilder.addVertex(matrix4f, -1.0f, 1.0f, -0.5f).setUv(4.0f + m, 0.0f + n);
-        BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.disableBlend();
+    @Unique
+    private static void renderWinterOverlay(Player player, SubmitNodeCollector submitNodeCollector, float smooth) {
+        BlockPos blockPos = BlockPos.containing(player.getX(), player.getEyeY(), player.getZ());
+        float f = Lightmap.getBrightness(player.level().dimensionType(), player.level().getMaxLocalRawBrightness(blockPos));
+        int color = ARGB.colorFromFloat(smooth, f, f, f);
+        float m = -player.getYRot() / 64.0f;
+        float n = player.getXRot() / 64.0f;
+        submitNodeCollector.submitCustomGeometry(new PoseStack(), RenderTypes.blockScreenEffect(COLDNESS_OVERLAY), (pose, builder) -> {
+            builder.addVertex(pose.pose(), -1.0f, -1.0f, -0.5f).setUv(4.0f + m, 4.0f + n).setColor(color);
+            builder.addVertex(pose.pose(), 1.0f, -1.0f, -0.5f).setUv(0.0f + m, 4.0f + n).setColor(color);
+            builder.addVertex(pose.pose(), 1.0f, 1.0f, -0.5f).setUv(0.0f + m, 0.0f + n).setColor(color);
+            builder.addVertex(pose.pose(), -1.0f, 1.0f, -0.5f).setUv(4.0f + m, 0.0f + n).setColor(color);
+        });
     }
 
 }

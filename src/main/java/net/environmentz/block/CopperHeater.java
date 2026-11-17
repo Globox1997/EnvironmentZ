@@ -1,6 +1,5 @@
 package net.environmentz.block;
 
-import com.mojang.serialization.MapCodec;
 import net.environmentz.block.entity.CopperHeaterEntity;
 import net.environmentz.init.BlockInit;
 import net.minecraft.core.BlockPos;
@@ -15,7 +14,6 @@ import net.minecraft.util.*;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -36,7 +34,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
@@ -44,8 +42,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class CopperHeater extends BaseEntityBlock {
 
-    public static final MapCodec<CopperHeater> CODEC = simpleCodec(CopperHeater::new);
-    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     public static final IntegerProperty OXIDATION = IntegerProperty.create("oxidation", 0, 3);
 
@@ -57,11 +54,6 @@ public class CopperHeater extends BaseEntityBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new CopperHeaterEntity(pos, state);
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
 
     @Nullable
@@ -124,36 +116,24 @@ public class CopperHeater extends BaseEntityBlock {
     }
 
     @Override
-    protected void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!state.is(newState.getBlock())) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof CopperHeaterEntity) {
-                if (world instanceof ServerLevel) {
-                    Containers.dropContents(world, pos, (CopperHeaterEntity) blockEntity);
-                }
-
-                super.onRemove(state, world, pos, newState, moved);
-                world.updateNeighbourForOutputSignal(pos, this);
-            } else {
-                super.onRemove(state, world, pos, newState, moved);
-            }
-        }
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel world, BlockPos pos, boolean moved) {
+        Containers.updateNeighboursAfterDestroy(state, world, pos);
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (stack.is(ItemTags.AXES) && state.getValue(OXIDATION) > 0) {
             if (!world.isClientSide()) {
                 world.setBlock(pos, state.setValue(OXIDATION, state.getValue(OXIDATION) - 1), Block.UPDATE_CLIENTS);
-                world.playSound(null, pos, SoundEvents.AXE_SCRAPE, SoundSource.BLOCKS, 1.0F, 1.0F);
+                world.playSound(null, pos, SoundEvents.AXE_SCRAPE.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
                 world.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
                 if (player instanceof ServerPlayer serverPlayerEntity) {
                     stack.hurtAndBreak(1, serverPlayerEntity, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
                 }
             }
-            return ItemInteractionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
     @Override
@@ -162,7 +142,7 @@ public class CopperHeater extends BaseEntityBlock {
     }
 
     @Override
-    protected int getAnalogOutputSignal(BlockState state, Level world, BlockPos pos) {
+    protected int getAnalogOutputSignal(BlockState state, Level world, BlockPos pos, Direction direction) {
         return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(world.getBlockEntity(pos));
     }
 

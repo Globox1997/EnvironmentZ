@@ -15,6 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.ItemCombinerMenu;
+import net.minecraft.world.inventory.ItemCombinerMenuSlotDefinition;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShearsItem;
@@ -35,8 +36,8 @@ public abstract class AnvilScreenHandlerMixin extends ItemCombinerMenu {
     @Unique
     private int environmentzResult = NO_RESULT;
 
-    public AnvilScreenHandlerMixin(MenuType<?> type, int syncId, Inventory playerInventory, ContainerLevelAccess context) {
-        super(type, syncId, playerInventory, context);
+    public AnvilScreenHandlerMixin(MenuType<?> type, int syncId, Inventory playerInventory, ContainerLevelAccess context, ItemCombinerMenuSlotDefinition slotDefinition) {
+        super(type, syncId, playerInventory, context, slotDefinition);
     }
 
     @Inject(method = "mayPickup", at = @At("HEAD"), cancellable = true)

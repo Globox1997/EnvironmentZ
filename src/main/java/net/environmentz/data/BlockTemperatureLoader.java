@@ -6,7 +6,7 @@ import net.environmentz.EnvironmentzMain;
 import net.environmentz.temperature.Temperatures;
 import net.environmentz.temperature.data.BlockTemperature;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.block.Block;
@@ -17,7 +17,7 @@ import java.util.*;
 public class BlockTemperatureLoader extends TemperatureDataLoader {
 
     @Override
-    public ResourceLocation getFabricId() {
+    public Identifier getFabricId() {
         return EnvironmentzMain.identifierOf("block_temperature_loader");
     }
 
@@ -33,7 +33,7 @@ public class BlockTemperatureLoader extends TemperatureDataLoader {
                 if (replaced.contains(key)) {
                     continue;
                 }
-                ResourceLocation identifier = ResourceLocation.tryParse(key);
+                Identifier identifier = Identifier.tryParse(key);
                 Optional<Block> block = identifier == null ? Optional.empty() : BuiltInRegistries.BLOCK.getOptional(identifier);
                 Optional<Fluid> fluid = identifier == null || block.isPresent() ? Optional.empty() : BuiltInRegistries.FLUID.getOptional(identifier);
                 if (block.isEmpty() && fluid.isEmpty()) {

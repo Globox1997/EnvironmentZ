@@ -3,10 +3,11 @@ package net.environmentz.temperature;
 import net.environmentz.init.ConfigInit;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class TemperatureManager {
 
@@ -26,23 +27,26 @@ public class TemperatureManager {
     private int thermometerCalming = 0;
     private int thermometerTemperature = 0;
 
+    private boolean loadedFromSave = false;
+
     private int syncedTemperature = NOT_SYNCED;
     private int syncedWetness = NOT_SYNCED;
     private int syncedThermometerTemperature = NOT_SYNCED;
 
-    public void readNbt(CompoundTag nbt) {
-        this.isHotEnvAffected = !nbt.contains("IsHotEnvAffected") || nbt.getBoolean("IsHotEnvAffected");
-        this.isColdEnvAffected = !nbt.contains("IsColdEnvAffected") || nbt.getBoolean("IsColdEnvAffected");
-        this.playerTemperature = nbt.getInt("PlayerTemperature");
-        this.playerColdProtectionAmount = nbt.getInt("PlayerColdProtectionAmount");
-        this.playerHotProtectionAmount = nbt.getInt("PlayerHotProtectionAmount");
-        this.playerWetIntensityValue = nbt.getInt("PlayerWetIntensityValue");
-        this.playerHeatResistance = nbt.getInt("PlayerHeatResistance");
-        this.playerColdResistance = nbt.getInt("PlayerColdResistance");
-        this.thermometerTemperature = nbt.getInt("ThermometerTemperature");
+    public void readNbt(ValueInput nbt) {
+        this.loadedFromSave = true;
+        this.isHotEnvAffected = nbt.getBooleanOr("IsHotEnvAffected", true);
+        this.isColdEnvAffected = nbt.getBooleanOr("IsColdEnvAffected", true);
+        this.playerTemperature = nbt.getIntOr("PlayerTemperature", 0);
+        this.playerColdProtectionAmount = nbt.getIntOr("PlayerColdProtectionAmount", 0);
+        this.playerHotProtectionAmount = nbt.getIntOr("PlayerHotProtectionAmount", 0);
+        this.playerWetIntensityValue = nbt.getIntOr("PlayerWetIntensityValue", 0);
+        this.playerHeatResistance = nbt.getIntOr("PlayerHeatResistance", 0);
+        this.playerColdResistance = nbt.getIntOr("PlayerColdResistance", 0);
+        this.thermometerTemperature = nbt.getIntOr("ThermometerTemperature", 0);
     }
 
-    public void writeNbt(CompoundTag nbt) {
+    public void writeNbt(ValueOutput nbt) {
         nbt.putBoolean("IsHotEnvAffected", this.isHotEnvAffected);
         nbt.putBoolean("IsColdEnvAffected", this.isColdEnvAffected);
         nbt.putInt("PlayerTemperature", this.playerTemperature);
@@ -144,6 +148,10 @@ public class TemperatureManager {
 
     public int getThermometerTemperature() {
         return this.thermometerTemperature;
+    }
+
+    public boolean isLoadedFromSave() {
+        return this.loadedFromSave;
     }
 
     public boolean isTemperatureSynced() {

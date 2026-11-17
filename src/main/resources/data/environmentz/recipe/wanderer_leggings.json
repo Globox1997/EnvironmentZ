@@ -1,19 +1,15 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "aba",
-    "a a",
-    "a a"
-  ],
-  "key": {
-    "a": {
-      "item": "minecraft:paper"
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "aba",
+        "a a",
+        "a a"
+    ],
+    "key": {
+        "a": "minecraft:paper",
+        "b": "minecraft:string"
     },
-    "b": {
-      "item": "minecraft:string"
+    "result": {
+        "id": "environmentz:wanderer_leggings"
     }
-  },
-  "result": {
-    "id": "environmentz:wanderer_leggings"
-  }
 }

@@ -7,6 +7,9 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Set;
 
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -16,6 +19,7 @@ import net.environmentz.network.EnvironmentServerPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Relative;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
@@ -25,8 +29,8 @@ public abstract class ServerPlayerEntityMixin extends Player implements PlayerEn
     @Unique
     public int compatSync = 0;
 
-    public ServerPlayerEntityMixin(Level world, BlockPos pos, float yaw, GameProfile gameProfile) {
-        super(world, pos, yaw, gameProfile);
+    public ServerPlayerEntityMixin(Level world, GameProfile gameProfile) {
+        super(world, gameProfile);
     }
 
     @Inject(method = "doTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;tick()V", shift = Shift.AFTER))
@@ -45,8 +49,9 @@ public abstract class ServerPlayerEntityMixin extends Player implements PlayerEn
         compatSync();
     }
 
-    @Inject(method = "teleportTo(Lnet/minecraft/server/level/ServerLevel;DDDFF)V", at = @At("TAIL"))
-    private void teleportMixin(ServerLevel targetWorld, double x, double y, double z, float yaw, float pitch, CallbackInfo info) {
+    @Inject(method = "teleportTo(Lnet/minecraft/server/level/ServerLevel;DDDLjava/util/Set;FFZ)Z", at = @At("TAIL"))
+    private void teleportMixin(ServerLevel targetWorld, double x, double y, double z, Set<Relative> relatives, float yaw, float pitch, boolean resetCamera,
+                               CallbackInfoReturnable<Boolean> info) {
         compatSync();
     }
 

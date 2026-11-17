@@ -1,15 +1,19 @@
 package net.environmentz.block.entity;
 
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.component.CookingFuel;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ResolvableInt;
 import net.environmentz.block.CopperHeater;
 import net.environmentz.block.screen.CopperHeaterScreenHandler;
 import net.environmentz.init.BlockInit;
 import net.environmentz.init.EffectInit;
-import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
@@ -91,19 +95,20 @@ public class CopperHeaterEntity extends BaseContainerBlockEntity implements Worl
     }
 
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    protected void loadAdditional(ValueInput nbt) {
+        super.loadAdditional(nbt);
         this.inventory = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(nbt, this.inventory, registryLookup);
-        this.burnTime = nbt.getShort("BurnTime");
-        this.fuelTime = this.getFuelTime(this.inventory.get(FUEL_SLOT_INDEX));
+        ContainerHelper.loadAllItems(nbt, this.inventory);
+        this.burnTime = nbt.getShortOr("BurnTime", (short) 0);
+        this.fuelTime = nbt.getIntOr("FuelTime", this.burnTime);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
+    protected void saveAdditional(ValueOutput nbt) {
+        super.saveAdditional(nbt);
         nbt.putShort("BurnTime", (short) this.burnTime);
-        ContainerHelper.saveAllItems(nbt, this.inventory, registryLookup);
+        nbt.putInt("FuelTime", this.fuelTime);
+        ContainerHelper.saveAllItems(nbt, this.inventory);
     }
 
     @Override
@@ -122,7 +127,7 @@ public class CopperHeaterEntity extends BaseContainerBlockEntity implements Worl
         if (!blockEntity.isBurning()) {
             ItemStack fuelStack = blockEntity.inventory.get(FUEL_SLOT_INDEX);
             if (!fuelStack.isEmpty()) {
-                int fuelTime = blockEntity.getFuelTime(fuelStack);
+                int fuelTime = blockEntity.getFuelTime((ServerLevel) world, fuelStack);
                 if (fuelTime > 0) {
                     blockEntity.burnTime = fuelTime;
                     blockEntity.fuelTime = fuelTime;
@@ -130,8 +135,8 @@ public class CopperHeaterEntity extends BaseContainerBlockEntity implements Worl
                     Item item = fuelStack.getItem();
                     fuelStack.shrink(1);
                     if (fuelStack.isEmpty()) {
-                        Item remainder = item.getCraftingRemainingItem();
-                        blockEntity.inventory.set(FUEL_SLOT_INDEX, remainder == null ? ItemStack.EMPTY : new ItemStack(remainder));
+                        ItemStackTemplate remainder = item.getCraftingRemainder();
+                        blockEntity.inventory.set(FUEL_SLOT_INDEX, remainder == null ? ItemStack.EMPTY : remainder.create());
                     }
                     dirty = true;
                 }
@@ -191,17 +196,15 @@ public class CopperHeaterEntity extends BaseContainerBlockEntity implements Worl
         }
     }
 
-    protected int getFuelTime(ItemStack fuel) {
+    protected int getFuelTime(ServerLevel world, ItemStack fuel) {
         if (fuel.isEmpty()) {
             return 0;
         }
-        Integer fuelTime = FuelRegistry.INSTANCE.get(fuel.getItem());
-        return fuelTime == null ? 0 : fuelTime;
+        return ResolvableInt.getFromItem(fuel, DataComponents.COOKING_FUEL, CookingFuel::burnTime, this.getLootContext(world), 0);
     }
 
     public static boolean canUseAsFuel(ItemStack stack) {
-        Integer fuelTime = FuelRegistry.INSTANCE.get(stack.getItem());
-        return fuelTime != null && fuelTime > 0;
+        return stack.has(DataComponents.COOKING_FUEL);
     }
 
     @Override

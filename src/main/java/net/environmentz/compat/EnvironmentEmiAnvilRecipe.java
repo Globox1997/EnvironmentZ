@@ -1,7 +1,7 @@
 package net.environmentz.compat;
 
 import java.util.List;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.recipe.VanillaEmiRecipeCategories;
@@ -14,9 +14,9 @@ public class EnvironmentEmiAnvilRecipe implements EmiRecipe {
     private final EmiStack input;
     private final EmiIngredient resource;
     private final EmiStack output;
-    private final ResourceLocation id;
+    private final Identifier id;
 
-    public EnvironmentEmiAnvilRecipe(EmiStack input, EmiIngredient resource, EmiStack output, ResourceLocation id) {
+    public EnvironmentEmiAnvilRecipe(EmiStack input, EmiIngredient resource, EmiStack output, Identifier id) {
         this.input = input;
         this.resource = resource;
         this.output = output;
@@ -29,7 +29,7 @@ public class EnvironmentEmiAnvilRecipe implements EmiRecipe {
     }
 
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return id;
     }
 

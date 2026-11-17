@@ -3,5 +3,4 @@
 ### Fixed:
 - 
 ### Changed:
-- Removed satin api
-- Tweaked body temperature limit mechanic
+- Updated to mc 26.3

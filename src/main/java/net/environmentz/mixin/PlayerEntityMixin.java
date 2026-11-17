@@ -8,11 +8,12 @@ import org.spongepowered.asm.mixin.injection.At;
 
 import net.environmentz.access.TemperatureManagerAccess;
 import net.environmentz.temperature.TemperatureManager;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 @Mixin(Player.class)
 public abstract class PlayerEntityMixin extends LivingEntity implements TemperatureManagerAccess {
@@ -25,12 +26,12 @@ public abstract class PlayerEntityMixin extends LivingEntity implements Temperat
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At(value = "TAIL"))
-    private void readCustomDataFromTagMixin(CompoundTag tag, CallbackInfo info) {
+    private void readCustomDataFromTagMixin(ValueInput tag, CallbackInfo info) {
         this.temperatureManager.readNbt(tag);
     }
 
     @Inject(method = "addAdditionalSaveData", at = @At(value = "TAIL"))
-    private void writeCustomDataToTagMixin(CompoundTag tag, CallbackInfo info) {
+    private void writeCustomDataToTagMixin(ValueOutput tag, CallbackInfo info) {
         this.temperatureManager.writeNbt(tag);
     }
 

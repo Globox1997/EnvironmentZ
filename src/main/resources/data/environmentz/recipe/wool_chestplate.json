@@ -1,16 +1,14 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "a a",
-    "aaa",
-    "aaa"
-  ],
-  "key": {
-    "a": {
-      "tag": "minecraft:wool"
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "a a",
+        "aaa",
+        "aaa"
+    ],
+    "key": {
+        "a": "#minecraft:wool"
+    },
+    "result": {
+        "id": "environmentz:wool_chestplate"
     }
-  },
-  "result": {
-    "id": "environmentz:wool_chestplate"
-  }
 }

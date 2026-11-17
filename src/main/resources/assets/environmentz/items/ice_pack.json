@@ -1,0 +1,33 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:damage",
+    "entries": [
+      {
+        "threshold": 0.3,
+        "model": {
+          "type": "minecraft:model",
+          "model": "environmentz:item/melting_ice_pack"
+        }
+      },
+      {
+        "threshold": 0.7,
+        "model": {
+          "type": "minecraft:model",
+          "model": "environmentz:item/almost_empty_ice_pack"
+        }
+      },
+      {
+        "threshold": 0.95,
+        "model": {
+          "type": "minecraft:model",
+          "model": "environmentz:item/empty_ice_pack"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "environmentz:item/ice_pack"
+    }
+  }
+}

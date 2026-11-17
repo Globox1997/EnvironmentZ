@@ -1,19 +1,15 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "a a",
-    "aba",
-    "aaa"
-  ],
-  "key": {
-    "a": {
-      "item": "minecraft:paper"
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "a a",
+        "aba",
+        "aaa"
+    ],
+    "key": {
+        "a": "minecraft:paper",
+        "b": "minecraft:string"
     },
-    "b": {
-      "item": "minecraft:string"
+    "result": {
+        "id": "environmentz:wanderer_chestplate"
     }
-  },
-  "result": {
-    "id": "environmentz:wanderer_chestplate"
-  }
 }

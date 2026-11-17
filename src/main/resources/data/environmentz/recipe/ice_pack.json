@@ -6,15 +6,9 @@
         " a "
     ],
     "key": {
-        "a": {
-            "item": "minecraft:leather"
-        },
-        "b": {
-            "item": "minecraft:iron_ingot"
-        },
-        "c": {
-            "tag": "environmentz:ice_items"
-        }
+        "a": "minecraft:leather",
+        "b": "minecraft:iron_ingot",
+        "c": "#environmentz:ice_items"
     },
     "result": {
         "id": "environmentz:ice_pack"

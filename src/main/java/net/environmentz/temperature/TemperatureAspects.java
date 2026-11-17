@@ -68,7 +68,7 @@ public class TemperatureAspects {
 
         float biomeTemperature = world.getBiome(playerPos).value().getBaseTemperature();
         EnvironmentCode environmentCode = EnvironmentCode.fromBiomeTemperature(biomeTemperature, Temperatures.getBiomeTemperature());
-        DimensionTemperatures dimension = Temperatures.getDimension(world.dimension().location());
+        DimensionTemperatures dimension = Temperatures.getDimension(world.dimension().identifier());
 
         updateWetness(player, temperatureManager);
         int wetness = temperatureManager.getPlayerWetIntensityValue();
@@ -76,7 +76,7 @@ public class TemperatureAspects {
 
         if (dimension.usesStandardTemperatures()) {
             breakdown.add("Standard", dimension.standard().get(environmentCode), true);
-        } else if (world.isDay()) {
+        } else if (world.isBrightOutside()) {
             breakdown.add("Day", dimension.day().get(environmentCode), true);
         } else {
             breakdown.add("Night", dimension.night().get(environmentCode), true);
@@ -240,7 +240,11 @@ public class TemperatureAspects {
 
     private static int armorTemperature(Player player, DimensionTemperatures dimension, EnvironmentCode environmentCode) {
         float temperature = 0.0F;
-        for (ItemStack stack : player.getInventory().armor) {
+        for (EquipmentSlot slot : EquipmentSlot.VALUES) {
+            if (slot.getType() != EquipmentSlot.Type.HUMANOID_ARMOR) {
+                continue;
+            }
+            ItemStack stack = player.getItemBySlot(slot);
             if (stack.isEmpty()) {
                 continue;
             }

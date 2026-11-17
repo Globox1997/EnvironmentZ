@@ -1,8 +1,6 @@
 {
     "type": "minecraft:campfire_cooking",
-    "ingredient": {
-        "item": "environmentz:heating_stones"
-    },
+    "ingredient": "environmentz:heating_stones",
     "result": {
         "id": "environmentz:heating_stones"
     },

@@ -1,15 +1,13 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "a a",
-    "a a"
-  ],
-  "key": {
-    "a": {
-      "tag": "minecraft:wool"
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "a a",
+        "a a"
+    ],
+    "key": {
+        "a": "#minecraft:wool"
+    },
+    "result": {
+        "id": "environmentz:wool_boots"
     }
-  },
-  "result": {
-    "id": "environmentz:wool_boots"
-  }
 }

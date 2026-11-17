@@ -7,7 +7,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import net.environmentz.EnvironmentzMain;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.GsonHelper;
 import java.io.Reader;
@@ -16,7 +16,7 @@ import java.util.function.BiConsumer;
 
 public abstract class TemperatureDataLoader implements SimpleSynchronousResourceReloadListener {
 
-    protected static void forEachJsonFile(ResourceManager manager, String directory, BiConsumer<ResourceLocation, JsonObject> consumer) {
+    protected static void forEachJsonFile(ResourceManager manager, String directory, BiConsumer<Identifier, JsonObject> consumer) {
         manager.listResources(directory, id -> id.getPath().endsWith(".json")).forEach((id, resource) -> {
             try (Reader reader = resource.openAsReader()) {
                 JsonElement json = JsonParser.parseReader(reader);
@@ -31,7 +31,7 @@ public abstract class TemperatureDataLoader implements SimpleSynchronousResource
         });
     }
 
-    protected static <T> Optional<T> parse(Codec<T> codec, JsonElement json, ResourceLocation file, String key) {
+    protected static <T> Optional<T> parse(Codec<T> codec, JsonElement json, Identifier file, String key) {
         return codec.parse(JsonOps.INSTANCE, json).resultOrPartial(error -> EnvironmentzMain.LOGGER.error("Invalid entry {} in {}: {}", key, file, error));
     }
 

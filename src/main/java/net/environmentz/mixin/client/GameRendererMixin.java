@@ -12,6 +12,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.resources.Identifier;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,13 +27,10 @@ public class GameRendererMixin {
 
     @Final
     @Shadow
-    Minecraft minecraft;
+    private Minecraft minecraft;
 
-    @Shadow
-    private int confusionAnimationTick;
-
-    @Inject(method = "renderLevel", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/util/Mth;lerp(FFF)F", ordinal = 0))
-    private void renderWorldMixin(DeltaTracker tickCounter, CallbackInfo info, @Local(ordinal = 0) Matrix4f matrix4f) {
+    @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lorg/joml/Matrix4f;mul(Lorg/joml/Matrix4fc;)Lorg/joml/Matrix4f;", ordinal = 0, shift = At.Shift.AFTER))
+    private void renderWorldMixin(CallbackInfo info, @Local(ordinal = 0) Matrix4f matrix4f) {
         LocalPlayer player = this.minecraft.player;
         if (!ConfigInit.CONFIG.shakingScreenEffect || player == null || player.isCreative() || player.isSpectator()) {
             return;
@@ -43,13 +41,16 @@ public class GameRendererMixin {
             return;
         }
         int period = Math.abs(bodyTemperature.maxVeryCold() * 2) + playerTemperature * 2;
-        if (period <= 0 || this.confusionAnimationTick % period < period / 2) {
-            matrix4f.translate((float) Math.cos(this.confusionAnimationTick * Math.PI) * 0.01f * this.minecraft.options.screenEffectScale().get().floatValue(), 0.0f, 0.0f);
+        if (period <= 0 || player.tickCount % period < period / 2) {
+            matrix4f.translate((float) Math.cos(player.tickCount * Math.PI) * 0.01f * this.minecraft.options.screenEffectScale().get().floatValue(), 0.0f, 0.0f);
         }
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;bindWrite(Z)V"))
-    private void renderBlurMixin(DeltaTracker tickCounter, boolean tick, CallbackInfo info) {
-        TemperatureBlurRendering.render(this.minecraft, tickCounter.getGameTimeDeltaTicks());
+    @Inject(method = "update", at = @At("TAIL"))
+    private void updateMixin(DeltaTracker deltaTracker, CallbackInfo info) {
+        Identifier blurEffect = TemperatureBlurRendering.getPostEffect(this.minecraft);
+        if (blurEffect != null) {
+            ((GameRenderer) (Object) this).getRequestedPostEffects().add(blurEffect);
+        }
     }
 }

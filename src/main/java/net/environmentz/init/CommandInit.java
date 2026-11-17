@@ -21,8 +21,8 @@ public class CommandInit {
 
     public static void init() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(Commands.literal("environment")
-                .requires(source -> source.hasPermission(2))
-                .then(Commands.literal("info").requires(source -> source.hasPermission(3))
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .then(Commands.literal("info").requires(Commands.hasPermission(Commands.LEVEL_ADMINS))
                         .then(infoCommand("affection", (player, manager) -> Component.translatable("commands.environment.affection", player.getDisplayName(), manager.isHotEnvAffected(),
                                 manager.isColdEnvAffected())))
                         .then(infoCommand("resistance", (player, manager) -> Component.translatable("commands.environment.resistance", player.getDisplayName(), manager.getPlayerHeatResistance(),

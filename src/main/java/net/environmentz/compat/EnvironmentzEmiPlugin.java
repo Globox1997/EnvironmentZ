@@ -12,7 +12,7 @@ import net.environmentz.init.ItemInit;
 import net.environmentz.init.TagInit;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -23,8 +23,8 @@ public class EnvironmentzEmiPlugin implements EmiPlugin {
     private static void addRecipe(EmiRegistry registry, Item item) {
         if (!itemList.contains(item)) {
             ItemStack itemStack = new ItemStack(item);
-            ResourceLocation itemIdentifier = BuiltInRegistries.ITEM.getKey(item);
-            ResourceLocation recipeIdentifier = EnvironmentzMain.identifierOf("/" + itemIdentifier.getNamespace() + "/" + itemIdentifier.getPath() + "_insulated");
+            Identifier itemIdentifier = BuiltInRegistries.ITEM.getKey(item);
+            Identifier recipeIdentifier = EnvironmentzMain.identifierOf("/" + itemIdentifier.getNamespace() + "/" + itemIdentifier.getPath() + "_insulated");
 
             if (!itemStack.is(TagInit.WARM_ARMOR)) {
                 ItemStack itemStack2 = itemStack.copy();

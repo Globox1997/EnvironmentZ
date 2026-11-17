@@ -1,15 +1,13 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "aaa",
-    "a a"
-  ],
-  "key": {
-    "a": {
-      "item": "minecraft:paper"
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "aaa",
+        "a a"
+    ],
+    "key": {
+        "a": "minecraft:paper"
+    },
+    "result": {
+        "id": "environmentz:wanderer_helmet"
     }
-  },
-  "result": {
-    "id": "environmentz:wanderer_helmet"
-  }
 }

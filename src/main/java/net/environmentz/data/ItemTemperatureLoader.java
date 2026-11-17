@@ -5,7 +5,7 @@ import net.environmentz.EnvironmentzMain;
 import net.environmentz.temperature.Temperatures;
 import net.environmentz.temperature.data.ItemTemperature;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.Item;
 import java.util.HashMap;
@@ -17,7 +17,7 @@ import java.util.Set;
 public class ItemTemperatureLoader extends TemperatureDataLoader {
 
     @Override
-    public ResourceLocation getFabricId() {
+    public Identifier getFabricId() {
         return EnvironmentzMain.identifierOf("item_temperature_loader");
     }
 
@@ -32,7 +32,7 @@ public class ItemTemperatureLoader extends TemperatureDataLoader {
                 if (replaced.contains(key)) {
                     continue;
                 }
-                ResourceLocation identifier = ResourceLocation.tryParse(key);
+                Identifier identifier = Identifier.tryParse(key);
                 Optional<Item> item = identifier == null ? Optional.empty() : BuiltInRegistries.ITEM.getOptional(identifier);
                 if (item.isEmpty()) {
                     EnvironmentzMain.LOGGER.info("{} is not a valid item identifier", key);

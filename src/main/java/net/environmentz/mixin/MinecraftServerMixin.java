@@ -9,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.biome.Biome;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -22,14 +23,14 @@ public class MinecraftServerMixin {
     @Unique
     private static final int EASY_SPAWN_SEARCH_INTERVAL = 64;
 
-    @ModifyExpressionValue(method = "setInitialSpawn", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Climate$Sampler;findSpawnPosition()Lnet/minecraft/core/BlockPos;"))
-    private static BlockPos findEasySpawnPositionMixin(BlockPos original, @Local(argsOnly = true) ServerLevel world) {
+    @ModifyExpressionValue(method = "setInitialSpawn", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/ChunkGenerator;getOrigin(Lnet/minecraft/world/level/levelgen/RandomState;)Lnet/minecraft/world/level/ChunkPos;"))
+    private static ChunkPos findEasySpawnPositionMixin(ChunkPos original, @Local(argsOnly = true) ServerLevel world) {
         if (!ConfigInit.CONFIG.easyWorldSpawn) {
             return original;
         }
-        BlockPos origin = original.atY(world.getSeaLevel());
+        BlockPos origin = original.getWorldPosition().atY(world.getSeaLevel());
         Pair<BlockPos, Holder<Biome>> result = world.findClosestBiome3d(biome -> biome.is(TagInit.EASY_SPAWN), origin, EASY_SPAWN_SEARCH_RADIUS, EASY_SPAWN_SEARCH_INTERVAL,
                 world.getHeight());
-        return result != null ? result.getFirst() : original;
+        return result != null ? ChunkPos.containing(result.getFirst()) : original;
     }
 }

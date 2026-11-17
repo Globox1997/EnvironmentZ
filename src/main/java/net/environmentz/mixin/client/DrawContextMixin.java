@@ -1,8 +1,6 @@
 package net.environmentz.mixin.client;
 
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -11,18 +9,17 @@ import net.environmentz.init.ItemInit;
 import net.environmentz.init.TagInit;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
-@Mixin(GuiGraphics.class)
+@Mixin(GuiGraphicsExtractor.class)
 public class DrawContextMixin {
 
-    @Inject(method = "renderItemDecorations(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;IILjava/lang/String;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isBarVisible()Z"))
-    private void drawItemInSlotMixin(Font textRenderer, ItemStack stack, int x, int y, @Nullable String countOverride, CallbackInfo info) {
+    @Inject(method = "itemBar", at = @At("HEAD"))
+    private void drawItemInSlotMixin(ItemStack stack, int x, int y, CallbackInfo info) {
         if (stack.is(TagInit.ARMOR_ITEMS) && stack.get(ItemInit.ICED) != null) {
             int i = getIcedItemBarStep(stack);
             int j = getIcedItemBarColor(stack);
@@ -34,8 +31,9 @@ public class DrawContextMixin {
             int k = x + 2;
             int l = y + 13;
 
-            this.fill(RenderType.guiOverlay(), k, l + extraY, k + 13, l + 2 + extraY, -16777216);
-            this.fill(RenderType.guiOverlay(), k, l + extraY, k + i, l + 1 + extraY, j | 0xFF000000);
+            GuiGraphicsExtractor graphics = (GuiGraphicsExtractor) (Object) this;
+            graphics.fill(RenderPipelines.GUI, k, l + extraY, k + 13, l + 2 + extraY, -16777216);
+            graphics.fill(RenderPipelines.GUI, k, l + extraY, k + i, l + 1 + extraY, j | 0xFF000000);
         }
 
     }
@@ -49,10 +47,6 @@ public class DrawContextMixin {
 
     private static int getIcedItemBarStep(ItemStack stack) {
         return Math.round((float) stack.get(ItemInit.ICED) * 13.0f / (float) ItemInit.COOLING_HEATING_VALUE);
-    }
-
-    @Shadow
-    public void fill(RenderType layer, int x1, int y1, int x2, int y2, int color) {
     }
 
 }

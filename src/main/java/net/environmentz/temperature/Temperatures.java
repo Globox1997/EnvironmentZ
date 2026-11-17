@@ -1,7 +1,7 @@
 package net.environmentz.temperature;
 
 import net.environmentz.temperature.data.*;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -12,7 +12,7 @@ import java.util.Map;
 
 public final class Temperatures {
 
-    public static final ResourceLocation OVERWORLD = ResourceLocation.withDefaultNamespace("overworld");
+    public static final Identifier OVERWORLD = Identifier.withDefaultNamespace("overworld");
 
     private static BodyTemperature bodyTemperature = BodyTemperature.EMPTY;
     private static BodyWetness bodyWetness = BodyWetness.EMPTY;
@@ -22,7 +22,7 @@ public final class Temperatures {
     private static Acclimatization acclimatization = Acclimatization.EMPTY;
     private static RoomHeat roomHeat = RoomHeat.DEFAULT;
 
-    private static Map<ResourceLocation, DimensionTemperatures> dimensions = Map.of();
+    private static Map<Identifier, DimensionTemperatures> dimensions = Map.of();
     private static Map<MobEffect, EffectTemperature> effects = Map.of();
     private static Map<Block, BlockTemperature> blocks = Map.of();
     private static Map<Fluid, BlockTemperature> fluids = Map.of();
@@ -87,7 +87,7 @@ public final class Temperatures {
         roomHeat = value;
     }
 
-    public static void setDimensions(Map<ResourceLocation, DimensionTemperatures> value) {
+    public static void setDimensions(Map<Identifier, DimensionTemperatures> value) {
         dimensions = Map.copyOf(value);
     }
 
@@ -105,11 +105,11 @@ public final class Temperatures {
     }
 
     @Nullable
-    public static DimensionTemperatures getRawDimension(ResourceLocation dimensionIdentifier) {
+    public static DimensionTemperatures getRawDimension(Identifier dimensionIdentifier) {
         return dimensions.get(dimensionIdentifier);
     }
 
-    public static DimensionTemperatures getDimension(ResourceLocation dimensionIdentifier) {
+    public static DimensionTemperatures getDimension(Identifier dimensionIdentifier) {
         DimensionTemperatures dimension = dimensions.get(dimensionIdentifier);
         if (dimension == null || dimension.isUnset()) {
             return dimensions.getOrDefault(OVERWORLD, DimensionTemperatures.EMPTY);

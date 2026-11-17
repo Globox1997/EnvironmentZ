@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_dye",
+  "dye": "#minecraft:dyes",
+  "group": "dyed_armor",
+  "result": {
+    "id": "environmentz:wanderer_helmet"
+  },
+  "target": "environmentz:wanderer_helmet"
+}

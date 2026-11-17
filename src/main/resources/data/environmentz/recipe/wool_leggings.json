@@ -1,16 +1,14 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "aaa",
-    "a a",
-    "a a"
-  ],
-  "key": {
-    "a": {
-      "tag": "minecraft:wool"
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "aaa",
+        "a a",
+        "a a"
+    ],
+    "key": {
+        "a": "#minecraft:wool"
+    },
+    "result": {
+        "id": "environmentz:wool_leggings"
     }
-  },
-  "result": {
-    "id": "environmentz:wool_leggings"
-  }
 }

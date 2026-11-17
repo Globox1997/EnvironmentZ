@@ -1,0 +1,27 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:damage",
+    "normalize": false,
+    "entries": [
+      {
+        "threshold": 0,
+        "model": {
+          "type": "minecraft:model",
+          "model": "environmentz:item/heated_stones"
+        }
+      },
+      {
+        "threshold": 119,
+        "model": {
+          "type": "minecraft:model",
+          "model": "environmentz:item/heating_stones"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "environmentz:item/heating_stones"
+    }
+  }
+}

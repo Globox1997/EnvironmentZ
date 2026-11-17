@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "environmentz:wolf"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "environmentz:wolf"
+      }
+    ]
+  }
+}

@@ -1,10 +1,7 @@
 {
     "type": "minecraft:stonecutting",
-    "ingredient": {
-        "item": "minecraft:stone"
-    },
+    "ingredient": "minecraft:stone",
     "result": {
         "id": "environmentz:heating_stones"
-    },
-    "count": 1
+    }
 }

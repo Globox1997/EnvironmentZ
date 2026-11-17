@@ -14,10 +14,10 @@ import net.minecraft.server.level.ServerPlayer;
 public class EnvironmentServerPacket {
 
     public static void init() {
-        PayloadTypeRegistry.playS2C().register(AffectionPacket.PACKET_ID, AffectionPacket.PACKET_CODEC);
-        PayloadTypeRegistry.playS2C().register(TemperaturePacket.PACKET_ID, TemperaturePacket.PACKET_CODEC);
-        PayloadTypeRegistry.playS2C().register(ThermometerPacket.PACKET_ID, ThermometerPacket.PACKET_CODEC);
-        PayloadTypeRegistry.playS2C().register(SyncValuesPacket.PACKET_ID, SyncValuesPacket.PACKET_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(AffectionPacket.PACKET_ID, AffectionPacket.PACKET_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(TemperaturePacket.PACKET_ID, TemperaturePacket.PACKET_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(ThermometerPacket.PACKET_ID, ThermometerPacket.PACKET_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(SyncValuesPacket.PACKET_ID, SyncValuesPacket.PACKET_CODEC);
     }
 
     public static void writeS2CSyncEnvPacket(ServerPlayer serverPlayerEntity, boolean heatAffected, boolean coldAffected) {

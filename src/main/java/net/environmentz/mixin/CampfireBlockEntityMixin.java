@@ -18,7 +18,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.crafting.CampfireCookingRecipe;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -30,7 +33,8 @@ public class CampfireBlockEntityMixin {
     private HashMap<UUID, Integer> playerComfortMap = new HashMap<>();
 
     @Inject(method = "cookTick", at = @At("TAIL"))
-    private static void litServerTickMixin(Level world, BlockPos pos, BlockState state, CampfireBlockEntity campfire, CallbackInfo info) {
+    private static void litServerTickMixin(ServerLevel world, BlockPos pos, BlockState state, CampfireBlockEntity campfire,
+                                           RecipeManager.CachedCheck<SingleRecipeInput, CampfireCookingRecipe> recipeCache, CallbackInfo info) {
         if (world.getGameTime() % 200 == 0) {
             List<Player> playerEntities = world.getEntitiesOfClass(Player.class, new AABB(pos.above()).inflate(4.0D, 2.0D, 4.0D), EntitySelector.NO_SPECTATORS);
             if (!playerEntities.isEmpty()) {
