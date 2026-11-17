@@ -7,7 +7,6 @@
   "mixins": [
     "PlayerEntityMixin",
     "AnvilScreenHandlerMixin",
-    "ArmorItemMixin",
     "ServerPlayerEntityMixin",
     "PlayerManagerMixin",
     "PowderSnowBlockMixin",

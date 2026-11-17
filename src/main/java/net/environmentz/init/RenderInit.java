@@ -7,11 +7,14 @@ import net.environmentz.entity.model.WolfHelmetModel;
 import net.environmentz.temperature.TemperatureBlurRendering;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.component.type.DyedColorComponent;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
 @Environment(EnvType.CLIENT)
 public class RenderInit {
@@ -31,6 +34,18 @@ public class RenderInit {
                 ItemInit.WOOL_LEGGINGS, ItemInit.WOOL_BOOTS);
 
         HandledScreens.register(BlockInit.COPPER_HEATER_SCREEN_HANDLER_TYPE, CopperHeaterScreen::new);
+
+        ItemTooltipCallback.EVENT.register((stack, tooltipContext, tooltipType, lines) -> {
+            if (stack.contains(ItemInit.INSULATED) && stack.get(ItemInit.INSULATED)) {
+                lines.add(Text.translatable("item.environmentz.fur_insolated.tooltip").formatted(Formatting.BLUE));
+            }
+            if (stack.contains(ItemInit.ICED)) {
+                Integer iced = stack.get(ItemInit.ICED);
+                if (iced != null && iced > 0) {
+                    lines.add(Text.translatable("item.environmentz.iced.tooltip", iced).formatted(Formatting.BLUE));
+                }
+            }
+        });
 
     }
 
