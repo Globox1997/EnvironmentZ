@@ -1,0 +1,44 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "GPLv3, ARR (Assets)"
+issueTrackerURL = "https://github.com/Globox1997/EnvironmentZ/issues"
+
+[[mods]]
+modId = "environmentz"
+version = "${version}"
+displayName = "EnvironmentZ"
+displayURL = "https://www.curseforge.com/minecraft/mc-mods/environmentz"
+iconFile = "assets/environmentz/icon.png"
+authors = "Globox_Z"
+description = '''Harsh environments will now affect you'''
+
+[[mixins]]
+config = "environmentz.mixins.json"
+
+[[dependencies.environmentz]]
+modId = "neoforge"
+type = "required"
+versionRange = "[${neoforge_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.environmentz]]
+modId = "minecraft"
+type = "required"
+versionRange = "[${minecraft_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.environmentz]]
+modId = "cloth_config"
+type = "required"
+versionRange = "[${cloth_config_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.environmentz]]
+modId = "dehydration"
+type = "optional"
+versionRange = "*"
+ordering = "NONE"
+side = "BOTH"

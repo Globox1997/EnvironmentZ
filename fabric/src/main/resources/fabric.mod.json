@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "id": "environmentz",
+  "version": "${version}",
+  "name": "EnvironmentZ",
+  "description": "Harsh environments will now affect you",
+  "authors": [
+    "Globox_Z"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/environmentz",
+    "sources": "https://github.com/Globox1997/EnvironmentZ",
+    "issues": "https://github.com/Globox1997/EnvironmentZ/issues"
+  },
+  "license": [
+    "GPLv3",
+    "ARR (Assets)"
+  ],
+  "icon": "assets/environmentz/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.environmentz.fabric.EnvironmentzFabric"
+    ],
+    "client": [
+      "net.environmentz.fabric.client.EnvironmentzFabricClient"
+    ],
+    "modmenu": [
+      "net.environmentz.config.ModMenuIntegration"
+    ],
+    "rei_client": [
+      "net.environmentz.compat.EnvironmentzReiPlugin"
+    ],
+    "jei_mod_plugin": [
+      "net.environmentz.compat.EnvironmentzJeiPlugin"
+    ]
+  },
+  "mixins": [
+    "environmentz.mixins.json"
+  ],
+  "depends": {
+    "java": ">=25",
+    "minecraft": ">=${minecraft_version}",
+    "fabric-api": ">=${fabric_api_version}",
+    "fabricloader": ">=${loader_version}",
+    "cloth-config2": ">=${cloth_config_version}"
+  },
+  "suggests": {
+    "dehydration": "*"
+  }
+}

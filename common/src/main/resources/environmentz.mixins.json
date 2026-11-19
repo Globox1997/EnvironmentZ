@@ -1,0 +1,30 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.environmentz.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "plugin": "net.environmentz.mixin.compat.EnvironmentzMixinPlugin",
+  "mixins": [
+    "PlayerEntityMixin",
+    "AnvilScreenHandlerMixin",
+    "ServerPlayerEntityMixin",
+    "PlayerManagerMixin",
+    "PowderSnowBlockMixin",
+    "MinecraftServerMixin",
+    "CampfireBlockEntityMixin",
+    "access.EntityAccessor"
+  ],
+  "client": [
+    "client.InGameOverlayRendererMixin",
+    "client.InGameHudMixin",
+    "client.HeadFeatureRendererMixin",
+    "client.PlayerEntityRendererMixin",
+    "client.GameRendererMixin",
+    "client.DrawContextMixin",
+    "client.ArmorFeatureRendererMixin",
+    "client.AvatarRenderStateMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
